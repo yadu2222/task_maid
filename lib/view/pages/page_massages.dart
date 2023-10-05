@@ -41,6 +41,22 @@ class _PageMassages extends State<PageMassages> {
     });
   }
 
+  @override
+  void didUpdateWidget(covariant PageMassages oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _messageController = TextEditingController();
+    _scrollController = ScrollController();
+
+    // ウィジェットがビルドされた後にスクロール位置を設定
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.linear,
+      );
+    });
+  }
+
   // void _scrollToBottom(){
   //   _scrollController.animateTo(
   //     _scrollController.position.maxScrollExtent + MediaQuery.of(context).viewInsets.bottom,
