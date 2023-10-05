@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import './items.dart';
 
 class Constant {
   static const Color main = Color(0xFF00849C);
@@ -35,4 +37,29 @@ class CustomText extends StatelessWidget {
       style: GoogleFonts.kiwiMaru(fontWeight: FontWeight.bold, fontSize: fontSize, color: color, height: 1.2),
     );
   }
+}
+
+
+// 辞書に追加するメソッド
+void addMessage(String messenger, bool messagebool, String message, bool StampBool, int stamp, int level,
+    bool indexBool, int index, bool whose) {
+  // 現在時刻を保存する変数
+  DateTime now = DateTime.now();
+  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+  String formattedTime = DateFormat.Hm().format(now);
+
+  // 辞書に追加
+  var newMessage = {
+    'sendDay': formattedDate,
+    'sendTime': formattedTime,
+    'messagebool': messagebool,
+    'message': message,
+    'stampBool': StampBool,
+    'stamp': stamp,
+    'level': level,
+    'indexBool': indexBool,
+    'index': index,
+    'whose': whose,
+  };
+  items.message['sender'][messenger].add(newMessage);
 }
