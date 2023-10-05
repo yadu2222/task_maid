@@ -39,6 +39,129 @@ class CustomText extends StatelessWidget {
   }
 }
 
+class stampPictures extends StatefulWidget {
+  int picture;
+  double width;
+  double height;
+  String messenger;
+  stampPictures({Key? key, required this.picture, required this.width, required this.height, required this.messenger})
+      : super(key: key);
+
+  @override
+  _stampPictures createState() => _stampPictures();
+}
+
+class _stampPictures extends State<stampPictures> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          items.stampIndex = widget.picture;
+          addMessage(widget.messenger, false, '', true, items.stampIndex, 0, false, 0, false);
+
+          setState(() {
+            items.stamplist = false;
+          });
+        },
+        child: Container(
+          width: widget.width * 0.2,
+          height: widget.width * 0.2,
+          margin: EdgeInsetsDirectional.all(widget.width * 0.02),
+          child: Image.asset(
+            items.taskMaid['stamp'][widget.picture],
+            fit: BoxFit.contain,
+          ),
+        ));
+  }
+}
+
+// スタンプを表示するクラス
+class stampList extends StatefulWidget {
+  double width;
+  double height;
+  String messenger;
+  stampList({Key? key, required this.width, required this.height, required this.messenger}) : super(key: key);
+
+  @override
+  _stampList createState() => _stampList();
+}
+
+class _stampList extends State<stampList> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: widget.width,
+      decoration: BoxDecoration(color: Constant.glay),
+      
+      child: Column(
+        children: [
+          Container(
+              alignment: Alignment(0, 0),
+              padding: EdgeInsets.only(left: widget.width * 0.025),
+              child: Row(
+                children: [
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 0,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 1,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 2,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 3,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                ],
+              )),
+          Container(
+              alignment: Alignment(0, 0),
+              padding: EdgeInsets.only(left: widget.width * 0.025),
+              child: Row(
+                children: [
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 4,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 5,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 6,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                  stampPictures(
+                    messenger: widget.messenger,
+                    picture: 7,
+                    width: widget.width,
+                    height: widget.height,
+                  ),
+                ],
+              ))
+        ],
+      ),
+    );
+  }
+}
 
 // 辞書に追加するメソッド
 void addMessage(String messenger, bool messagebool, String message, bool StampBool, int stamp, int level,

@@ -12,7 +12,7 @@ class items {
       //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
       {
         'user': 'せろり',
-        'woeker':'おさかな',
+        'woeker': 'おさかな',
         'task': 'ニャリオットとあそぶ',
         'month': '09',
         'day': '23',
@@ -23,7 +23,7 @@ class items {
       },
       {
         'user': 'せろり',
-        'woeker':'おさかな',
+        'woeker': 'おさかな',
         'task': 'フロント完成',
         'month': '09',
         'day': '23',
@@ -34,7 +34,7 @@ class items {
       },
       {
         'user': 'おさかな',
-        'woeker':'おさかな',
+        'woeker': 'おさかな',
         'task': 'ニャリオットにごはんあげる',
         'month': '10',
         'day': '23',
@@ -43,11 +43,10 @@ class items {
         'bool': false,
         'taskIndex': 2
       },
-      
     ]
   };
 
-    static Map message = {
+  static Map message = {
     'sender': {
       //ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
       'せろり': [
@@ -59,7 +58,7 @@ class items {
           'stampBool': false,
           'stamp': 0,
           'level': 5,
-          'indexBool':true,
+          'indexBool': true,
           'index': 1,
           'whose': true,
         },
@@ -71,11 +70,10 @@ class items {
           'stampBool': true,
           'stamp': 0,
           'level': 5,
-          'indexBool':true,
+          'indexBool': true,
           'index': 0,
           'whose': false,
         },
-        
       ],
       'おさかな': [
         {
@@ -86,7 +84,7 @@ class items {
           'stampBool': false,
           'stamp': 0,
           'level': 5,
-          'indexBool':false,
+          'indexBool': false,
           'index': 0,
           'whose': true,
         }
@@ -109,12 +107,20 @@ class items {
     ],
     'stamp': [
       'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp01.png',
     ],
   };
 
   // messagesの画面内の状態を保存する変数
   static bool indexBool = false;
+  static bool stamplist = false;
   static bool stampbool = false;
+  static int stampIndex = 0;
   static int taskIndex = 0;
-
 }

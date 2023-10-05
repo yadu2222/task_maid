@@ -170,6 +170,7 @@ class _PageHomeState extends State<PageHome> {
                               Container(
                                 width: _screenSizeWidth * 0.38,
                                 height: _screenSizeHeight * 0.6,
+                                padding: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.03),
                                 decoration: BoxDecoration(
                                   color: Constant.glay,
                                   borderRadius: BorderRadius.circular(10), // 角丸
@@ -181,17 +182,37 @@ class _PageHomeState extends State<PageHome> {
                                         -1; //null除外
                                     // リストの中身
                                     return ListTile(
-                                      title: Container(
-                                          width: _screenSizeWidth * 0.38,
-                                          padding: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                          //boxに下線
-                                          decoration: const BoxDecoration(
-                                              border: Border(bottom: BorderSide(color: Constant.blackGlay, width: 2))),
-                                          child: CustomText(
-                                              text: item['task'],
-                                              fontSize: _screenSizeWidth * 0.035,
-                                              color: Constant.blackGlay)),
-                                    );
+                                        title: item['bool']
+                                            ? const SizedBox(
+                                                width: 0,
+                                                height: 0,
+                                              )
+                                            : InkWell(
+                                                onTap: () {
+                                                  // ページ遷移
+                                                  //ページ遷移
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => PageTask()),
+                                                  ).then((value) {
+                                                    //戻ってきたら再描画
+                                                    setState(() {});
+                                                  });
+                                                },
+                                                child: Container(
+                                                    width: _screenSizeWidth * 0.38,
+                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.04),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    //boxに下線
+                                                    decoration: BoxDecoration(
+                                                      color: Constant.white,
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                    child: CustomText(
+                                                        text: item['task'],
+                                                        fontSize: _screenSizeWidth * 0.035,
+                                                        color: Constant.blackGlay)),
+                                              ));
                                   }).toList(),
                                 ),
                               )
