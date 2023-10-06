@@ -71,7 +71,6 @@ class _PageHomeState extends State<PageHome> {
                                       top: _screenSizeWidth * 0.0225),
                                   child: IconButton(
                                       onPressed: () {
-                                        //ここに処理設置
                                         //ページ遷移
                                         Navigator.push(
                                           context,
@@ -86,7 +85,6 @@ class _PageHomeState extends State<PageHome> {
                                         color: Constant.glay,
                                         size: 55,
                                       ))),
-                              //SizedBox(width: _screenSizeWidth*0.425,),
 
                               //設定
                               Container(

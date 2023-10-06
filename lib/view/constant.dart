@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../view/pages/page_massages.dart';
 import './items.dart';
 
 class Constant {
@@ -44,7 +45,16 @@ class stampPictures extends StatefulWidget {
   double width;
   double height;
   String messenger;
-  stampPictures({Key? key, required this.picture, required this.width, required this.height, required this.messenger})
+  var scaffoldKey;
+  var scrollController;
+  stampPictures(
+      {Key? key,
+      required this.picture,
+      required this.width,
+      required this.height,
+      required this.messenger,
+      required this.scaffoldKey,
+      required this.scrollController})
       : super(key: key);
 
   @override
@@ -61,6 +71,18 @@ class _stampPictures extends State<stampPictures> {
 
           setState(() {
             items.stamplist = false;
+
+            void reloadWidgetTree() {
+              widget.scaffoldKey.currentState?.reassemble();
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              widget.scrollController.animateTo(
+                widget.scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            });
           });
         },
         child: Container(
@@ -80,7 +102,16 @@ class stampList extends StatefulWidget {
   double width;
   double height;
   String messenger;
-  stampList({Key? key, required this.width, required this.height, required this.messenger}) : super(key: key);
+  var scaffoldKey;
+  var scrollController;
+  stampList(
+      {Key? key,
+      required this.width,
+      required this.height,
+      required this.messenger,
+      required this.scaffoldKey,
+      required this.scrollController})
+      : super(key: key);
 
   @override
   _stampList createState() => _stampList();
@@ -92,7 +123,6 @@ class _stampList extends State<stampList> {
     return Container(
       width: widget.width,
       decoration: BoxDecoration(color: Constant.glay),
-      
       child: Column(
         children: [
           Container(
@@ -101,24 +131,32 @@ class _stampList extends State<stampList> {
               child: Row(
                 children: [
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 0,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 1,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 2,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 3,
                     width: widget.width,
@@ -132,24 +170,32 @@ class _stampList extends State<stampList> {
               child: Row(
                 children: [
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 4,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 5,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 6,
                     width: widget.width,
                     height: widget.height,
                   ),
                   stampPictures(
+                    scaffoldKey: widget.scaffoldKey,
+                    scrollController: widget.scrollController,
                     messenger: widget.messenger,
                     picture: 7,
                     width: widget.width,
@@ -185,4 +231,14 @@ void addMessage(String messenger, bool messagebool, String message, bool StampBo
     'whose': whose,
   };
   items.message['sender'][messenger].add(newMessage);
+}
+
+// ルームIDチェッカー
+bool roomIDcheck(String roomID) {
+  for (int i = 0; i < items.room[roomID]['workers'].length; i++) {
+    if (items.room[roomID]['workers'][i] == items.userInfo['userid']) {
+      return true;
+    }
+  }
+  return false;
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database.dart';
+import 'package:google_fonts/google_fonts.dart';  
 
 // import 'package:intl/intl.dart';
 
@@ -18,6 +19,12 @@ class PageMassages extends StatefulWidget {
 class _PageMassages extends State<PageMassages> {
   String messenger;
   _PageMassages({required this.messenger});
+
+  // 画面の再構築メソッド
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  void reloadWidgetTree() {
+    _scaffoldKey.currentState?.reassemble();
+  }
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -44,9 +51,9 @@ class _PageMassages extends State<PageMassages> {
   @override
   void didUpdateWidget(covariant PageMassages oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _messageController = TextEditingController();
-    _scrollController = ScrollController();
 
+    // コントローラーを再初期化するのではなく、既存のコントローラーをクリア
+    _messageController.clear();
     // ウィジェットがビルドされた後にスクロール位置を設定
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.animateTo(
@@ -56,14 +63,6 @@ class _PageMassages extends State<PageMassages> {
       );
     });
   }
-
-  // void _scrollToBottom(){
-  //   _scrollController.animateTo(
-  //     _scrollController.position.maxScrollExtent + MediaQuery.of(context).viewInsets.bottom,
-  //     curve: Curves.easeOut,
-  //     duration: const Duration(milliseconds: 300),
-  //   );
-  // }
 
   // 仮置きする変数
   String message = '';
@@ -76,6 +75,7 @@ class _PageMassages extends State<PageMassages> {
     var _screenSizeHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
       body: Center(
         child: Container(
@@ -204,7 +204,7 @@ class _PageMassages extends State<PageMassages> {
                                                                             children: [
                                                                               CustomText(
                                                                                   text:
-                                                                                      '期限：${items.taskList['id'][messages['index']]['month']}/${items.taskList['id'][messages['index']]['day']}\t${items.taskList['id'][messages['index']]['our']}\n---------------------',
+                                                                                      '期限：${items.taskList['id'][messages['index']]['limitDay']}\t${items.taskList['id'][messages['index']]['limitTime']}\n---------------------',
                                                                                   fontSize: _screenSizeWidth * 0.0325,
                                                                                   color: Constant.blackGlay),
                                                                             ]),
@@ -242,7 +242,22 @@ class _PageMassages extends State<PageMassages> {
                                                                                         [index]['index'],
                                                                                     false);
                                                                                 items.indexBool = false;
-                                                                                setState(() {});
+                                                                                // 再読み込みとスクロール
+                                                                                setState(() {
+                                                                                  // ちょっと待たせて実行
+                                                                                  WidgetsBinding.instance
+                                                                                      .addPostFrameCallback((_) {
+                                                                                    _scrollController.animateTo(
+                                                                                      _scrollController
+                                                                                          .position.maxScrollExtent,
+                                                                                      duration: const Duration(
+                                                                                          milliseconds: 300),
+                                                                                      curve: Curves.easeOut,
+                                                                                    );
+                                                                                  });
+                                                                                });
+
+                                                                                reloadWidgetTree();
                                                                               },
                                                                               child: Container(
                                                                                 width: _screenSizeWidth * 0.1525,
@@ -281,7 +296,22 @@ class _PageMassages extends State<PageMassages> {
                                                                                         [index]['index'],
                                                                                     false);
                                                                                 items.indexBool = false;
-                                                                                setState(() {});
+                                                                                // 再読み込みとスクロール
+                                                                                setState(() {
+                                                                                  // ちょっと待たせて実行
+                                                                                  WidgetsBinding.instance
+                                                                                      .addPostFrameCallback((_) {
+                                                                                    _scrollController.animateTo(
+                                                                                      _scrollController
+                                                                                          .position.maxScrollExtent,
+                                                                                      duration: const Duration(
+                                                                                          milliseconds: 300),
+                                                                                      curve: Curves.easeOut,
+                                                                                    );
+                                                                                  });
+                                                                                });
+
+                                                                                reloadWidgetTree();
                                                                               },
                                                                               child: Container(
                                                                                 width: _screenSizeWidth * 0.1525,
@@ -484,7 +514,7 @@ class _PageMassages extends State<PageMassages> {
                                                                                           SizedBox(
                                                                                               child: CustomText(
                                                                                                   text:
-                                                                                                      '期限:${item['month']}-${item['day']}\t${item['our']}',
+                                                                                                      '期限:${item['limitDay']}\t${item['limitTime']}',
                                                                                                   fontSize:
                                                                                                       _screenSizeWidth *
                                                                                                           0.03,
@@ -550,6 +580,9 @@ class _PageMassages extends State<PageMassages> {
                                           //decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
                                           child: TextField(
                                             controller: _messageController,
+                                            style: TextStyle(
+                                              // fontFamily: GoogleFonts.kiwiMaru,
+                                            ),
 
                                             cursorColor: Constant.blackGlay,
                                             decoration: const InputDecoration(
@@ -575,27 +608,34 @@ class _PageMassages extends State<PageMassages> {
                                           ),
                                           onPressed: () {
                                             // 入力フォームが空じゃなければ
+                                            // ここでデータベース送信と受け取り？
                                             if (_messageController.text.isNotEmpty) {
                                               FocusScope.of(context).unfocus(); //キーボードを閉じる
 
                                               // メッセージ追加メソッド呼び出し
                                               addMessage(messenger, true, message, false, 0, 5, items.indexBool,
                                                   items.taskIndex, false);
-
                                               // 入力フォームの初期化
                                               _messageController.clear();
                                               items.indexBool = false;
                                             }
 
-                                            // ここでデータベース送信と受け取り？
-                                            setState(() {}); // 画面の更新
+                                            // stamplistを消す
+                                            items.stamplist = false;
 
-                                            // 未来の自分へ なんでか知らんけど機能しませんどうにかしてください
-                                            _scrollController.animateTo(
-                                              _scrollController.position.maxScrollExtent,
-                                              duration: const Duration(milliseconds: 300),
-                                              curve: Curves.linear,
-                                            );
+                                            // 再読み込みとスクロール
+                                            setState(() {
+                                              // ちょっと待たせて実行
+                                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                _scrollController.animateTo(
+                                                  _scrollController.position.maxScrollExtent,
+                                                  duration: const Duration(milliseconds: 300),
+                                                  curve: Curves.easeOut,
+                                                );
+                                              });
+                                            });
+
+                                            reloadWidgetTree();
                                           },
                                         ),
                                       ],
@@ -604,7 +644,12 @@ class _PageMassages extends State<PageMassages> {
 
                               // スタンプリスト
                               items.stamplist
-                                  ? stampList(width: _screenSizeWidth, height: _screenSizeHeight, messenger: messenger)
+                                  ? stampList(
+                                      scaffoldKey: _scaffoldKey,
+                                      scrollController: _scrollController,
+                                      width: _screenSizeWidth,
+                                      height: _screenSizeHeight,
+                                      messenger: messenger)
                                   : const SizedBox(
                                       width: 0,
                                       height: 0,

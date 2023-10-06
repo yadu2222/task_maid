@@ -4,45 +4,109 @@ import 'constant.dart';
 class items {
   static Map<String, dynamic> userInfo = {
     'name': 'おさかな',
+    'userid': '12345',
+    'userTask': taskList,
+    'message': message,
+  };
+
+  static Map<String, dynamic> friend = {
+    '12345': {
+      'name': 'おさかな２',
+      'userTask': taskList,
+      'message': message,
+    },
+    '67890': {
+      'name': 'ニャリオット',
+      'userTask': taskList,
+      'message': message,
+    }
+  };
+
+  static Map myroom = {'myroomID': []};
+
+  // ルーム
+  static Map room = {
+    '1234': {
+      'roomName': 'ニャリオットのお世話',
+      'leader': '12345',
+      'workers': ['67890'],
+      'task': [
+        {
+          'user': 'せろり',
+          'woeker': 'おさかな',
+          'task': 'ニャリオットとあそぶ',
+          'day': '09',
+          'month': '23',
+          'limitDay': '09-23',
+          'limitTime': '10:25',
+          'level': 3,
+          'bool': false,
+          'taskIndex': 0
+        },
+        {
+          'user': 'せろり',
+          'worker': 'おさかな',
+          'day': '09',
+          'month': '23',
+          'task': 'フロント完成',
+          'limitDay': '09-23',
+          'limitTime': '10:25',
+          'level': 3,
+          'bool': false,
+          'taskIndex': 1
+        },
+      ],
+    },
+    '2345': {
+      'roomName': 'ニャリオットのお世話2',
+      'leader': '67890',
+      'workers': ['67890'],
+      'task': [
+        {
+          'user': 'おさかな',
+          'worker': 'おさかな',
+          'task': 'ニャリオットにごはんあげる',
+          'day': '09',
+          'month': '23',
+          'limitDay': '09-23',
+          'limitTime': '10:25',
+          'level': 3,
+          'bool': false,
+          'taskIndex': 0
+        },
+      ],
+    }
   };
 
   //タスクリスト
   static Map taskList = {
     'id': [
-      //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
       {
         'user': 'せろり',
-        'woeker': 'おさかな',
-        'task': 'ニャリオットとあそぶ',
-        'month': '09',
-        'day': '23',
-        'our': '10:25',
+        'worker': 'おさかな',
+        'task': 'ニャリオットにごはんあげる',
+        'day': '09',
+        'month': '23',
+        'limitDay': '09-23',
+        'limitTime': '10:25',
         'level': 3,
         'bool': false,
         'taskIndex': 0
       },
       {
-        'user': 'せろり',
-        'woeker': 'おさかな',
-        'task': 'フロント完成',
-        'month': '09',
-        'day': '23',
-        'our': '10:25',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 1
-      },
-      {
         'user': 'おさかな',
-        'woeker': 'おさかな',
+        'worker': 'おさかな',
         'task': 'ニャリオットにごはんあげる',
-        'month': '10',
-        'day': '23',
-        'our': '10:25',
+        'day': '09',
+        'month': '23',
+        'limitDay': '09-23',
+        'limitTime': '10:25',
         'level': 3,
         'bool': false,
-        'taskIndex': 2
+        'taskIndex': 0
       },
+
+      //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
     ]
   };
 
@@ -107,7 +171,7 @@ class items {
     ],
     'stamp': [
       'assets/images/stamp/taskMaid_stamp01.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp02.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',
