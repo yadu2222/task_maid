@@ -16,13 +16,32 @@ class items {
   };
 
   static Map myroom = {
-    'myroomID': ['1234', '2345']
+    'myroomID': ['1111', '1234', '2345']
   };
 
   // ルーム
   static Map room = {
     '1111': {
       'roomName': 'てすとるーむ',
+      'leader': '12345',
+      'workers': ['12345'],
+      'tasks': [
+        {
+          'user': 'おさかな',
+          'woeker': 'おさかな',
+          'task': 'タスク追加機能',
+          'day': '10',
+          'month': '09',
+          'limitDay': '10-09',
+          'limitTime': '13:00',
+          'level': 3,
+          'bool': false,
+          'taskIndex': 0
+        },
+      ],
+    },
+    '3456': {
+      'roomName': '参加できない; ;',
       'leader': '12345',
       'workers': ['12345'],
       'tasks': [
@@ -91,6 +110,10 @@ class items {
       ],
     }
   };
+
+  // 部屋を作るときに値を保存する変数
+  static String roomName = '';
+  static String roomNum = '0000';
 
   //タスクリスト
   static Map taskList = {
@@ -242,4 +265,6 @@ class items {
   static bool stampbool = false;
   static int stampIndex = 0;
   static int taskIndex = 0;
+
+  
 }

@@ -15,6 +15,11 @@ class _PageTask extends State<PageTask> {
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _controller = TextEditingController();
 
+  // 部屋番号のコントローラー
+  final TextEditingController roomNumController = TextEditingController();
+// 部屋名のコントローラー
+  final TextEditingController roomNameController = TextEditingController();
+
   // 検索用変数
   static String roomID = 'ルームID';
   static String ex = '検索結果はありません';
@@ -72,7 +77,7 @@ class _PageTask extends State<PageTask> {
                 // 現在表示しているルームのボタン
                 InkWell(
                     onTap: () {
-                      // ここに処理を設置
+                      // ダイアログ表示 現在加入中の部屋と検索バー表示
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -89,9 +94,10 @@ class _PageTask extends State<PageTask> {
                                     decoration:
                                         BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                                     child: Column(children: [
+                                      // 検索バー
                                       Container(
                                           width: _screenSizeWidth * 0.7,
-                                          height: _screenSizeHeight * 0.065,
+                                          //height: _screenSizeHeight * 0.067,
                                           decoration: BoxDecoration(
                                               color: Constant.glay, borderRadius: BorderRadius.circular(50)),
                                           margin: EdgeInsets.all(_screenSizeWidth * 0.02),
@@ -393,6 +399,168 @@ class _PageTask extends State<PageTask> {
                                                     ))
                                               ],
                                             ),
+
+                                            // 現在参加中部屋のリスト
+                                            Container(
+                                              width: _screenSizeWidth * 0.7,
+                                              height: _screenSizeHeight * 0.35,
+                                              child: ListView(
+                                                children: [
+                                                  ...((items.myroom['myroomID'] as List<String>).map<Widget>((roomId) {
+                                                    return ListTile(
+                                                      title: InkWell(
+                                                        onTap: () {},
+                                                        child: Container(
+                                                          width: _screenSizeWidth * 0.7,
+                                                          height: _screenSizeHeight * 0.05,
+                                                          decoration: BoxDecoration(
+                                                            color: Constant.main,
+                                                            borderRadius: BorderRadius.circular(10),
+                                                          ),
+                                                          alignment: const Alignment(0, 0),
+                                                          child: CustomText(
+                                                            text: items.room[roomId]['roomName'],
+                                                            color: Constant.white,
+                                                            fontSize: _screenSizeWidth * 0.04,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList()),
+
+                                                  // 部屋を作成するためのaddボタン
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context); // 前のページに戻る
+                                                      // ダイアログ表示 ここで部屋を作成
+                                                      // 新規の番号もらってこないとなんですけどどうしましょう
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return AlertDialog(
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(16.0),
+                                                                ),
+                                                                elevation: 0.0, // ダイアログの影を削除
+                                                                backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+                                                                content: Container(
+                                                                    width: _screenSizeWidth * 0.9,
+                                                                    height: _screenSizeHeight * 0.3,
+                                                                    padding: EdgeInsets.only(
+                                                                        left: _screenSizeWidth * 0.03,
+                                                                        right: _screenSizeWidth * 0.03,
+                                                                        top: _screenSizeWidth * 0.05,
+                                                                        bottom: _screenSizeWidth * 0.05),
+                                                                    decoration: BoxDecoration(
+                                                                        color: Constant.glay,
+                                                                        borderRadius: BorderRadius.circular(16)),
+                                                                    child: Column(children: [
+                                                                      Container(
+                                                                        margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                                        alignment: Alignment(0, 0),
+                                                                        child: CustomText(
+                                                                            text: '新規作成',
+                                                                            fontSize: _screenSizeWidth * 0.05,
+                                                                            color: Constant.blackGlay),
+                                                                      ),
+                                                                      Container(
+                                                                          width: _screenSizeWidth * 0.5,
+                                                                          height: _screenSizeHeight * 0.04,
+                                                                          alignment: const Alignment(0.0, 0.0),
+                                                                          margin:
+                                                                              EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                                          // テキストフィールド
+                                                                          child: TextField(
+                                                                            controller: roomNumController,
+                                                                            decoration: const InputDecoration(
+                                                                              hintText: '部屋番号を入力してね',
+                                                                            ),
+                                                                            onChanged: (num) {
+                                                                              items.roomNum = num;
+                                                                            },
+                                                                            textInputAction: TextInputAction.next,
+                                                                          )),
+                                                                      Container(
+                                                                          width: _screenSizeWidth * 0.5,
+                                                                          height: _screenSizeHeight * 0.04,
+                                                                          alignment: const Alignment(0.0, 0.0),
+                                                                          margin:
+                                                                              EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                                          // テキストフィールド
+                                                                          child: TextField(
+                                                                            controller: roomNameController,
+                                                                            decoration: const InputDecoration(
+                                                                              hintText: '部屋の名前を入力してね',
+                                                                            ),
+                                                                            onChanged: (newroomname) {
+                                                                              items.roomName = newroomname;
+                                                                            },
+                                                                            textInputAction: TextInputAction.done,
+                                                                          )),
+
+                                                                      // 作成ボタン
+                                                                      // かぶりがないかチェックしないといけないけど未実装です がば
+                                                                      InkWell(
+                                                                        onTap: () {
+                                                                          // 空文字だったら通さない
+                                                                          if (roomNameController.text.isNotEmpty &&
+                                                                              roomNumController.text.isNotEmpty) {
+                                                                            FocusScope.of(context)
+                                                                                .unfocus(); //キーボードを閉じる
+                                                                            Navigator.of(context).pop(); //もどる
+
+                                                                            setState(() {
+                                                                              // 追加する部屋のひな型
+                                                                              var newroom = {
+                                                                                'roomName': items.roomName,
+                                                                                'leader': items.userInfo['userid'],
+                                                                                'workers': [],
+                                                                                'task': [],
+                                                                              };
+                                                                              items.room[items.roomNum] = newroom;
+                                                                              items.myroom['myroomID']
+                                                                                  .add(items.roomNum);
+
+                                                                              // 入力フォームの初期化
+                                                                              roomNameController.clear();
+                                                                              roomNumController.clear();
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                        child: Container(
+                                                                          width: _screenSizeWidth * 0.25,
+                                                                          alignment: Alignment(0, 0),
+                                                                          padding: EdgeInsets.only(
+                                                                              left: _screenSizeWidth * 0.03,
+                                                                              right: _screenSizeWidth * 0.03,
+                                                                              top: _screenSizeWidth * 0.02,
+                                                                              bottom: _screenSizeWidth * 0.02),
+                                                                          margin: EdgeInsets.only(
+                                                                              top: _screenSizeWidth * 0.02),
+                                                                          decoration: BoxDecoration(
+                                                                              color: Constant.main,
+                                                                              borderRadius: BorderRadius.circular(16)),
+                                                                          child: CustomText(
+                                                                              text: '作成',
+                                                                              fontSize: _screenSizeWidth * 0.05,
+                                                                              color: Constant.glay),
+                                                                        ),
+                                                                      )
+                                                                    ])));
+                                                          });
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.add,
+                                                      size: 35,
+                                                      color: Constant.blackGlay,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
                                           ])),
                                     ])));
                           });
