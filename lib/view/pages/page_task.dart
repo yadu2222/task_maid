@@ -81,7 +81,7 @@ class _PageTask extends State<PageTask> {
                       // タスク追加ボタン　リーダーのみ表示
                       items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
                           ? Container(
-                              width: _screenSizeWidth * 0.55,
+                              width: _screenSizeWidth * 0.5,
                               alignment: Alignment.centerRight,
                               child: IconButton(
                                 onPressed: () {
@@ -189,7 +189,6 @@ class _PageTask extends State<PageTask> {
                                                         //Map<String, dynamic> workerInfo = items.friend[workerId];
                                                         return ListTile(
                                                             title: InkWell(
-
                                                           // ボタンの色替えを建設しろ
                                                           onTap: () {
                                                             items.worker = items.friend[workerId]['name'];
