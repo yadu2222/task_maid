@@ -15,9 +15,14 @@ class _PageTask extends State<PageTask> {
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _controller = TextEditingController();
 
+  // タスク作成時のフォームに使うコントローラー
+  final TextEditingController dayController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController taskThinkController = TextEditingController();
+
   // 部屋番号のコントローラー
   final TextEditingController roomNumController = TextEditingController();
-// 部屋名のコントローラー
+  // 部屋名のコントローラー
   final TextEditingController roomNameController = TextEditingController();
 
   // 検索用変数
@@ -34,7 +39,7 @@ class _PageTask extends State<PageTask> {
   }
 
   static String roomNames = roomName();
-  static int taskRoomIndex = 0; // どのmyroomidを選ぶかのために使う
+  static String taskRoomIndex = '1111'; // どのmyroomidを選ぶかのために使う デフォはてすとるーむ
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +77,191 @@ class _PageTask extends State<PageTask> {
                         },
                       ),
                       CustomText(text: "タスク", fontSize: _screenSizeWidth * 0.06, color: Constant.glay),
+
+                      // タスク追加ボタン　リーダーのみ表示
+                      items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
+                          ? Container(
+                              width: _screenSizeWidth * 0.55,
+                              alignment: Alignment.centerRight,
+                              child: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16.0),
+                                            ),
+                                            elevation: 0.0, // ダイアログの影を削除
+                                            backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+                                            content: Container(
+                                                width: _screenSizeWidth * 0.9,
+                                                height: _screenSizeHeight * 0.5,
+                                                decoration: BoxDecoration(
+                                                    color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                                padding: EdgeInsets.only(
+                                                  left: _screenSizeWidth * 0.03,
+                                                  right: _screenSizeWidth * 0.03,
+                                                  top: _screenSizeWidth * 0.05,
+                                                ),
+                                                child: Column(children: [
+                                                  Container(
+                                                    margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                    alignment: Alignment(0, 0),
+                                                    child: CustomText(
+                                                        text: 'タスク追加',
+                                                        fontSize: _screenSizeWidth * 0.05,
+                                                        color: Constant.blackGlay),
+                                                  ),
+
+                                                  // 期日入力 くるくる回るやつ実装したかったけど時間なかった
+                                                  Container(
+                                                      width: _screenSizeWidth * 0.8,
+                                                      alignment: const Alignment(0.0, 0.0),
+                                                      margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
+                                                      child: Row(children: [
+                                                        Container(
+                                                            width: _screenSizeWidth * 0.15,
+                                                            height: _screenSizeHeight * 0.04,
+                                                            alignment: const Alignment(0.0, 0.0),
+                                                            margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                            // 日付
+                                                            child: TextField(
+                                                              controller: dayController,
+                                                              decoration: const InputDecoration(
+                                                                hintText: 'xx-yy',
+                                                              ),
+                                                              onChanged: (day) {
+                                                                items.limitDay = day;
+                                                              },
+                                                              textInputAction: TextInputAction.next,
+                                                            )),
+                                                        Container(
+                                                            width: _screenSizeWidth * 0.15,
+                                                            height: _screenSizeHeight * 0.04,
+                                                            alignment: const Alignment(0.0, 0.0),
+                                                            margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                            // 時間
+                                                            child: TextField(
+                                                              controller: timeController,
+                                                              decoration: const InputDecoration(
+                                                                hintText: 'nn:mm',
+                                                              ),
+                                                              onChanged: (time) {
+                                                                items.limitTime = time;
+                                                              },
+                                                              textInputAction: TextInputAction.next,
+                                                            ))
+                                                      ])),
+                                                  Container(
+                                                      width: _screenSizeWidth * 0.5,
+                                                      height: _screenSizeHeight * 0.04,
+                                                      alignment: const Alignment(0.0, 0.0),
+                                                      margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                      // 内容
+                                                      child: TextField(
+                                                        controller: taskThinkController,
+                                                        decoration: const InputDecoration(
+                                                          hintText: 'タスク内容を入力してね',
+                                                        ),
+                                                        onChanged: (task) {
+                                                          items.newtask = task;
+                                                        },
+                                                        textInputAction: TextInputAction.done,
+                                                      )),
+
+                                                  Container(
+                                                      child: CustomText(
+                                                          text: '誰に頼む？',
+                                                          fontSize: _screenSizeWidth * 0.04,
+                                                          color: Constant.blackGlay)),
+
+                                                  Container(
+                                                    height: _screenSizeHeight * 0.175,
+                                                    child: ListView(
+                                                      children: (items.room[taskRoomIndex]['workers'] as List<dynamic>)
+                                                          .map<Widget>((workerId) {
+                                                        // workerId を使って該当の情報を取得し、ウィジェットを生成する
+                                                        //Map<String, dynamic> workerInfo = items.friend[workerId];
+                                                        return ListTile(
+                                                            title: InkWell(
+
+                                                          // ボタンの色替えを建設しろ
+                                                          onTap: () {
+                                                            items.worker = items.friend[workerId]['name'];
+                                                            items.friend[workerId]['bool'] = true;
+                                                          },
+                                                          child: Container(
+                                                            padding: EdgeInsets.only(
+                                                                top: _screenSizeWidth * 0.02,
+                                                                bottom: _screenSizeWidth * 0.02),
+                                                            alignment: Alignment(0, 0),
+                                                            decoration: BoxDecoration(
+                                                                color: Constant.white,
+                                                                borderRadius: BorderRadius.circular(10)),
+                                                            child: CustomText(
+                                                                text: items.friend[workerId]['name'],
+                                                                fontSize: _screenSizeWidth * 0.04,
+                                                                color: Constant.blackGlay),
+                                                          ),
+                                                        ));
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+
+                                                  // タスク作成ボタン
+                                                  InkWell(
+                                                    onTap: () {
+                                                      // 空文字だったら通さない
+                                                      if (dayController.text.isNotEmpty &&
+                                                          timeController.text.isNotEmpty &&
+                                                          taskThinkController.text.isNotEmpty) {
+                                                        FocusScope.of(context).unfocus(); //キーボードを閉じる
+                                                        Navigator.of(context).pop(); //もどる
+
+                                                        setState(() {
+                                                          // タスクを追加
+                                                          addTask(items.userInfo['name'], items.worker, items.newtask,
+                                                              items.limitDay, items.limitTime, taskRoomIndex);
+
+                                                          // 入力フォームの初期化
+                                                          dayController.clear();
+                                                          timeController.clear();
+                                                          taskThinkController.clear();
+                                                        });
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: _screenSizeWidth * 0.25,
+                                                      alignment: Alignment(0, 0),
+                                                      padding: EdgeInsets.only(
+                                                          left: _screenSizeWidth * 0.03,
+                                                          right: _screenSizeWidth * 0.03,
+                                                          top: _screenSizeWidth * 0.02,
+                                                          bottom: _screenSizeWidth * 0.02),
+                                                      margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
+                                                      decoration: BoxDecoration(
+                                                          color: Constant.main,
+                                                          borderRadius: BorderRadius.circular(16)),
+                                                      child: CustomText(
+                                                          text: '作成',
+                                                          fontSize: _screenSizeWidth * 0.05,
+                                                          color: Constant.white),
+                                                    ),
+                                                  )
+                                                ])));
+                                      });
+                                },
+                                icon: Icon(Icons.add),
+                                iconSize: 35,
+                                color: Constant.glay,
+                              ),
+                            )
+                          : SizedBox.shrink()
                     ])),
 
                 // 現在表示しているルームのボタン
@@ -409,7 +599,13 @@ class _PageTask extends State<PageTask> {
                                                   ...((items.myroom['myroomID'] as List<String>).map<Widget>((roomId) {
                                                     return ListTile(
                                                       title: InkWell(
-                                                        onTap: () {},
+                                                        onTap: () {
+                                                          // 表示する部屋の切り替え
+                                                          setState(() {
+                                                            taskRoomIndex = roomId;
+                                                            Navigator.pop(context); // 前のページに戻る
+                                                          });
+                                                        },
                                                         child: Container(
                                                           width: _screenSizeWidth * 0.7,
                                                           height: _screenSizeHeight * 0.05,
@@ -517,7 +713,7 @@ class _PageTask extends State<PageTask> {
                                                                               var newroom = {
                                                                                 'roomName': items.roomName,
                                                                                 'leader': items.userInfo['userid'],
-                                                                                'workers': [],
+                                                                                'workers': [items.userInfo['userid']],
                                                                                 'task': [],
                                                                               };
                                                                               items.room[items.roomNum] = newroom;
@@ -567,15 +763,13 @@ class _PageTask extends State<PageTask> {
                     },
                     // 現在のルーム名表示部分
                     child: Container(
-                      padding: EdgeInsets.only(
-                          top: _screenSizeWidth * 0.04,
-                          bottom: _screenSizeWidth * 0.04,
-                          left: _screenSizeWidth * 0.08,
-                          right: _screenSizeWidth * 0.08),
+                      width: _screenSizeWidth * 0.625,
+                      alignment: Alignment(0, 0),
+                      padding: EdgeInsets.all(_screenSizeWidth * 0.04),
                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
                       margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.03),
                       child: CustomText(
-                          text: items.room[items.myroom['myroomID'][taskRoomIndex]]['roomName'],
+                          text: items.room[taskRoomIndex]['roomName'],
                           fontSize: _screenSizeWidth * 0.045,
                           color: Constant.blackGlay),
                     )),
@@ -590,12 +784,8 @@ class _PageTask extends State<PageTask> {
                       // リストの中身
                       return ListTile(
                           // タスクの状態を判定して表示
-                          title: item['bool']
-                              ? SizedBox(
-                                  width: 0,
-                                  height: 0,
-                                )
-                              : InkWell(
+                          title: !item['bool'] && item['roomid'] == taskRoomIndex
+                              ? InkWell(
                                   onTap: () {
                                     // 詳細ダイアログ表示
                                     showDialog(
@@ -682,9 +872,24 @@ class _PageTask extends State<PageTask> {
                                                                   onTap: () {
                                                                     // 見ているタスクを引用してリスケを希望
                                                                     // 辞書に追加
-                                                                    addMessage(item['user'], true, 'できました！！！！！！！',
-                                                                        false, 0, 0, true, index, false);
-                                                                    items.indexBool = false;
+                                                                    items.room[taskRoomIndex]['leader'] ==
+                                                                            items.userInfo['userid']
+                                                                        ? addMessage(
+                                                                            item['user'],
+                                                                            true,
+                                                                            '進捗どうですか？？？？？？？',
+                                                                            false,
+                                                                            0,
+                                                                            0,
+                                                                            true,
+                                                                            index,
+                                                                            false)
+                                                                        : addMessage(item['user'], true, 'できました！！！！！！！',
+                                                                            false, 0, 0, true, index, false);
+
+                                                                    if (!(items.room[taskRoomIndex]['leader'] ==
+                                                                        items.userInfo['userid']))
+                                                                      items.indexBool = false;
 
                                                                     // タスクの状態を変更
                                                                     item['bool'] = true;
@@ -711,7 +916,10 @@ class _PageTask extends State<PageTask> {
                                                                         color: Constant.white,
                                                                         borderRadius: BorderRadius.circular(10)),
                                                                     child: CustomText(
-                                                                        text: 'できました\n！！！！！！',
+                                                                        text: items.room[taskRoomIndex]['leader'] ==
+                                                                                items.userInfo['userid']
+                                                                            ? '進捗どう\nですか？？？'
+                                                                            : 'できました\n！！！！！！',
                                                                         fontSize: _screenSizeWidth * 0.04,
                                                                         color: Constant.blackGlay),
                                                                   ),
@@ -832,7 +1040,8 @@ class _PageTask extends State<PageTask> {
                                                       color: Constant.blackGlay))
                                             ]))
                                       ])),
-                                ));
+                                )
+                              : SizedBox.shrink());
                     }).toList(),
                   ),
                 )

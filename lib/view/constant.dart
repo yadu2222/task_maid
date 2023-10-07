@@ -6,9 +6,6 @@ import './items.dart';
 
 class Constant {
   static const Color main = Color(0xFF00849C);
-  static const Color sub1 = Color(0xFFFF9F9F);
-  static const Color sub2 = Color.fromARGB(255, 197, 233, 53);
-  static const Color sub3 = Color(0xFFFFDC61);
   static const Color glay = Color(0xFFD9D9D9);
   static const Color blackGlay = Color.fromARGB(255, 124, 124, 124);
   static const Color white = Color(0xFFFFFFFF);
@@ -231,6 +228,26 @@ void addMessage(String messenger, bool messagebool, String message, bool StampBo
     'whose': whose,
   };
   items.message['sender'][messenger].add(newMessage);
+}
+
+// タスクを辞書に追加するメソッド
+void addTask(String user, String worker, String task, String limitDay, String limitTime, String taskRoomIndex) {
+  // 辞書に追加
+  var newtask = {
+    'user': user,
+    'worker': worker,
+    'task': task,
+    'day': '09',
+    'month': '23',
+    'limitDay':limitDay,
+    'limitTime': limitTime,
+    'level': 3,
+    'bool': false,
+    'taskIndex': 0,
+    'roomid': taskRoomIndex
+  };
+  items.room[taskRoomIndex]['tasks'].add(newtask);
+  items.taskList['id'].add(newtask);
 }
 
 // ルームIDチェッカー
