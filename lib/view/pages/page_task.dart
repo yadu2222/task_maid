@@ -29,6 +29,7 @@ class _PageTask extends State<PageTask> {
   }
 
   static String roomNames = roomName();
+  static int taskRoomIndex = 0; // どのmyroomidを選ぶかのために使う
 
   @override
   Widget build(BuildContext context) {
@@ -68,247 +69,348 @@ class _PageTask extends State<PageTask> {
                       CustomText(text: "タスク", fontSize: _screenSizeWidth * 0.06, color: Constant.glay),
                     ])),
 
-                // ルーム検索バー
-                Container(
-                  width: _screenSizeWidth * 0.88,
-                  height: _screenSizeHeight * 0.065,
-                  decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(50)),
-                  margin: EdgeInsets.all(_screenSizeWidth * 0.025),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: _screenSizeWidth * 0.05,
-                      ),
-                      const Icon(
-                        Icons.search,
-                        size: 30,
-                        color: Constant.blackGlay,
-                      ),
-                      SizedBox(
-                        width: _screenSizeWidth * 0.05,
-                      ),
+                // 現在表示しているルームのボタン
+                InkWell(
+                    onTap: () {
+                      // ここに処理を設置
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                elevation: 0.0, // ダイアログの影を削除
+                                backgroundColor: Constant.white.withOpacity(0), // 背景色
 
-                      Container(
-                          width: _screenSizeWidth * 0.54,
-                          height: _screenSizeHeight * 0.04,
-                          alignment: const Alignment(0.0, 0.0),
+                                content: Container(
+                                    width: _screenSizeWidth * 0.9,
+                                    height: _screenSizeHeight * 0.465,
+                                    decoration:
+                                        BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                    child: Column(children: [
+                                      Container(
+                                          width: _screenSizeWidth * 0.7,
+                                          height: _screenSizeHeight * 0.065,
+                                          decoration: BoxDecoration(
+                                              color: Constant.glay, borderRadius: BorderRadius.circular(50)),
+                                          margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                          child: Column(children: [
+                                            // Container(
+                                            //     width: _screenSizeWidth * 0.7,
+                                            //     child: IconButton(
+                                            //       onPressed: () {},
+                                            //       icon: Icon(
+                                            //         Icons.add,
+                                            //         color: Constant.blackGlay,
+                                            //         size: 30,
+                                            //       ),
+                                            //     )),
+                                            Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: _screenSizeWidth * 0.02,
+                                                ),
+                                                const Icon(
+                                                  Icons.search,
+                                                  size: 30,
+                                                  color: Constant.blackGlay,
+                                                ),
+                                                SizedBox(
+                                                  width: _screenSizeWidth * 0.02,
+                                                ),
 
-                          // テキストフィールド
-                          child: TextField(
-                            controller: _messageController,
-                            decoration: const InputDecoration(
-                              hintText: '部屋番号を入力してね',
-                            ),
-                            onChanged: (text) {
-                              roomID = text;
-                            },
-                            textInputAction: TextInputAction.search,
-                          )),
-                      SizedBox(
-                        width: _screenSizeWidth * 0.01,
-                      ),
-
-                      // やじるし
-                      IconButton(
-                          onPressed: () {
-                            FocusScope.of(context).unfocus(); //キーボードを閉じる
-
-                            roomNames = roomName(); // 変数の更新
-
-                            if (_messageController.text.isNotEmpty) {
-                              // データベースさんへ問い合わせた結果を表示
-                              showDialog(
-                                  context: context,
-                                  barrierDismissible: true, // ユーザーがダイアログ外をタップして閉じられないようにする
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16.0),
-                                      ),
-                                      elevation: 0.0, // ダイアログの影を削除
-                                      backgroundColor: Constant.white.withOpacity(0), // 背景色
-
-                                      content: Container(
-                                        width: _screenSizeWidth * 0.8,
-                                        height: _screenSizeHeight * 0.215,
-                                        alignment: const Alignment(0.0, 0.0),
-                                        padding: roomNames == ex
-                                            ? EdgeInsets.only(
-                                                top: _screenSizeWidth * 0.085,
-                                                left: _screenSizeWidth * 0.05,
-                                                right: _screenSizeWidth * 0.05)
-                                            : EdgeInsets.all(_screenSizeWidth * 0.05),
-                                        decoration: BoxDecoration(
-                                            color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              // 検索した部屋の名前を表示
-                                              width: _screenSizeWidth * 0.7,
-                                              // height: _screenSizeHeight * 0.05,
-                                              alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.only(
-                                                top: _screenSizeWidth * 0.0475,
-                                                bottom: _screenSizeWidth * 0.02,
-                                              ),
-                                              child: CustomText(
-                                                  text: roomNames,
-                                                  fontSize: _screenSizeWidth * 0.045,
-                                                  color: Constant.blackGlay),
-                                            ),
-                                            roomNames == ex
-                                                ? const SizedBox(
-                                                    width: 0,
-                                                    height: 0,
-                                                  )
-                                                : Container(
-                                                    width: _screenSizeWidth * 0.7,
-                                                    //height: _screenSizeHeight * 0.05,
+                                                Container(
+                                                    width: _screenSizeWidth * 0.4,
+                                                    height: _screenSizeHeight * 0.04,
                                                     alignment: const Alignment(0.0, 0.0),
-                                                    margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.02),
-                                                    child: CustomText(
-                                                        text: '参加しますか？',
-                                                        fontSize: _screenSizeWidth * 0.045,
-                                                        color: Constant.blackGlay),
-                                                  ),
-                                            roomNames == ex
-                                                ? InkWell(
-                                                    onTap: () {
-                                                      // ここに処理
+
+                                                    // テキストフィールド
+                                                    child: TextField(
+                                                      controller: _messageController,
+                                                      decoration: const InputDecoration(
+                                                        hintText: '部屋番号を入力してね',
+                                                      ),
+                                                      onChanged: (text) {
+                                                        roomID = text;
+                                                      },
+                                                      textInputAction: TextInputAction.search,
+                                                    )),
+                                                SizedBox(
+                                                  width: _screenSizeWidth * 0.01,
+                                                ),
+
+                                                // やじるし
+                                                IconButton(
+                                                    onPressed: () {
+                                                      FocusScope.of(context).unfocus(); //キーボードを閉じる
                                                       Navigator.of(context).pop(); //もどる
-                                                    },
-                                                    child: Container(
-                                                      width: _screenSizeWidth * 0.3,
-                                                      height: _screenSizeHeight * 0.05,
-                                                      alignment: const Alignment(0.0, 0.0),
-                                                      margin: EdgeInsets.only(top: _screenSizeWidth * 0.03),
-                                                      //margin: EdgeInsets.only(left: _screenSizeWidth * 0.04),
 
-                                                      decoration: BoxDecoration(
-                                                          color: Constant.main,
-                                                          borderRadius: BorderRadius.circular(16)),
-                                                      child: CustomText(
-                                                          text: 'はい',
-                                                          fontSize: _screenSizeWidth * 0.035,
-                                                          color: Constant.white),
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    width: _screenSizeWidth * 0.7,
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    margin: EdgeInsets.only(left: _screenSizeWidth * 0.05),
-                                                    child: Row(
-                                                      children: [
-                                                        // 参加する
-                                                        InkWell(
-                                                            onTap: () {
-                                                              Navigator.of(context).pop(); //もどる
-                                                              showDialog(
-                                                                  context: context,
-                                                                  builder: (BuildContext context) {
-                                                                    return AlertDialog(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(16.0),
+                                                      roomNames = roomName(); // 変数の更新
+
+                                                      if (_messageController.text.isNotEmpty) {
+                                                        // データベースさんへ問い合わせた結果を表示
+                                                        // ポップアップ
+                                                        showDialog(
+                                                            context: context,
+                                                            barrierDismissible: true, // ユーザーがダイアログ外をタップして閉じられないようにする
+                                                            builder: (BuildContext context) {
+                                                              return AlertDialog(
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(16.0),
+                                                                ),
+                                                                elevation: 0.0, // ダイアログの影を削除
+                                                                backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+                                                                content: Container(
+                                                                  width: _screenSizeWidth * 0.95,
+                                                                  height: _screenSizeHeight * 0.215,
+                                                                  alignment: const Alignment(0.0, 0.0),
+                                                                  padding: roomNames == ex
+                                                                      ? EdgeInsets.only(
+                                                                          top: _screenSizeWidth * 0.085,
+                                                                          left: _screenSizeWidth * 0.05,
+                                                                          right: _screenSizeWidth * 0.05)
+                                                                      : EdgeInsets.all(_screenSizeWidth * 0.05),
+                                                                  decoration: BoxDecoration(
+                                                                      color: Constant.glay,
+                                                                      borderRadius: BorderRadius.circular(16)),
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Container(
+                                                                        // 検索した部屋の名前を表示
+                                                                        width: _screenSizeWidth * 0.7,
+                                                                        // height: _screenSizeHeight * 0.05,
+                                                                        alignment: const Alignment(0.0, 0.0),
+                                                                        margin: EdgeInsets.only(
+                                                                          top: _screenSizeWidth * 0.0475,
+                                                                          bottom: _screenSizeWidth * 0.02,
                                                                         ),
-                                                                        elevation: 0.0, // ダイアログの影を削除
-                                                                        backgroundColor:
-                                                                            Constant.white.withOpacity(0), // 背景色
+                                                                        child: CustomText(
+                                                                            text: roomNames,
+                                                                            fontSize: _screenSizeWidth * 0.045,
+                                                                            color: Constant.blackGlay),
+                                                                      ),
+                                                                      roomNames == ex
+                                                                          ? const SizedBox(
+                                                                              width: 0,
+                                                                              height: 0,
+                                                                            )
+                                                                          : Container(
+                                                                              width: _screenSizeWidth * 0.7,
+                                                                              //height: _screenSizeHeight * 0.05,
+                                                                              alignment: const Alignment(0.0, 0.0),
+                                                                              margin: EdgeInsets.only(
+                                                                                  bottom: _screenSizeWidth * 0.02),
+                                                                              child: CustomText(
+                                                                                  text: '参加しますか？',
+                                                                                  fontSize: _screenSizeWidth * 0.045,
+                                                                                  color: Constant.blackGlay),
+                                                                            ),
+                                                                      roomNames == ex
+                                                                          ? InkWell(
+                                                                              onTap: () {
+                                                                                // ここに処理
+                                                                                Navigator.of(context).pop(); //もどる
+                                                                              },
+                                                                              child: Container(
+                                                                                width: _screenSizeWidth * 0.3,
+                                                                                height: _screenSizeHeight * 0.05,
+                                                                                alignment: const Alignment(0.0, 0.0),
+                                                                                margin: EdgeInsets.only(
+                                                                                    top: _screenSizeWidth * 0.03),
+                                                                                //margin: EdgeInsets.only(left: _screenSizeWidth * 0.04),
 
-                                                                        content: Container(
-                                                                          width: _screenSizeWidth * 0.8,
-                                                                          height: _screenSizeHeight * 0.215,
-                                                                          alignment: Alignment(0, 0),
-                                                                          decoration: BoxDecoration(
-                                                                              color: Constant.glay,
-                                                                              borderRadius: BorderRadius.circular(16)),
-                                                                          child: CustomText(
-                                                                              // text: roomIDcheck(roomID)
-                                                                              //     ? '既に参加しています'
-                                                                              //     : '参加しました！',
-                                                                              text: '参加しました！',
-                                                                              fontSize: _screenSizeWidth * 0.05,
-                                                                              color: Constant.blackGlay),
-                                                                        ));
-                                                                  });
+                                                                                decoration: BoxDecoration(
+                                                                                    color: Constant.main,
+                                                                                    borderRadius:
+                                                                                        BorderRadius.circular(16)),
+                                                                                child: CustomText(
+                                                                                    text: 'はい',
+                                                                                    fontSize: _screenSizeWidth * 0.035,
+                                                                                    color: Constant.white),
+                                                                              ),
+                                                                            )
+                                                                          : Container(
+                                                                              width: _screenSizeWidth * 0.9,
+                                                                              alignment: const Alignment(0.0, 0.0),
+                                                                              margin: EdgeInsets.only(
+                                                                                  left: _screenSizeWidth * 0.05),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  // 参加する
+                                                                                  InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.of(context)
+                                                                                            .pop(); //もどる
+                                                                                        showDialog(
+                                                                                            context: context,
+                                                                                            builder:
+                                                                                                (BuildContext context) {
+                                                                                              return AlertDialog(
+                                                                                                  shape:
+                                                                                                      RoundedRectangleBorder(
+                                                                                                    borderRadius:
+                                                                                                        BorderRadius
+                                                                                                            .circular(
+                                                                                                                16.0),
+                                                                                                  ),
+                                                                                                  elevation:
+                                                                                                      0.0, // ダイアログの影を削除
+                                                                                                  backgroundColor:
+                                                                                                      Constant.white
+                                                                                                          .withOpacity(
+                                                                                                              0), // 背景色
 
-                                                              /**
+                                                                                                  content: Container(
+                                                                                                    width:
+                                                                                                        _screenSizeWidth *
+                                                                                                            0.8,
+                                                                                                    height:
+                                                                                                        _screenSizeHeight *
+                                                                                                            0.215,
+                                                                                                    alignment:
+                                                                                                        Alignment(0, 0),
+                                                                                                    decoration: BoxDecoration(
+                                                                                                        color: Constant
+                                                                                                            .glay,
+                                                                                                        borderRadius:
+                                                                                                            BorderRadius
+                                                                                                                .circular(
+                                                                                                                    16)),
+                                                                                                    child: CustomText(
+                                                                                                        // text: roomIDcheck(roomID)
+                                                                                                        //     ? '既に参加しています'
+                                                                                                        //     : '参加しました！',
+                                                                                                        text: '参加しました！',
+                                                                                                        fontSize:
+                                                                                                            _screenSizeWidth *
+                                                                                                                0.05,
+                                                                                                        color: Constant
+                                                                                                            .blackGlay),
+                                                                                                  ));
+                                                                                            });
+
+                                                                                        /**
                                                                * 未来のわたしへ 入ってたら既に参加していますしたいけどうまくいかないので時間あれば直してください
                                                                */
 
-                                                              // ルームの追加
-                                                              try{
-                                                              if (!roomIDcheck(roomID)) {
-                                                                items.myroom['myroomID'].add(roomID);
-                                                                List<Map<String, Object>> friendRoomadd = [];
-                                                                String leaderName =
-                                                                    items.friend[items.room[roomID]['leader']]['name'];   // 本来はデータベースに問い合わせる
-                                                                // friendRoomadd[leaderName] = {};
-                                                                items.message['sender'][leaderName]=friendRoomadd;
-                                                              }
-                                                              }catch(e){
-                                                                // 今だけ
-                                                                print('だれもいないよ');
-                                                              }
+                                                                                        // ルームの追加
+                                                                                        try {
+                                                                                          if (!roomIDcheck(roomID)) {
+                                                                                            // 参加した部屋番号を保持
+                                                                                            items.myroom['myroomID']
+                                                                                                .add(roomID);
 
-                                                              // ユーザーのIDをルームに追加
-                                                              items.room[roomID]['workers']
-                                                                  .add(items.userInfo['userid']);
-                                                            },
-                                                            child: Container(
-                                                              width: _screenSizeWidth * 0.2,
-                                                              height: _screenSizeHeight * 0.05,
-                                                              margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                              padding: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                              alignment: const Alignment(0.0, 0.0),
-                                                              decoration: BoxDecoration(
-                                                                  color: Constant.main,
-                                                                  borderRadius: BorderRadius.circular(16)),
-                                                              child: CustomText(
-                                                                  text: 'はい',
-                                                                  fontSize: _screenSizeWidth * 0.035,
-                                                                  color: Constant.white),
-                                                            )),
+                                                                                            List<Map<String, dynamic>>
+                                                                                                friendRoomadd = [];
+                                                                                            String leaderName = items
+                                                                                                        .friend[
+                                                                                                    items.room[roomID]
+                                                                                                        ['leader']][
+                                                                                                'name']; // 本来はデータベースに問い合わせる
+                                                                                            // friendRoomadd[leaderName] = {};
+                                                                                            items.message['sender']
+                                                                                                    [leaderName] =
+                                                                                                friendRoomadd;
+                                                                                          }
+                                                                                        } catch (e) {
+                                                                                          // 今だけ
+                                                                                          print('だれもいないよ');
+                                                                                        }
 
-                                                        // 参加しない
-                                                        InkWell(
-                                                            onTap: () {
-                                                              // ここに処理
-                                                              Navigator.of(context).pop(); //もどる
-                                                            },
-                                                            child: Container(
-                                                              width: _screenSizeWidth * 0.2,
-                                                              height: _screenSizeHeight * 0.05,
-                                                              margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                              padding: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                              alignment: const Alignment(0.0, 0.0),
-                                                              decoration: BoxDecoration(
-                                                                  color: Constant.main,
-                                                                  borderRadius: BorderRadius.circular(16)),
-                                                              child: CustomText(
-                                                                  text: 'いいえ',
-                                                                  fontSize: _screenSizeWidth * 0.035,
-                                                                  color: Constant.white),
-                                                            )),
-                                                      ],
+                                                                                        // ユーザーのIDをルームに追加
+                                                                                        items.room[roomID]['workers']
+                                                                                            .add(items
+                                                                                                .userInfo['userid']);
+                                                                                      },
+                                                                                      child: Container(
+                                                                                        width: _screenSizeWidth * 0.2,
+                                                                                        height:
+                                                                                            _screenSizeHeight * 0.05,
+                                                                                        margin: EdgeInsets.all(
+                                                                                            _screenSizeWidth * 0.02),
+                                                                                        padding: EdgeInsets.all(
+                                                                                            _screenSizeWidth * 0.02),
+                                                                                        alignment:
+                                                                                            const Alignment(0.0, 0.0),
+                                                                                        decoration: BoxDecoration(
+                                                                                            color: Constant.main,
+                                                                                            borderRadius:
+                                                                                                BorderRadius.circular(
+                                                                                                    16)),
+                                                                                        child: CustomText(
+                                                                                            text: 'はい',
+                                                                                            fontSize: _screenSizeWidth *
+                                                                                                0.035,
+                                                                                            color: Constant.white),
+                                                                                      )),
+
+                                                                                  // 参加しない
+                                                                                  InkWell(
+                                                                                      onTap: () {
+                                                                                        // ここに処理
+                                                                                        Navigator.of(context)
+                                                                                            .pop(); //もどる
+                                                                                      },
+                                                                                      child: Container(
+                                                                                        width: _screenSizeWidth * 0.2,
+                                                                                        height:
+                                                                                            _screenSizeHeight * 0.05,
+                                                                                        margin: EdgeInsets.all(
+                                                                                            _screenSizeWidth * 0.02),
+                                                                                        padding: EdgeInsets.all(
+                                                                                            _screenSizeWidth * 0.02),
+                                                                                        alignment:
+                                                                                            const Alignment(0.0, 0.0),
+                                                                                        decoration: BoxDecoration(
+                                                                                            color: Constant.main,
+                                                                                            borderRadius:
+                                                                                                BorderRadius.circular(
+                                                                                                    16)),
+                                                                                        child: CustomText(
+                                                                                            text: 'いいえ',
+                                                                                            fontSize: _screenSizeWidth *
+                                                                                                0.035,
+                                                                                            color: Constant.white),
+                                                                                      )),
+                                                                                ],
+                                                                              ))
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            });
+                                                      }
+                                                      setState(() {
+                                                        _messageController.clear(); // 入力フォームの初期化
+                                                      });
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.send,
+                                                      color: Constant.blackGlay,
+                                                      size: 30,
                                                     ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }
-                            setState(() {
-                              _messageController.clear(); // 入力フォームの初期化
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.send,
-                            color: Constant.blackGlay,
-                            size: 30,
-                          ))
-                    ],
-                  ),
-                ),
+                                              ],
+                                            ),
+                                          ])),
+                                    ])));
+                          });
+                    },
+                    // 現在のルーム名表示部分
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          top: _screenSizeWidth * 0.04,
+                          bottom: _screenSizeWidth * 0.04,
+                          left: _screenSizeWidth * 0.08,
+                          right: _screenSizeWidth * 0.08),
+                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.03),
+                      child: CustomText(
+                          text: items.room[items.myroom['myroomID'][taskRoomIndex]]['roomName'],
+                          fontSize: _screenSizeWidth * 0.045,
+                          color: Constant.blackGlay),
+                    )),
 
                 Container(
                   width: _screenSizeWidth * 0.95,

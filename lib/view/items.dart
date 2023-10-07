@@ -7,27 +7,41 @@ class items {
     'userid': '12345',
     'userTask': taskList,
     'message': message,
+    'myroom': myroom
   };
 
   static Map<String, dynamic> friend = {
-    '12345': {
-      'name': 'おさかな２',
-      'userTask': taskList,
-      'message': message,
-    },
-    '67890': {
-      'name': 'ニャリオット',
-      'userTask': taskList,
-      'message': message,
-    }
+    '12345': {'name': 'おさかな２', 'userTask': taskList, 'message': message, 'myroom': '1234'},
+    '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345'}
   };
 
-  static Map myroom = {'myroomID': []};
+  static Map myroom = {
+    'myroomID': ['1234', '2345']
+  };
 
   // ルーム
   static Map room = {
+    '1111': {
+      'roomName': 'てすとるーむ',
+      'leader': '12345',
+      'workers': ['12345'],
+      'tasks': [
+        {
+          'user': 'おさかな',
+          'woeker': 'おさかな',
+          'task': 'タスク追加機能',
+          'day': '10',
+          'month': '09',
+          'limitDay': '10-09',
+          'limitTime': '13:00',
+          'level': 3,
+          'bool': false,
+          'taskIndex': 0
+        },
+      ],
+    },
     '1234': {
-      'roomName': 'ニャリオットのお世話',
+      'roomName': 'てくてくてっく',
       'leader': '12345',
       'workers': ['67890'],
       'task': [
@@ -58,7 +72,7 @@ class items {
       ],
     },
     '2345': {
-      'roomName': 'ニャリオットのお世話2',
+      'roomName': 'ニャリオットのお世話',
       'leader': '67890',
       'workers': ['67890'],
       'task': [
@@ -84,7 +98,7 @@ class items {
       {
         'user': 'せろり',
         'worker': 'おさかな',
-        'task': 'ニャリオットにごはんあげる',
+        'task': 'webソケット',
         'day': '09',
         'month': '23',
         'limitDay': '09-23',
@@ -96,7 +110,7 @@ class items {
       {
         'user': 'おさかな',
         'worker': 'おさかな',
-        'task': 'ニャリオットにごはんあげる',
+        'task': 'でーたべーす',
         'day': '09',
         'month': '23',
         'limitDay': '09-23',
@@ -105,6 +119,47 @@ class items {
         'bool': false,
         'taskIndex': 0
       },
+      {
+        'user': 'おさかな',
+        'woeker': 'おさかな',
+        'task': 'タスク追加機能',
+        'day': '10',
+        'month': '09',
+        'limitDay': '10-09',
+        'limitTime': '13:00',
+        'level': 3,
+        'bool': false,
+        'taskIndex': 0
+      },
+      {
+        'user': 'おさかな',
+        'woeker': 'おさかな',
+        'task': 'ルーム作成機能',
+        'day': '10',
+        'month': '09',
+        'limitDay': '10-09',
+        'limitTime': '13:00',
+        'level': 3,
+        'bool': false,
+        'taskIndex': 0
+      },
+      {
+        'user': 'おさかな',
+        'woeker': 'おさかな',
+        'task': 'ニャリオットにごはんをあげる',
+        'day': '10',
+        'month': '09',
+        'limitDay': '10-09',
+        'limitTime': '13:00',
+        'level': 3,
+        'bool': false,
+        'taskIndex': 0
+      },
+      // room['1111']['tasks'][0],
+      // room['1111']['tasks'][1],
+      // room['1111']['tasks'][2],
+      // room['1111']['tasks'][3],
+      // room['1111']['tasks'][4],
 
       //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
     ]
@@ -112,7 +167,7 @@ class items {
 
   static Map message = {
     'sender': {
-      //ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
+      // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
       'せろり': [
         {
           'sendDay': '2023-9-25',
@@ -135,7 +190,7 @@ class items {
           'stamp': 0,
           'level': 5,
           'indexBool': true,
-          'index': 0,
+          'index': 1,
           'whose': false,
         },
       ],
