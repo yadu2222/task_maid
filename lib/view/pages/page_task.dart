@@ -16,6 +16,7 @@ class _PageTask extends State<PageTask> {
   final TextEditingController _controller = TextEditingController();
 
   // タスク作成時のフォームに使うコントローラー
+  final TextEditingController monthController = TextEditingController();
   final TextEditingController dayController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
   final TextEditingController taskThinkController = TextEditingController();
@@ -97,7 +98,7 @@ class _PageTask extends State<PageTask> {
 
                                             content: Container(
                                                 width: _screenSizeWidth * 0.9,
-                                                height: _screenSizeHeight * 0.5,
+                                                height: _screenSizeHeight * 0.4,
                                                 decoration: BoxDecoration(
                                                     color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                                                 padding: EdgeInsets.only(
@@ -122,16 +123,41 @@ class _PageTask extends State<PageTask> {
                                                       margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
                                                       child: Row(children: [
                                                         Container(
-                                                            width: _screenSizeWidth * 0.15,
+                                                            width: _screenSizeWidth * 0.075,
                                                             height: _screenSizeHeight * 0.04,
                                                             alignment: const Alignment(0.0, 0.0),
                                                             margin: EdgeInsets.all(_screenSizeWidth * 0.03),
 
-                                                            // 日付
+                                                            // 日付 月
+                                                            child: TextField(
+                                                              controller: monthController,
+                                                              decoration: const InputDecoration(
+                                                                hintText: 'xx',
+                                                              ),
+                                                              onChanged: (month) {
+                                                                items.limitMonth = month;
+                                                              },
+                                                              textInputAction: TextInputAction.next,
+                                                            )),
+                                                        Container(
+                                                          width: _screenSizeWidth * 0.02,
+                                                          alignment: Alignment(0, 0),
+                                                          child: CustomText(
+                                                              text: '/',
+                                                              fontSize: _screenSizeWidth * 0.035,
+                                                              color: Constant.blackGlay),
+                                                        ),
+                                                        Container(
+                                                            width: _screenSizeWidth * 0.075,
+                                                            height: _screenSizeHeight * 0.04,
+                                                            alignment: const Alignment(0.0, 0.0),
+                                                            margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+
+                                                            // 日付 日
                                                             child: TextField(
                                                               controller: dayController,
                                                               decoration: const InputDecoration(
-                                                                hintText: 'xx-yy',
+                                                                hintText: 'yy',
                                                               ),
                                                               onChanged: (day) {
                                                                 items.limitDay = day;
@@ -181,7 +207,7 @@ class _PageTask extends State<PageTask> {
                                                           color: Constant.blackGlay)),
 
                                                   Container(
-                                                    height: _screenSizeHeight * 0.175,
+                                                    height: _screenSizeHeight * 0.1,
                                                     child: ListView(
                                                       children: (items.room[taskRoomIndex]['workers'] as List<dynamic>)
                                                           .map<Widget>((workerId) {
@@ -224,8 +250,15 @@ class _PageTask extends State<PageTask> {
 
                                                         setState(() {
                                                           // タスクを追加
-                                                          addTask(items.userInfo['name'], items.worker, items.newtask,
-                                                              items.limitDay, items.limitTime, taskRoomIndex);
+                                                          addTask(
+                                                              items.userInfo['name'],
+                                                              items.worker,
+                                                              items.newtask,
+                                                              items.limitMonth,
+                                                              items.limitDay,
+                                                              items.limit,
+                                                              items.limitTime,
+                                                              taskRoomIndex);
 
                                                           // 入力フォームの初期化
                                                           dayController.clear();

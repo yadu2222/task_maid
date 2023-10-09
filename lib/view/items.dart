@@ -122,7 +122,9 @@ class items {
 
   // タスクを追加するときに値を保存する変数
   static String worker = '';
+  static String limitMonth = '';
   static String limitDay = '';
+  static String limit = '${limitMonth}-${limitDay}';
   static String limitTime = '0000';
   static String newtask = '0000';
 
@@ -134,8 +136,8 @@ class items {
         'user': 'せろり',
         'worker': 'おさかな',
         'task': 'webソケット',
-        'day': '09',
-        'month': '23',
+        'month': '09',
+        'day': '23',
         'limitDay': '09-23',
         'limitTime': '10:25',
         'level': 3,
@@ -147,8 +149,8 @@ class items {
         'user': 'おさかな',
         'worker': 'おさかな',
         'task': 'でーたべーす',
-        'day': '09',
-        'month': '23',
+        'month': '09',
+        'day': '23',
         'limitDay': '09-23',
         'limitTime': '10:25',
         'level': 3,
@@ -160,8 +162,8 @@ class items {
         'user': 'おさかな',
         'worker': 'おさかな',
         'task': 'タスク追加機能',
-        'day': '10',
-        'month': '09',
+        'month': '10',
+        'day': '09',
         'limitDay': '10-09',
         'limitTime': '13:00',
         'level': 3,
@@ -173,8 +175,8 @@ class items {
         'user': 'おさかな',
         'worker': 'おさかな',
         'task': 'ルーム作成機能',
-        'day': '10',
-        'month': '09',
+        'month': '10',
+        'day': '09',
         'limitDay': '10-09',
         'limitTime': '13:00',
         'level': 3,
@@ -186,8 +188,8 @@ class items {
         'user': 'おさかな',
         'worker': 'おさかな',
         'task': 'ニャリオットにごはんをあげる',
-        'day': '10',
-        'month': '09',
+        'month': '10',
+        'day': '09',
         'limitDay': '10-09',
         'limitTime': '13:00',
         'level': 3,

@@ -231,15 +231,15 @@ void addMessage(String messenger, bool messagebool, String message, bool StampBo
 }
 
 // タスクを辞書に追加するメソッド
-void addTask(String user, String worker, String task, String limitDay, String limitTime, String taskRoomIndex) {
+void addTask(String user, String worker, String task, String limitMonth, String limitDay, String limit, String limitTime, String taskRoomIndex) {
   // 辞書に追加
   var newtask = {
     'user': user,
     'worker': worker,
     'task': task,
-    'day': '09',
-    'month': '23',
-    'limitDay':limitDay,
+    'day': limitMonth,
+    'month': limitDay,
+    'limitDay':limit,
     'limitTime': limitTime,
     'level': 3,
     'bool': false,
