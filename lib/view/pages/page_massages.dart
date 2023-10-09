@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database.dart';
-import 'package:google_fonts/google_fonts.dart';  
+import 'package:google_fonts/google_fonts.dart'; 
+
+/*
+送る、
+サバ側でデータベースに登録、送信
+受け取る、flutter側でsqliteに登録、表示。 
+ */
 
 // import 'package:intl/intl.dart';
 
