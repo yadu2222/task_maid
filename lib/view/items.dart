@@ -12,11 +12,11 @@ class items {
 
   static Map<String, dynamic> friend = {
     '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234','bool':false},
-    '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345','bool':false}
+    '67890': {'name': 'せろり', 'userTask': taskList, 'message': message, 'myroom': '2345','bool':false}
   };
 
   static Map myroom = {
-    'myroomID': ['1111', '1234', '2345']
+    'myroomID': ['1234','1111']
   };
 
   // ルーム
@@ -63,7 +63,7 @@ class items {
     },
     '1234': {
       'roomName': 'てくてくてっく',
-      'leader': '12345',
+      'leader': '67890',
       'workers': ['12345', '67890'],
       'tasks': [
         {
@@ -136,41 +136,16 @@ class items {
         'user': 'せろり',
         'worker': 'おさかな',
         'task': 'webソケット',
-        'month': '09',
-        'day': '23',
-        'limitDay': '09-23',
-        'limitTime': '10:25',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'でーたべーす',
-        'month': '09',
-        'day': '23',
-        'limitDay': '09-23',
-        'limitTime': '10:25',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'タスク追加機能',
         'month': '10',
         'day': '09',
         'limitDay': '10-09',
-        'limitTime': '13:00',
+        'limitTime': '15:25',
         'level': 3,
         'bool': false,
         'taskIndex': 0,
         'roomid': '1234'
       },
+      
       {
         'user': 'おさかな',
         'worker': 'おさかな',
@@ -178,7 +153,7 @@ class items {
         'month': '10',
         'day': '09',
         'limitDay': '10-09',
-        'limitTime': '13:00',
+        'limitTime': '15:00',
         'level': 3,
         'bool': false,
         'taskIndex': 0,
@@ -212,7 +187,7 @@ class items {
       // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
       'せろり': [
         {
-          'sendDay': '2023-9-25',
+          'sendDay': '2023-10-09',
           'sendTime': '12:03',
           'messagebool': true,
           'message': '進捗いかがですか？',
@@ -223,18 +198,7 @@ class items {
           'index': 1,
           'whose': true,
         },
-        {
-          'sendDay': '2023-9-25',
-          'sendTime': '12:03',
-          'messagebool': true,
-          'message': 'ぜんぜんだめです',
-          'stampBool': true,
-          'stamp': 0,
-          'level': 5,
-          'indexBool': true,
-          'index': 1,
-          'whose': false,
-        },
+        
       ],
       'おさかな': [
         {
@@ -269,7 +233,7 @@ class items {
     'stamp': [
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp02.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp03.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',

@@ -40,7 +40,7 @@ class _PageTask extends State<PageTask> {
   }
 
   static String roomNames = roomName();
-  static String taskRoomIndex = '1111'; // どのmyroomidを選ぶかのために使う デフォはてすとるーむ
+  static String taskRoomIndex = '1234'; // どのmyroomidを選ぶかのために使う デフォはてすとるーむ
 
   @override
   Widget build(BuildContext context) {
@@ -318,22 +318,11 @@ class _PageTask extends State<PageTask> {
                                     child: Column(children: [
                                       // 検索バー
                                       Container(
-                                          width: _screenSizeWidth * 0.7,
-                                          //height: _screenSizeHeight * 0.067,
+                                          width: _screenSizeWidth * 0.7,                                         
                                           decoration: BoxDecoration(
                                               color: Constant.glay, borderRadius: BorderRadius.circular(50)),
                                           margin: EdgeInsets.all(_screenSizeWidth * 0.02),
                                           child: Column(children: [
-                                            // Container(
-                                            //     width: _screenSizeWidth * 0.7,
-                                            //     child: IconButton(
-                                            //       onPressed: () {},
-                                            //       icon: Icon(
-                                            //         Icons.add,
-                                            //         color: Constant.blackGlay,
-                                            //         size: 30,
-                                            //       ),
-                                            //     )),
                                             Row(
                                               children: [
                                                 SizedBox(
@@ -978,7 +967,6 @@ class _PageTask extends State<PageTask> {
                                                                               )),
                                                                     ).then((value) {
                                                                       //戻ってきたら再描画
-
                                                                       setState(() {
                                                                         Navigator.pop(context);
                                                                       });

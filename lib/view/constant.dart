@@ -298,7 +298,7 @@ class HttpToServer {  // HttpLib
     var headersList = {
       'Accept': '*/*',
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json', // ここいる
     };
     // "Access-Control-Allow-Origin": "*"
 
