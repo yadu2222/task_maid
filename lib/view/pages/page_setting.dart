@@ -54,10 +54,7 @@ class _PageSetting extends State<PageSetting> {
                     margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
                     padding: EdgeInsets.all(_screenSizeWidth * 0.03),
                     alignment: Alignment.bottomLeft,
-                    child: CustomText(
-                        text: 'ID：${items.userInfo['userid']}',
-                        fontSize: _screenSizeWidth * 0.045,
-                        color: Constant.glay),
+                    child: CustomText(text: 'ID：${items.userInfo['userid']}', fontSize: _screenSizeWidth * 0.045, color: Constant.glay),
                   ),
                   Container(
                     margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
@@ -68,11 +65,7 @@ class _PageSetting extends State<PageSetting> {
                   Container(
                     width: _screenSizeWidth * 0.8,
                     height: _screenSizeHeight * 0.065,
-                    padding: EdgeInsets.only(
-                        left: _screenSizeWidth * 0.05,
-                        right: _screenSizeWidth * 0.05,
-                        top: _screenSizeWidth * 0.025,
-                        bottom: _screenSizeWidth * 0.025),
+                    padding: EdgeInsets.only(left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.05, top: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.025),
                     decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                     child: TextField(
                       decoration: InputDecoration(
@@ -85,10 +78,12 @@ class _PageSetting extends State<PageSetting> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
     )));
   }
+
+  
 }

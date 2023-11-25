@@ -50,23 +50,32 @@ class _PageMail extends State<PageMail> {
             Container(
               width: _screenSizeWidth * 0.95,
               height: _screenSizeHeight * 0.85,
-              child: ListView(
-                children: (items.message['sender'] as Map<String, dynamic>).entries.map<Widget>((entry) {
-                  String senderName = entry.key;
-                  List<Map<String, dynamic>> messages = entry.value as List<Map<String, dynamic>>;
-                  // sender のリスト内での位置を取得
-                  int senderIndex = (items.message['sender'] as Map<String, dynamic>).keys.toList().indexOf(senderName);
+              child: _messages(_screenSizeWidth,_screenSizeHeight)
+            )
+          ],
+        ),
+      ),
+    )));
+  }
 
-                  //int index = (messages['senderName'] as Map<String,dynamic>).indexof(messages);
-                  return ListTile(
-                    title: InkWell(
+  // トークルームの繰り返し処理
+   Widget _messages(var _screenSizeWidth,var _screenSizeHeight) {
+    return ListView.builder(
+      // indexの作成 widgetが表示される数
+      itemCount: items.sender['sender'].length,
+      itemBuilder: (context, index) {
+        // 繰り返し描画されるwidget
+        return Card(
+            color: Constant.glay,
+            elevation: 0,
+            child: InkWell(
                       onTap: () {
                         // ページ遷移
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => PageMassages(
-                                    messenger: senderName,
+                                    messenger: items.sender['sender'][index],
                                   )),
                         ).then((value) {
                           //戻ってきたら再描画
@@ -76,10 +85,7 @@ class _PageMail extends State<PageMail> {
                       child: Container(
                         width: _screenSizeWidth * 0.8,
                         height: _screenSizeHeight * 0.075,
-                        padding: EdgeInsets.only(
-                            top: _screenSizeWidth * 0.025,
-                            bottom: _screenSizeWidth * 0.025,
-                            left: _screenSizeWidth * 0.045),
+                        padding: EdgeInsets.only(top: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.025, left: _screenSizeWidth * 0.045),
                         decoration: BoxDecoration(
                           color: Constant.glay,
                           borderRadius: BorderRadius.circular(5), // 角丸
@@ -95,29 +101,21 @@ class _PageMail extends State<PageMail> {
                               Container(
                                 width: _screenSizeWidth * 0.7,
                                 alignment: Alignment.topLeft,
-                                child: CustomText(
-                                    text: senderName, fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                child: CustomText(text: items.sender['sender'][index], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                               ),
                               Container(
                                   width: _screenSizeWidth * 0.7,
                                   child:
                                       // 部屋の名前表示
-                                      CustomText(
-                                          text: items.room[items.myroom['myroomID'][senderIndex]]['roomName'],
-                                          fontSize: _screenSizeWidth * 0.035,
-                                          color: Constant.blackGlay))
+                                      // 建設予定
+                                      CustomText(text: '建設予定', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
                             ])
                           ],
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            )
-          ],
-        ),
-      ),
-    )));
+                    ),);
+      },
+    );
   }
+  
 }

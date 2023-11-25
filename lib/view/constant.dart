@@ -37,6 +37,50 @@ class CustomText extends StatelessWidget {
   }
 }
 
+// dialog表示用クラス
+class dialog extends StatefulWidget {
+
+  // 箱のサイズ
+  double screenSizeWidth;
+  double screenSizeHeight;
+  // paddingの有無
+  bool pabool;
+
+  // 中身のサイズ
+  double widthin;
+  double heightin;
+
+  Widget widget;
+  dialog({Key? key, required this.screenSizeWidth, required this.screenSizeHeight, required this.widget,required this.pabool,required this.widthin,required this.heightin});
+
+  @override
+  _dialog createState() => _dialog();
+}
+
+class _dialog extends State<dialog> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 0.0, // ダイアログの影を削除
+        backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+        content: Container(
+            width: widget.screenSizeWidth * widget.widthin,
+            height: widget.screenSizeHeight * widget.heightin,
+            decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+            padding: widget.pabool ?
+            EdgeInsets.only(
+              left: widget.screenSizeWidth * 0.03,
+              right: widget.screenSizeWidth * 0.03,
+              top: widget.screenSizeWidth * 0.05,
+            ) : EdgeInsets.all(0),
+            child: widget.widget));
+  }
+}
+
 class stampPictures extends StatefulWidget {
   int picture;
   double width;
@@ -44,15 +88,7 @@ class stampPictures extends StatefulWidget {
   String messenger;
   var scaffoldKey;
   var scrollController;
-  stampPictures(
-      {Key? key,
-      required this.picture,
-      required this.width,
-      required this.height,
-      required this.messenger,
-      required this.scaffoldKey,
-      required this.scrollController})
-      : super(key: key);
+  stampPictures({Key? key, required this.picture, required this.width, required this.height, required this.messenger, required this.scaffoldKey, required this.scrollController}) : super(key: key);
 
   @override
   _stampPictures createState() => _stampPictures();
@@ -101,14 +137,7 @@ class stampList extends StatefulWidget {
   String messenger;
   var scaffoldKey;
   var scrollController;
-  stampList(
-      {Key? key,
-      required this.width,
-      required this.height,
-      required this.messenger,
-      required this.scaffoldKey,
-      required this.scrollController})
-      : super(key: key);
+  stampList({Key? key, required this.width, required this.height, required this.messenger, required this.scaffoldKey, required this.scrollController}) : super(key: key);
 
   @override
   _stampList createState() => _stampList();
@@ -207,8 +236,7 @@ class _stampList extends State<stampList> {
 }
 
 // 辞書に追加するメソッド
-void addMessage(String messenger, bool messagebool, String message, bool StampBool, int stamp, int level,
-    bool indexBool, int index, bool whose) {
+void addMessage(String messenger, bool messagebool, String message, bool StampBool, int stamp, int level, bool indexBool, int index, bool whose) {
   // 現在時刻を保存する変数
   DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -227,7 +255,7 @@ void addMessage(String messenger, bool messagebool, String message, bool StampBo
     'index': index,
     'whose': whose,
   };
-  items.message['sender'][messenger].add(newMessage);
+  items.message[messenger].add(newMessage);
 }
 
 // タスクを辞書に追加するメソッド
@@ -239,7 +267,7 @@ void addTask(String user, String worker, String task, String limitMonth, String 
     'task': task,
     'day': limitMonth,
     'month': limitDay,
-    'limitDay':limit,
+    'limitDay': limit,
     'limitTime': limitTime,
     'level': 3,
     'bool': false,
@@ -259,3 +287,4 @@ bool roomIDcheck(String roomID) {
   }
   return false;
 }
+

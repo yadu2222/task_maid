@@ -2,17 +2,11 @@ import 'package:flutter/material.dart';
 import 'constant.dart';
 
 class items {
-  static Map<String, dynamic> userInfo = {
-    'name': 'おさかな',
-    'userid': '12345',
-    'userTask': taskList,
-    'message': message,
-    'myroom': myroom
-  };
+  static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'userTask': taskList, 'message': message, 'myroom': myroom};
 
   static Map<String, dynamic> friend = {
-    '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234','bool':false},
-    '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345','bool':false}
+    '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
+    '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
   };
 
   static Map myroom = {
@@ -26,19 +20,7 @@ class items {
       'leader': '12345',
       'workers': ['12345'],
       'tasks': [
-        {
-          'user': 'おさかな',
-          'worker': 'おさかな',
-          'task': 'タスク追加機能',
-          'day': '10',
-          'month': '09',
-          'limitDay': '10-09',
-          'limitTime': '13:00',
-          'level': 3,
-          'bool': false,
-          'taskIndex': 0,
-          'roomid': '1111'
-        },
+        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'タスク追加機能', 'day': '10', 'month': '09', 'limitDay': '10-09', 'limitTime': '13:00', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1111'},
       ],
     },
     '3456': {
@@ -46,19 +28,7 @@ class items {
       'leader': '12345',
       'workers': ['12345'],
       'tasks': [
-        {
-          'user': 'おさかな',
-          'worker': 'おさかな',
-          'task': 'タスク追加機能',
-          'day': '10',
-          'month': '09',
-          'limitDay': '10-09',
-          'limitTime': '13:00',
-          'level': 3,
-          'bool': false,
-          'taskIndex': 0,
-          'roomid': '3456'
-        },
+        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'タスク追加機能', 'day': '10', 'month': '09', 'limitDay': '10-09', 'limitTime': '13:00', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '3456'},
       ],
     },
     '1234': {
@@ -66,32 +36,8 @@ class items {
       'leader': '12345',
       'workers': ['12345', '67890'],
       'tasks': [
-        {
-          'user': 'せろり',
-          'worker': 'おさかな',
-          'task': 'ニャリオットとあそぶ',
-          'day': '09',
-          'month': '23',
-          'limitDay': '09-23',
-          'limitTime': '10:25',
-          'level': 3,
-          'bool': false,
-          'taskIndex': 0,
-          'roomid': '1234'
-        },
-        {
-          'user': 'せろり',
-          'worker': 'おさかな',
-          'day': '09',
-          'month': '23',
-          'task': 'フロント完成',
-          'limitDay': '09-23',
-          'limitTime': '10:25',
-          'level': 3,
-          'bool': false,
-          'taskIndex': 1,
-          'roomid': '1234'
-        },
+        {'user': 'せろり', 'worker': 'おさかな', 'task': 'ニャリオットとあそぶ', 'day': '09', 'month': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
+        {'user': 'せろり', 'worker': 'おさかな', 'day': '09', 'month': '23', 'task': 'フロント完成', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 1, 'roomid': '1234'},
       ],
     },
     '2345': {
@@ -99,19 +45,7 @@ class items {
       'leader': '67890',
       'workers': ['67890'],
       'tasks': [
-        {
-          'user': 'おさかな',
-          'worker': 'おさかな',
-          'task': 'ニャリオットにごはんあげる',
-          'day': '09',
-          'month': '23',
-          'limitDay': '09-23',
-          'limitTime': '10:25',
-          'level': 3,
-          'bool': false,
-          'taskIndex': 0,
-          'roomid': '2345'
-        },
+        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'ニャリオットにごはんあげる', 'day': '09', 'month': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '2345'},
       ],
     }
   };
@@ -132,84 +66,22 @@ class items {
   //タスクリスト
   static Map taskList = {
     'id': [
-      {
-        'user': 'せろり',
-        'worker': 'おさかな',
-        'task': 'webソケット',
-        'month': '09',
-        'day': '23',
-        'limitDay': '09-23',
-        'limitTime': '10:25',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'でーたべーす',
-        'month': '09',
-        'day': '23',
-        'limitDay': '09-23',
-        'limitTime': '10:25',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'タスク追加機能',
-        'month': '10',
-        'day': '09',
-        'limitDay': '10-09',
-        'limitTime': '13:00',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'ルーム作成機能',
-        'month': '10',
-        'day': '09',
-        'limitDay': '10-09',
-        'limitTime': '13:00',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '1234'
-      },
-      {
-        'user': 'おさかな',
-        'worker': 'おさかな',
-        'task': 'ニャリオットにごはんをあげる',
-        'month': '10',
-        'day': '09',
-        'limitDay': '10-09',
-        'limitTime': '13:00',
-        'level': 3,
-        'bool': false,
-        'taskIndex': 0,
-        'roomid': '2345'
-      },
-      // room['1111']['tasks'][0],
-      // room['1111']['tasks'][1],
-      // room['1111']['tasks'][2],
-      // room['1111']['tasks'][3],
-      // room['1111']['tasks'][4],
-
+      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
+      {'user': 'せろり', 'worker': 'おさかな', 'task': 'webソケット', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
+      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
+      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
       //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
     ]
   };
 
+  static Map sender = {'sender': [
+    'せろり',
+    'おさかな'
+  ]};
+
   static Map message = {
-    'sender': {
       // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
+      // idに、すべきや、、、！！！
       'せろり': [
         {
           'sendDay': '2023-9-25',
@@ -250,7 +122,6 @@ class items {
           'whose': true,
         }
       ]
-    }
   };
 
   // メッセージ
@@ -260,6 +131,7 @@ class items {
     ]
   };
 
+  // 画像リスト
   static Map taskMaid = {
     'standing': [
       'assets/images/taskMaid_01.png', //とてもうれしい
@@ -284,4 +156,15 @@ class items {
   static bool stampbool = false;
   static int stampIndex = 0;
   static int taskIndex = 0;
+
+  Widget _test_taskList(var _screenSizeWidth) {
+    return ListView.builder(
+      // indexの作成 widgetが表示される数
+      itemCount: items.taskList['id'].length,
+      itemBuilder: (context, index) {
+        // 繰り返し描画されるwidget
+        return Card(color: Constant.glay, elevation: 0, child: SizedBox());
+      },
+    );
+  }
 }
