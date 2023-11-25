@@ -182,37 +182,34 @@ class _PageHomeState extends State<PageHome> {
       itemCount: items.taskList['id'].length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return Card(
-            color: Constant.glay,
-            elevation: 0,
-            child: items.taskList['id'][index]['bool']
-                ? const SizedBox(
-                    width: 0,
-                    height: 0,
-                  )
-                : InkWell(
-                    onTap: () {
-                      // ページ遷移
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PageTask()),
-                      ).then((value) {
-                        // 戻ってきたら再描画
-                        setState(() {});
-                      });
-                    },
-                    child: Container(
-                        // width: _screenSizeWidth * 0.3,
-                        padding: EdgeInsets.all(_screenSizeWidth * 0.04),
-                        margin: EdgeInsets.only(left: _screenSizeWidth * 0.025, right: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.01),
-                        alignment: const Alignment(0.0, 0.0),
-                        // boxに下線
-                        decoration: BoxDecoration(
-                          color: Constant.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: CustomText(text: items.taskList['id'][index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
-                  ));
+        return !items.taskList['id'][index]['bool']
+            ? Card(
+                color: Constant.glay,
+                elevation: 0,
+                child: InkWell(
+                  onTap: () {
+                    // ページ遷移
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PageTask()),
+                    ).then((value) {
+                      // 戻ってきたら再描画
+                      setState(() {});
+                    });
+                  },
+                  child: Container(
+                      // width: _screenSizeWidth * 0.3,
+                      padding: EdgeInsets.all(_screenSizeWidth * 0.04),
+                      margin: EdgeInsets.only(left: _screenSizeWidth * 0.025, right: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.01),
+                      alignment: const Alignment(0.0, 0.0),
+                      // boxに下線
+                      decoration: BoxDecoration(
+                        color: Constant.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: CustomText(text: items.taskList['id'][index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                ))
+            : SizedBox.shrink();
       },
     );
   }

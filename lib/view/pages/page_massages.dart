@@ -359,10 +359,11 @@ class _PageMassages extends State<PageMassages> {
                                       color: messages[index]['message'] == 'リスケお願いします' ? Constant.red : Constant.blackGlay)),
 
                               // 引用するタスク部分
+                              messages[index]['indexBool']
+                                    ?
                               Container(
                                 // 引用してるか否かを判定
-                                child: messages[index]['indexBool']
-                                    ? Container(
+                                child:  Container(
                                         width: _screenSizeWidth * 0.8,
                                         decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
                                         child: Column(
@@ -463,26 +464,17 @@ class _PageMassages extends State<PageMassages> {
                                                               ),
                                                             ),
                                                           ]))
-                                                      : const SizedBox(
-                                                          width: 0,
-                                                          height: 0,
-                                                        ),
+                                                      : SizedBox.shrink(),
                                                 ],
                                               ),
                                             ),
                                           ],
                                         ),
                                       )
-                                    : const SizedBox(
-                                        width: 0,
-                                        height: 0,
-                                      ),
-                              )
+                                    
+                              ) : SizedBox.shrink()
                             ])
-                          : const SizedBox(
-                              width: 0,
-                              height: 0,
-                            )),
+                          : SizedBox.shrink()),
 
                   // スタンプの表示
                   Container(
@@ -513,11 +505,12 @@ class _PageMassages extends State<PageMassages> {
       itemCount: item.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return Card(
+        return item[index]['user'] == messenger && !item[index]['bool']
+                ?
+        Card(
             color: Constant.glay,
             elevation: 0,
-            child: item[index]['user'] == messenger && !item[index]['bool']
-                ? InkWell(
+            child:  InkWell(
                     onTap: () {
                       // 引用中に変更
                       setState(() {
@@ -543,10 +536,9 @@ class _PageMassages extends State<PageMassages> {
                       ),
                     ),
                   )
-                : const SizedBox(
-                    width: 0,
-                    height: 0,
-                  ));
+                )
+            // falseなら空の箱を返す
+            : SizedBox.shrink();
       },
     );
   }

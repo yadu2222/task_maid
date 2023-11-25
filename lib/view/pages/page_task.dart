@@ -669,12 +669,14 @@ class _PageTask extends State<PageTask> {
       itemCount: item.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return Card(
+        return !item[index]['bool'] && item[index]['roomid'] == taskRoomIndex
+                    ?
+        
+        Card(
             color: Constant.glay.withAlpha(0),
             elevation: 0,
             child: // タスクの状態を判定して表示
-                !item[index]['bool'] && item[index]['roomid'] == taskRoomIndex
-                    ? InkWell(
+                 InkWell(
                         onTap: () {
                           // 詳細ダイアログ表示
                           showDialog(
@@ -871,7 +873,8 @@ class _PageTask extends State<PageTask> {
                                   ]))
                             ])),
                       )
-                    : SizedBox.shrink());
+                    )
+            : SizedBox.shrink();
       },
     );
   }
