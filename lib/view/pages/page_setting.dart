@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
+import '../Atoms.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -26,26 +27,10 @@ class _PageSetting extends State<PageSetting> {
         bottom: false,
         child: Column(
           children: [
-            Container(
-                width: _screenSizeWidth,
-                alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+            // 上部バー部分
+            Atoms.PageTitle(context, '設定'),
 
-                // バー部分
-                child: Row(children: [
-                  SizedBox(width: _screenSizeWidth * 0.05),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Constant.glay,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // 前のページに戻る
-                    },
-                  ),
-                  CustomText(text: "設定", fontSize: _screenSizeWidth * 0.06, color: Constant.glay),
-                ])),
+            // 設定
             Container(
               margin: EdgeInsets.all(_screenSizeWidth * 0.05),
               child: Column(
@@ -84,6 +69,4 @@ class _PageSetting extends State<PageSetting> {
       ),
     )));
   }
-
-  
 }

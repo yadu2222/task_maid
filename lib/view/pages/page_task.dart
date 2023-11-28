@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
+import '../Atoms.dart';
 
 class PageTask extends StatefulWidget {
-  const PageTask({Key? key}) : super(key: key);
+  // どこの部屋のタスクを参照したいのか引数でもらう
+  final String roomNum;
+
+  const PageTask({required this.roomNum, Key? key}) : super(key: key);
 
   @override
-  _PageTask createState() => _PageTask();
+  _PageTask createState() => _PageTask(roomNum: roomNum);
 }
 
 class _PageTask extends State<PageTask> {
@@ -26,6 +30,9 @@ class _PageTask extends State<PageTask> {
   // 部屋名のコントローラー
   final TextEditingController roomNameController = TextEditingController();
 
+  String roomNum;
+  _PageTask({required this.roomNum});
+
   // 検索用変数
   static String roomID = 'ルームID';
   static String ex = '検索結果はありません';
@@ -40,7 +47,7 @@ class _PageTask extends State<PageTask> {
   }
 
   static String roomNames = roomName();
-  static String taskRoomIndex = '1111'; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
+  static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
 
   @override
   Widget build(BuildContext context) {
@@ -61,26 +68,11 @@ class _PageTask extends State<PageTask> {
               children: [
                 Container(
                     width: _screenSizeWidth,
-                    alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                    margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-
                     // バー部分
                     child: Row(children: [
-                      SizedBox(width: _screenSizeWidth * 0.05),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Constant.glay,
-                          size: 35,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context); // 前のページに戻る
-                        },
-                      ),
-                      CustomText(text: "タスク", fontSize: _screenSizeWidth * 0.06, color: Constant.glay),
-
+                      Atoms.PageTitle(context, 'タスク'),
                       // タスク追加ボタン　リーダーのみ表示
-                      items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
+                      items.room[roomNum]['leader'] == items.userInfo['userid']
                           ? Container(
                               width: _screenSizeWidth * 0.5,
                               alignment: Alignment.centerRight,
@@ -636,7 +628,7 @@ class _PageTask extends State<PageTask> {
                       padding: EdgeInsets.all(_screenSizeWidth * 0.04),
                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
                       margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.03),
-                      child: CustomText(text: items.room[taskRoomIndex]['roomName'], fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
+                      child: CustomText(text: items.room[roomNum]['roomName'], fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
                     )),
 
                 // タスク表示
@@ -650,7 +642,7 @@ class _PageTask extends State<PageTask> {
           ])),
         )));
   }
-  
+
   Widget _test_taskList(var _screenSizeWidth) {
     return ListView.builder(
       // indexの作成 widgetが表示される数
@@ -670,210 +662,207 @@ class _PageTask extends State<PageTask> {
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return !item[index]['bool'] && item[index]['roomid'] == taskRoomIndex
-                    ?
-        
-        Card(
-            color: Constant.glay.withAlpha(0),
-            elevation: 0,
-            child: // タスクの状態を判定して表示
-                 InkWell(
-                        onTap: () {
-                          // 詳細ダイアログ表示
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16.0),
-                                      // side: const BorderSide(
-                                      //   color: Constant.sub3, width: 5, // ダイアログの形状を変更
-                                      // ),
-                                    ),
-                                    elevation: 0.0, // ダイアログの影を削除
-                                    backgroundColor: Constant.white.withOpacity(0), // 背景色
+            ? Card(
+                color: Constant.glay.withAlpha(0),
+                elevation: 0,
+                child: // タスクの状態を判定して表示
+                    InkWell(
+                  onTap: () {
+                    // 詳細ダイアログ表示
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                // side: const BorderSide(
+                                //   color: Constant.sub3, width: 5, // ダイアログの形状を変更
+                                // ),
+                              ),
+                              elevation: 0.0, // ダイアログの影を削除
+                              backgroundColor: Constant.white.withOpacity(0), // 背景色
 
-                                    content: Container(
-                                      width: _screenSizeWidth * 0.8,
-                                      height: _screenSizeHeight * 0.465,
-                                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                              content: Container(
+                                width: _screenSizeWidth * 0.8,
+                                height: _screenSizeHeight * 0.465,
+                                decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                child: Column(
+                                  children: [
+                                    // タスク内容表示
+                                    Container(
                                       child: Column(
                                         children: [
-                                          // タスク内容表示
                                           Container(
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                    width: _screenSizeWidth * 0.4,
-                                                    height: _screenSizeHeight * 0.05,
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    margin: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.02),
-                                                    child: CustomText(text: "詳細", fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay)),
-
-                                                // 箱の中身
-                                                Container(
-                                                    width: _screenSizeWidth * 0.6,
-                                                    height: _screenSizeHeight * 0.2,
-                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.05),
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
-                                                    child: Column(children: [
-                                                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                        CustomText(
-                                                            text: '依頼者：${item[index]['user']}\n期限：${item[index]['limitDay']}\t${item[index]['limitTime']}\n-------------------------------',
-                                                            fontSize: _screenSizeWidth * 0.035,
-                                                            color: Constant.blackGlay),
-                                                      ]),
-                                                      SizedBox(
-                                                        height: _screenSizeHeight * 0.01,
-                                                      ),
-
-                                                      // タスク内容の表示
-                                                      CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
-                                                    ])),
-
-                                                Container(
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    margin: EdgeInsets.only(top: _screenSizeHeight * 0.02, left: _screenSizeWidth * 0.03, bottom: _screenSizeHeight * 0.0225
-                                                        //right: _screenSizeWidth * 0.05,
-                                                        ),
-                                                    padding: EdgeInsets.only(left: _screenSizeWidth * 0.02, right: _screenSizeWidth * 0.02),
-                                                    child: Row(children: [
-                                                      // できました！！ボタン
-                                                      InkWell(
-                                                        onTap: () {
-                                                          // 見ているタスクを引用してリスケを希望
-                                                          // 辞書に追加
-                                                          items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
-                                                              ? addMessage(item[index]['user'], true, '進捗どうですか？？？？？？？', false, 0, 0, true, index, false)
-                                                              : addMessage(item[index]['user'], true, 'できました！！！！！！！', false, 0, 0, true, index, false);
-
-                                                          if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
-
-                                                          // タスクの状態を変更
-                                                          item[index]['bool'] = true;
-                                                          // ページ遷移
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) => PageMassages(
-                                                                      messenger: item[index]['user'],
-                                                                    )),
-                                                          ).then((value) {
-                                                            //戻ってきたら再描画
-                                                            setState(() {
-                                                              Navigator.pop(context);
-                                                            });
-                                                          });
-                                                        },
-                                                        child: Container(
-                                                          width: _screenSizeWidth * 0.275,
-                                                          height: _screenSizeWidth * 0.15,
-                                                          padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                          alignment: const Alignment(0.0, 0.0),
-                                                          decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                                          child: CustomText(
-                                                              text: items.room[taskRoomIndex]['leader'] == items.userInfo['userid'] ? '進捗どう\nですか？？？' : 'できました\n！！！！！！',
-                                                              fontSize: _screenSizeWidth * 0.04,
-                                                              color: Constant.blackGlay),
-                                                        ),
-                                                      ),
-
-                                                      SizedBox(
-                                                        width: _screenSizeWidth * 0.035,
-                                                      ),
-
-                                                      // リスケおねがいします、、ボタン
-                                                      InkWell(
-                                                        onTap: () {
-                                                          // 見ているタスクを引用してリスケを希望
-                                                          // 辞書に追加
-                                                          addMessage(item[index]['user'], true, 'リスケお願いします', false, 0, 0, true, index, false);
-                                                          items.indexBool = false;
-                                                          // ページ遷移
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) => PageMassages(
-                                                                      messenger: item[index]['user'],
-                                                                    )),
-                                                          ).then((value) {
-                                                            //戻ってきたら再描画
-
-                                                            setState(() {
-                                                              Navigator.pop(context);
-                                                            });
-                                                          });
-                                                        },
-                                                        child: Container(
-                                                          width: _screenSizeWidth * 0.275,
-                                                          height: _screenSizeWidth * 0.15,
-                                                          padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                          alignment: const Alignment(0.0, 0.0),
-                                                          decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
-                                                          child: CustomText(text: 'リスケお願いします！！！', fontSize: _screenSizeWidth * 0.04, color: Constant.glay),
-                                                        ),
-                                                      ),
-                                                    ])),
-                                              ],
-                                            ),
-                                          ),
-
-                                          // 戻るボタン
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).pop(); //もどる
-                                            },
-                                            child: Container(
-                                              width: _screenSizeWidth * 0.3,
+                                              width: _screenSizeWidth * 0.4,
                                               height: _screenSizeHeight * 0.05,
                                               alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                              decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                              child: CustomText(text: "もどる", fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
-                                            ),
-                                          )
+                                              margin: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.02),
+                                              child: CustomText(text: "詳細", fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay)),
+
+                                          // 箱の中身
+                                          Container(
+                                              width: _screenSizeWidth * 0.6,
+                                              height: _screenSizeHeight * 0.2,
+                                              padding: EdgeInsets.all(_screenSizeWidth * 0.05),
+                                              alignment: const Alignment(0.0, 0.0),
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
+                                              child: Column(children: [
+                                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                  CustomText(
+                                                      text: '依頼者：${item[index]['user']}\n期限：${item[index]['limitDay']}\t${item[index]['limitTime']}\n-------------------------------',
+                                                      fontSize: _screenSizeWidth * 0.035,
+                                                      color: Constant.blackGlay),
+                                                ]),
+                                                SizedBox(
+                                                  height: _screenSizeHeight * 0.01,
+                                                ),
+
+                                                // タスク内容の表示
+                                                CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                              ])),
+
+                                          Container(
+                                              alignment: const Alignment(0.0, 0.0),
+                                              margin: EdgeInsets.only(top: _screenSizeHeight * 0.02, left: _screenSizeWidth * 0.03, bottom: _screenSizeHeight * 0.0225
+                                                  //right: _screenSizeWidth * 0.05,
+                                                  ),
+                                              padding: EdgeInsets.only(left: _screenSizeWidth * 0.02, right: _screenSizeWidth * 0.02),
+                                              child: Row(children: [
+                                                // できました！！ボタン
+                                                InkWell(
+                                                  onTap: () {
+                                                    // 見ているタスクを引用してリスケを希望
+                                                    // 辞書に追加
+                                                    items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
+                                                        ? addMessage(item[index]['user'], true, '進捗どうですか？？？？？？？', false, 0, 0, true, index, false)
+                                                        : addMessage(item[index]['user'], true, 'できました！！！！！！！', false, 0, 0, true, index, false);
+
+                                                    if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
+
+                                                    // タスクの状態を変更
+                                                    item[index]['bool'] = true;
+                                                    // ページ遷移
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => PageMassages(
+                                                                messenger: item[index]['user'],
+                                                              )),
+                                                    ).then((value) {
+                                                      //戻ってきたら再描画
+                                                      setState(() {
+                                                        Navigator.pop(context);
+                                                      });
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: _screenSizeWidth * 0.275,
+                                                    height: _screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                                                    child: CustomText(
+                                                        text: items.room[taskRoomIndex]['leader'] == items.userInfo['userid'] ? '進捗どう\nですか？？？' : 'できました\n！！！！！！',
+                                                        fontSize: _screenSizeWidth * 0.04,
+                                                        color: Constant.blackGlay),
+                                                  ),
+                                                ),
+
+                                                SizedBox(
+                                                  width: _screenSizeWidth * 0.035,
+                                                ),
+
+                                                // リスケおねがいします、、ボタン
+                                                InkWell(
+                                                  onTap: () {
+                                                    // 見ているタスクを引用してリスケを希望
+                                                    // 辞書に追加
+                                                    addMessage(item[index]['user'], true, 'リスケお願いします', false, 0, 0, true, index, false);
+                                                    items.indexBool = false;
+                                                    // ページ遷移
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => PageMassages(
+                                                                messenger: item[index]['user'],
+                                                              )),
+                                                    ).then((value) {
+                                                      //戻ってきたら再描画
+
+                                                      setState(() {
+                                                        Navigator.pop(context);
+                                                      });
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: _screenSizeWidth * 0.275,
+                                                    height: _screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
+                                                    child: CustomText(text: 'リスケお願いします！！！', fontSize: _screenSizeWidth * 0.04, color: Constant.glay),
+                                                  ),
+                                                ),
+                                              ])),
                                         ],
                                       ),
-                                    ));
-                              });
-                        },
-                        child: Container(
-                            width: _screenSizeWidth * 0.95,
-                            height: _screenSizeHeight * 0.1,
-                            padding: EdgeInsets.only(right: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
-                            //alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                            decoration: BoxDecoration(
-                              color: Constant.glay,
-                              borderRadius: BorderRadius.circular(10), // 角丸
-                            ),
-                            child: Row(children: [
+                                    ),
+
+                                    // 戻るボタン
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).pop(); //もどる
+                                      },
+                                      child: Container(
+                                        width: _screenSizeWidth * 0.3,
+                                        height: _screenSizeHeight * 0.05,
+                                        alignment: const Alignment(0.0, 0.0),
+                                        margin: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                        decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                                        child: CustomText(text: "もどる", fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ));
+                        });
+                  },
+                  child: Container(
+                      width: _screenSizeWidth * 0.95,
+                      height: _screenSizeHeight * 0.1,
+                      padding: EdgeInsets.only(right: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
+                      //alignment: const Alignment(0.0, 0.0), //真ん中に配置
+                      decoration: BoxDecoration(
+                        color: Constant.glay,
+                        borderRadius: BorderRadius.circular(10), // 角丸
+                      ),
+                      child: Row(children: [
+                        Container(
+                          width: _screenSizeWidth * 0.15,
+                          height: _screenSizeHeight * 0.1,
+                          alignment: const Alignment(0.0, 0.0), //真ん中に配置
+                          padding: EdgeInsets.all(_screenSizeWidth * 0.025),
+                          child: CustomText(text: '${item[index]['month']}\n${item[index]['day']}', fontSize: _screenSizeWidth * 0.055, color: Constant.blackGlay),
+                        ),
+                        SizedBox(
+                          width: _screenSizeWidth * 0.01,
+                        ),
+                        Container(
+                            width: _screenSizeWidth * 0.5,
+                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.04, bottom: _screenSizeWidth * 0.04),
+                            child: Column(children: [
                               Container(
-                                width: _screenSizeWidth * 0.15,
-                                height: _screenSizeHeight * 0.1,
-                                alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                                padding: EdgeInsets.all(_screenSizeWidth * 0.025),
-                                child: CustomText(text: '${item[index]['month']}\n${item[index]['day']}', fontSize: _screenSizeWidth * 0.055, color: Constant.blackGlay),
-                              ),
-                              SizedBox(
-                                width: _screenSizeWidth * 0.01,
-                              ),
+                                  width: _screenSizeWidth * 0.625,
+                                  alignment: Alignment.centerLeft,
+                                  child: CustomText(text: '${item[index]['limitTime']}まで\n-------------------------------', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
                               Container(
-                                  width: _screenSizeWidth * 0.5,
-                                  margin: EdgeInsets.only(top: _screenSizeWidth * 0.04, bottom: _screenSizeWidth * 0.04),
-                                  child: Column(children: [
-                                    Container(
-                                        width: _screenSizeWidth * 0.625,
-                                        alignment: Alignment.centerLeft,
-                                        child: CustomText(text: '${item[index]['limitTime']}まで\n-------------------------------', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
-                                    Container(
-                                        width: _screenSizeWidth * 0.625,
-                                        alignment: Alignment.centerLeft,
-                                        child: CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
-                                  ]))
-                            ])),
-                      )
-                    )
+                                  width: _screenSizeWidth * 0.625,
+                                  alignment: Alignment.centerLeft,
+                                  child: CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                            ]))
+                      ])),
+                ))
             : SizedBox.shrink();
       },
     );

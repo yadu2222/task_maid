@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_maid/view/Atoms.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database_helper.dart';
@@ -52,31 +53,10 @@ class _PageMassages extends State<PageMassages> {
                 Align(
                   alignment: Alignment.topCenter,
                   child: Column(children: [
-                    // 戻るボタン
-                    Container(
-                      width: _screenSizeWidth,
-                      alignment: const Alignment(0.0, 0.0),
-                      margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                      child: Row(
-                        children: [
-                          SizedBox(width: _screenSizeWidth * 0.05),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios,
-                              color: Constant.glay,
-                              size: 35,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          CustomText(text: messenger, fontSize: _screenSizeWidth * 0.06, color: Constant.glay),
-                        ],
-                      ),
-                    ),
-
+                    // 上部バー
+                    Atoms.PageTitle(context, messenger),
                     // メッセージ部分
-                    Container(width: _screenSizeWidth * 0.9, height: _screenSizeHeight * 0.8, child: messageList(_screenSizeWidth, _screenSizeHeight, items.message['$messenger'])),
+                    Container(width: _screenSizeWidth * 0.9, height: _screenSizeHeight * 0.8, child: messageList(items.message['$messenger'])),
                   ]),
                 ),
 
@@ -166,7 +146,7 @@ class _PageMassages extends State<PageMassages> {
                                                                       width: _screenSizeWidth * 0.6,
                                                                       height: _screenSizeHeight * 0.35,
                                                                       // タスク選択処理
-                                                                      child: taskList(_screenSizeWidth, _screenSizeHeight, items.taskList['id'])),
+                                                                      child: taskList(items.taskList['id'])),
                                                                 ],
                                                               ),
                                                             )
@@ -260,12 +240,8 @@ class _PageMassages extends State<PageMassages> {
                                   ])),
 
                               // スタンプリスト
-                              items.stamplist
-                                  ? stampList(scaffoldKey: _scaffoldKey, scrollController: _scrollController, width: _screenSizeWidth, height: _screenSizeHeight, messenger: messenger)
-                                  : const SizedBox(
-                                      width: 0,
-                                      height: 0,
-                                    ),
+                              // 表示非表示を変数で判断
+                              items.stamplist ? stampPictures() : const SizedBox.shrink()
                             ])))
               ],
             ),
@@ -274,6 +250,10 @@ class _PageMassages extends State<PageMassages> {
       ),
     );
   }
+
+/**
+ * ここからこのページの処理まとめ
+ */
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -314,7 +294,9 @@ class _PageMassages extends State<PageMassages> {
   }
 
   // メッセージ表示処理
-  Widget messageList(var _screenSizeWidth, var _screenSizeHeight, List messages) {
+  Widget messageList(List messages) {
+    double screenSizeWidth = MediaQuery.of(context).size.width;
+    double screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // controllerの設置
       controller: _scrollController,
@@ -326,15 +308,15 @@ class _PageMassages extends State<PageMassages> {
             color: Constant.glay.withAlpha(0),
             elevation: 0,
             child: Container(
-                width: _screenSizeWidth,
+                width: screenSizeWidth,
                 // 相手のメッセージならば左 自分のメッセージなら右に寄せて表示
                 alignment: messages[index]['whose'] ? Alignment.centerLeft : Alignment.centerRight,
-                margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
+                margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
                 child: Column(children: [
                   Container(
-                      width: _screenSizeWidth * 0.5,
+                      width: screenSizeWidth * 0.5,
                       padding: messages[index]['messagebool']
-                          ? EdgeInsets.only(top: _screenSizeWidth * 0.035, left: _screenSizeWidth * 0.035, right: _screenSizeWidth * 0.035, bottom: _screenSizeWidth * 0.03)
+                          ? EdgeInsets.only(top: screenSizeWidth * 0.035, left: screenSizeWidth * 0.035, right: screenSizeWidth * 0.035, bottom: screenSizeWidth * 0.03)
                           : EdgeInsets.all(0),
                       decoration: BoxDecoration(
                         color: messages[index]['messagebool'] ? Constant.glay : Constant.glay.withOpacity(0),
@@ -348,131 +330,129 @@ class _PageMassages extends State<PageMassages> {
                                   alignment: Alignment.centerLeft,
                                   child: CustomText(
                                       text: '${messages[index]['sendDay']}\t${messages[index]['sendTime']}\n----------------------------',
-                                      fontSize: _screenSizeWidth * 0.035,
+                                      fontSize: screenSizeWidth * 0.035,
                                       color: Constant.blackGlay)),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: CustomText(
                                       text: messages[index]['message'],
-                                      fontSize: _screenSizeWidth * 0.035,
+                                      fontSize: screenSizeWidth * 0.035,
                                       // リスケお願いしますのときだけ赤文字
                                       color: messages[index]['message'] == 'リスケお願いします' ? Constant.red : Constant.blackGlay)),
 
                               // 引用するタスク部分
                               messages[index]['indexBool']
-                                    ?
-                              Container(
-                                // 引用してるか否かを判定
-                                child:  Container(
-                                        width: _screenSizeWidth * 0.8,
-                                        decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
-                                        child: Column(
-                                          children: [
-                                            // タスク内容表示
-                                            Container(
-                                              child: Column(
-                                                children: [
-                                                  // 箱の中身
+                                  ? Container(
+                                      // 引用してるか否かを判定
+                                      child: Container(
+                                      width: screenSizeWidth * 0.8,
+                                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
+                                      child: Column(
+                                        children: [
+                                          // タスク内容表示
+                                          Container(
+                                            child: Column(
+                                              children: [
+                                                // 箱の中身
 
-                                                  Container(
-                                                      width: _screenSizeWidth * 0.6,
-                                                      //height: _screenSizeHeight * 0.2,
-                                                      padding: EdgeInsets.all(_screenSizeWidth * 0.035),
-                                                      margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                      alignment: const Alignment(0.0, 0.0),
-                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Constant.white),
-                                                      child: Column(children: [
-                                                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                          CustomText(
-                                                              text:
-                                                                  '期限：${items.taskList['id'][messages[index]['index']]['limitDay']}\t${items.taskList['id'][messages[index]['index']]['limitTime']}\n---------------------',
-                                                              fontSize: _screenSizeWidth * 0.0325,
-                                                              color: Constant.blackGlay),
-                                                        ]),
-                                                        SizedBox(
-                                                          height: _screenSizeHeight * 0.01,
-                                                        ),
+                                                Container(
+                                                    width: screenSizeWidth * 0.6,
+                                                    //height: _screenSizeHeight * 0.2,
+                                                    padding: EdgeInsets.all(screenSizeWidth * 0.035),
+                                                    margin: EdgeInsets.all(screenSizeWidth * 0.02),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Constant.white),
+                                                    child: Column(children: [
+                                                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                        CustomText(
+                                                            text:
+                                                                '期限：${items.taskList['id'][messages[index]['index']]['limitDay']}\t${items.taskList['id'][messages[index]['index']]['limitTime']}\n---------------------',
+                                                            fontSize: screenSizeWidth * 0.0325,
+                                                            color: Constant.blackGlay),
+                                                      ]),
+                                                      SizedBox(
+                                                        height: screenSizeHeight * 0.01,
+                                                      ),
 
-                                                        // タスク内容の表示
-                                                        CustomText(text: items.taskList['id'][messages[index]['index']]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
-                                                      ])),
+                                                      // タスク内容の表示
+                                                      CustomText(text: items.taskList['id'][messages[index]['index']]['task'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                                    ])),
 
-                                                  messages[index]['whose']
-                                                      ? Container(
-                                                          alignment: const Alignment(0.0, 0.0),
-                                                          margin: EdgeInsets.all(_screenSizeWidth * 0.03),
-                                                          child: Row(children: [
-                                                            // できました！！ボタン
-                                                            InkWell(
-                                                              onTap: () {
-                                                                // メッセージ追加
-                                                                addMessage(messenger, true, '順調です！', false, 0, 0, true,  messages[index]['index'], false);
-                                                                items.indexBool = false;
-                                                                // 再読み込みとスクロール
-                                                                setState(() {
-                                                                  // ちょっと待たせて実行
-                                                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                                    _scrollController.animateTo(
-                                                                      _scrollController.position.maxScrollExtent,
-                                                                      duration: const Duration(milliseconds: 300),
-                                                                      curve: Curves.easeOut,
-                                                                    );
-                                                                  });
+                                                messages[index]['whose']
+                                                    ? Container(
+                                                        alignment: const Alignment(0.0, 0.0),
+                                                        margin: EdgeInsets.all(screenSizeWidth * 0.03),
+                                                        child: Row(children: [
+                                                          // できました！！ボタン
+                                                          InkWell(
+                                                            onTap: () {
+                                                              // メッセージ追加
+                                                              addMessage(messenger, true, '順調です！', false, 0, 0, true, messages[index]['index'], false);
+                                                              items.indexBool = false;
+                                                              // 再読み込みとスクロール
+                                                              setState(() {
+                                                                // ちょっと待たせて実行
+                                                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                                  _scrollController.animateTo(
+                                                                    _scrollController.position.maxScrollExtent,
+                                                                    duration: const Duration(milliseconds: 300),
+                                                                    curve: Curves.easeOut,
+                                                                  );
                                                                 });
+                                                              });
 
-                                                                reloadWidgetTree();
-                                                              },
-                                                              child: Container(
-                                                                width: _screenSizeWidth * 0.1525,
-                                                                height: _screenSizeWidth * 0.15,
-                                                                margin: EdgeInsets.only(left: _screenSizeWidth * 0.005, right: _screenSizeWidth * 0.025),
-                                                                padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                                alignment: const Alignment(0.0, 0.0),
-                                                                decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                                                child: CustomText(text: '順調です！！！！！！', fontSize: _screenSizeWidth * 0.03725, color: Constant.blackGlay),
-                                                              ),
+                                                              reloadWidgetTree();
+                                                            },
+                                                            child: Container(
+                                                              width: screenSizeWidth * 0.1525,
+                                                              height: screenSizeWidth * 0.15,
+                                                              margin: EdgeInsets.only(left: screenSizeWidth * 0.005, right: screenSizeWidth * 0.025),
+                                                              padding: EdgeInsets.all(screenSizeWidth * 0.01),
+                                                              alignment: const Alignment(0.0, 0.0),
+                                                              decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                                                              child: CustomText(text: '順調です！！！！！！', fontSize: screenSizeWidth * 0.03725, color: Constant.blackGlay),
                                                             ),
+                                                          ),
 
-                                                            // リスケおねがいします、、ボタン
-                                                            InkWell(
-                                                              onTap: () {
-                                                                // メッセージ追加
-                                                                addMessage(messenger, true, 'リスケお願いします', false, 0, 0, true,  messages[index]['index'], false);
-                                                                items.indexBool = false;
-                                                                // 再読み込みとスクロール
-                                                                setState(() {
-                                                                  // ちょっと待たせて実行
-                                                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                                    _scrollController.animateTo(
-                                                                      _scrollController.position.maxScrollExtent,
-                                                                      duration: const Duration(milliseconds: 300),
-                                                                      curve: Curves.easeOut,
-                                                                    );
-                                                                  });
+                                                          // リスケおねがいします、、ボタン
+                                                          InkWell(
+                                                            onTap: () {
+                                                              // メッセージ追加
+                                                              addMessage(messenger, true, 'リスケお願いします', false, 0, 0, true, messages[index]['index'], false);
+                                                              items.indexBool = false;
+                                                              // 再読み込みとスクロール
+                                                              setState(() {
+                                                                // ちょっと待たせて実行
+                                                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                                  _scrollController.animateTo(
+                                                                    _scrollController.position.maxScrollExtent,
+                                                                    duration: const Duration(milliseconds: 300),
+                                                                    curve: Curves.easeOut,
+                                                                  );
                                                                 });
+                                                              });
 
-                                                                reloadWidgetTree();
-                                                              },
-                                                              child: Container(
-                                                                width: _screenSizeWidth * 0.1525,
-                                                                height: _screenSizeWidth * 0.15,
-                                                                padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                                margin: EdgeInsets.only(left: _screenSizeWidth * 0.025),
-                                                                alignment: const Alignment(0.0, 0.0),
-                                                                decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
-                                                                child: CustomText(text: 'リスケお願いします', fontSize: _screenSizeWidth * 0.03725, color: Constant.glay),
-                                                              ),
+                                                              reloadWidgetTree();
+                                                            },
+                                                            child: Container(
+                                                              width: screenSizeWidth * 0.1525,
+                                                              height: screenSizeWidth * 0.15,
+                                                              padding: EdgeInsets.all(screenSizeWidth * 0.01),
+                                                              margin: EdgeInsets.only(left: screenSizeWidth * 0.025),
+                                                              alignment: const Alignment(0.0, 0.0),
+                                                              decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
+                                                              child: CustomText(text: 'リスケお願いします', fontSize: screenSizeWidth * 0.03725, color: Constant.glay),
                                                             ),
-                                                          ]))
-                                                      : SizedBox.shrink(),
-                                                ],
-                                              ),
+                                                          ),
+                                                        ]))
+                                                    : SizedBox.shrink(),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      )
-                                    
-                              ) : SizedBox.shrink()
+                                          ),
+                                        ],
+                                      ),
+                                    ))
+                                  : SizedBox.shrink()
                             ])
                           : SizedBox.shrink()),
 
@@ -481,9 +461,9 @@ class _PageMassages extends State<PageMassages> {
                     // そもスタンプを選択しているかの判定
                     child: messages[index]['stampBool']
                         ? Container(
-                            width: _screenSizeWidth * 0.5,
-                            height: _screenSizeWidth * 0.5,
-                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.02, bottom: _screenSizeWidth * 0.02),
+                            width: screenSizeWidth * 0.5,
+                            height: screenSizeWidth * 0.5,
+                            margin: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                             child: Image.asset(
                               items.taskMaid['stamp'][messages[index]['stamp']],
                               fit: BoxFit.contain,
@@ -498,45 +478,113 @@ class _PageMassages extends State<PageMassages> {
     );
   }
 
+  // スタンプの表示
+  Widget stampPicture(int picture) {
+    double screenSizeWidth = MediaQuery.of(context).size.width;
+    double screenSizeHeight = MediaQuery.of(context).size.height;
+    return InkWell(
+        onTap: () {
+          items.stampIndex = picture;
+          addMessage(messenger, false, '', true, items.stampIndex, 0, false, 0, false);
+          setState(() {
+            items.stamplist = false;
+
+            void reloadWidgetTree() {
+              _scaffoldKey.currentState?.reassemble();
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            });
+          });
+        },
+        child: Container(
+          width: screenSizeWidth * 0.2,
+          height: screenSizeWidth * 0.2,
+          margin: EdgeInsetsDirectional.all(screenSizeWidth * 0.02),
+          child: Image.asset(
+            items.taskMaid['stamp'][picture],
+            fit: BoxFit.contain,
+          ),
+        ));
+  }
+
+  // スタンプ表示の繰り返し
+  Widget stampPictures() {
+    double screenSizeWidth = MediaQuery.of(context).size.width;
+    double screenSizeHeight = MediaQuery.of(context).size.height;
+    return Container(
+      width: screenSizeWidth,
+      decoration: BoxDecoration(color: Constant.glay),
+      child: Column(
+        children: [
+          Container(
+              // containerの中心に表示してくださいということ
+              alignment: const Alignment(0, 0),
+              padding: EdgeInsets.only(left: screenSizeWidth * 0.025),
+              child: Row(children: [
+                stampPicture(0),
+                stampPicture(1),
+                stampPicture(2),
+                stampPicture(3),
+              ])),
+          Container(
+              alignment: const Alignment(0, 0),
+              padding: EdgeInsets.only(left: screenSizeWidth * 0.025),
+              child: Row(children: [
+                stampPicture(4),
+                stampPicture(5),
+                stampPicture(6),
+                stampPicture(7),
+              ]))
+        ],
+      ),
+    );
+  }
+
   // タスク選択時の処理
-  Widget taskList(var _screenSizeWidth, var _screenSizeHeight, List item) {
+  Widget taskList(List item) {
+    double screenSizeWidth = MediaQuery.of(context).size.width;
+    double screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: item.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return item[index]['user'] == messenger && !item[index]['bool']
-                ?
-        Card(
-            color: Constant.glay,
-            elevation: 0,
-            child:  InkWell(
-                    onTap: () {
-                      // 引用中に変更
-                      setState(() {
-                        items.indexBool = true;
-                        // 個の変数がどこの子なのかわからない、、
-                        // items.taskIndex = quoteIndex;
-                        Navigator.of(context).pop();
-                      });
-                    },
-                    // 日付表示
-                    child: Container(
-                      width: _screenSizeWidth * 0.7,
-                      padding: EdgeInsets.all(_screenSizeWidth * 0.02),
-                      decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        children: [
-                          SizedBox(child: CustomText(text: '期限:${item[index]['limitDay']}\t${item[index]['limitTime']}', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)),
-                          SizedBox(
-                            child: CustomText(text: '---------------------------------', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay),
-                          ),
-                          SizedBox(child: CustomText(text: '${item[index]['task']}', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay))
-                        ],
-                      ),
+            ? Card(
+                color: Constant.glay,
+                elevation: 0,
+                child: InkWell(
+                  onTap: () {
+                    // 引用中に変更
+                    setState(() {
+                      items.indexBool = true;
+                      // この変数がどこの子なのかわからない、、
+                      // items.taskIndex = quoteIndex;
+                      Navigator.of(context).pop();
+                    });
+                  },
+                  // 日付表示
+                  child: Container(
+                    width: screenSizeWidth * 0.7,
+                    padding: EdgeInsets.all(screenSizeWidth * 0.02),
+                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      children: [
+                        SizedBox(child: CustomText(text: '期限:${item[index]['limitDay']}\t${item[index]['limitTime']}', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay)),
+                        SizedBox(
+                          child: CustomText(text: '---------------------------------', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay),
+                        ),
+                        SizedBox(child: CustomText(text: '${item[index]['task']}', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay))
+                      ],
                     ),
-                  )
-                )
+                  ),
+                ))
             // falseなら空の箱を返す
             : SizedBox.shrink();
       },

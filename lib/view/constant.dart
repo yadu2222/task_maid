@@ -39,7 +39,6 @@ class CustomText extends StatelessWidget {
 
 // dialog表示用クラス
 class dialog extends StatefulWidget {
-
   // 箱のサイズ
   double screenSizeWidth;
   double screenSizeHeight;
@@ -51,7 +50,7 @@ class dialog extends StatefulWidget {
   double heightin;
 
   Widget widget;
-  dialog({Key? key, required this.screenSizeWidth, required this.screenSizeHeight, required this.widget,required this.pabool,required this.widthin,required this.heightin});
+  dialog({Key? key, required this.screenSizeWidth, required this.screenSizeHeight, required this.widget, required this.pabool, required this.widthin, required this.heightin});
 
   @override
   _dialog createState() => _dialog();
@@ -71,167 +70,14 @@ class _dialog extends State<dialog> {
             width: widget.screenSizeWidth * widget.widthin,
             height: widget.screenSizeHeight * widget.heightin,
             decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-            padding: widget.pabool ?
-            EdgeInsets.only(
-              left: widget.screenSizeWidth * 0.03,
-              right: widget.screenSizeWidth * 0.03,
-              top: widget.screenSizeWidth * 0.05,
-            ) : EdgeInsets.all(0),
+            padding: widget.pabool
+                ? EdgeInsets.only(
+                    left: widget.screenSizeWidth * 0.03,
+                    right: widget.screenSizeWidth * 0.03,
+                    top: widget.screenSizeWidth * 0.05,
+                  )
+                : EdgeInsets.all(0),
             child: widget.widget));
-  }
-}
-
-class stampPictures extends StatefulWidget {
-  int picture;
-  double width;
-  double height;
-  String messenger;
-  var scaffoldKey;
-  var scrollController;
-  stampPictures({Key? key, required this.picture, required this.width, required this.height, required this.messenger, required this.scaffoldKey, required this.scrollController}) : super(key: key);
-
-  @override
-  _stampPictures createState() => _stampPictures();
-}
-
-class _stampPictures extends State<stampPictures> {
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          items.stampIndex = widget.picture;
-          addMessage(widget.messenger, false, '', true, items.stampIndex, 0, false, 0, false);
-
-          setState(() {
-            items.stamplist = false;
-
-            void reloadWidgetTree() {
-              widget.scaffoldKey.currentState?.reassemble();
-            }
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget.scrollController.animateTo(
-                widget.scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            });
-          });
-        },
-        child: Container(
-          width: widget.width * 0.2,
-          height: widget.width * 0.2,
-          margin: EdgeInsetsDirectional.all(widget.width * 0.02),
-          child: Image.asset(
-            items.taskMaid['stamp'][widget.picture],
-            fit: BoxFit.contain,
-          ),
-        ));
-  }
-}
-
-// スタンプを表示するクラス
-class stampList extends StatefulWidget {
-  double width;
-  double height;
-  String messenger;
-  var scaffoldKey;
-  var scrollController;
-  stampList({Key? key, required this.width, required this.height, required this.messenger, required this.scaffoldKey, required this.scrollController}) : super(key: key);
-
-  @override
-  _stampList createState() => _stampList();
-}
-
-class _stampList extends State<stampList> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: widget.width,
-      decoration: BoxDecoration(color: Constant.glay),
-      child: Column(
-        children: [
-          Container(
-              alignment: Alignment(0, 0),
-              padding: EdgeInsets.only(left: widget.width * 0.025),
-              child: Row(
-                children: [
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 0,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 1,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 2,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 3,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                ],
-              )),
-          Container(
-              alignment: Alignment(0, 0),
-              padding: EdgeInsets.only(left: widget.width * 0.025),
-              child: Row(
-                children: [
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 4,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 5,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 6,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                  stampPictures(
-                    scaffoldKey: widget.scaffoldKey,
-                    scrollController: widget.scrollController,
-                    messenger: widget.messenger,
-                    picture: 7,
-                    width: widget.width,
-                    height: widget.height,
-                  ),
-                ],
-              ))
-        ],
-      ),
-    );
   }
 }
 
@@ -287,4 +133,3 @@ bool roomIDcheck(String roomID) {
   }
   return false;
 }
-

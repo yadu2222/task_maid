@@ -4,6 +4,7 @@ import '../items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_massage.dart';
+import '../Atoms.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -32,6 +33,7 @@ class _PageHomeState extends State<PageHome> {
               Column(
                 children: [
                   // header
+                  // アイコンバー
                   Container(
                       width: _screenSizeWidth,
                       height: _screenSizeHeight * 0.075,
@@ -40,66 +42,26 @@ class _PageHomeState extends State<PageHome> {
                           child: Row(
                             children: [
                               //メール
-                              Container(
-                                  margin: EdgeInsets.only(left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.025, top: _screenSizeWidth * 0.0225),
-                                  child: IconButton(
-                                      onPressed: () {
-                                        // ここに処理設置
-                                        // ページ遷移
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => PageMail()),
-                                        ).then((value) {
-                                          //戻ってきたら再描画
-                                          setState(() {});
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.mail_outline,
-                                        color: Constant.glay,
-                                        size: 55,
-                                      ))),
+                              // Componentsless.PageShiftIcon(functionIcon: Icons.mail_outline, widget:const PageMail()),
+                              Atoms.PageShiftIcon(
+                                context,
+                                Icons.mail_outline,
+                                PageMail(),
+                              ),
 
                               //タスク
-                              Container(
-                                  margin: EdgeInsets.only(left: _screenSizeWidth * 0.025, right: _screenSizeWidth * 0.025, top: _screenSizeWidth * 0.0225),
-                                  child: IconButton(
-                                      onPressed: () {
-                                        //ページ遷移
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => PageTask()),
-                                        ).then((value) {
-                                          //戻ってきたら再描画
-                                          setState(() {});
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.check_box,
-                                        color: Constant.glay,
-                                        size: 55,
-                                      ))),
+                              Atoms.PageShiftIcon(
+                                context,
+                                Icons.check_box,
+                                PageTask(roomNum: '1111'),
+                              ),
 
                               //設定
-                              Container(
-                                  margin: EdgeInsets.only(left: _screenSizeWidth * 0.025, right: _screenSizeWidth * 0.025, top: _screenSizeWidth * 0.0225),
-                                  child: IconButton(
-                                      onPressed: () {
-                                        //ここに処理設置
-                                        //ページ遷移
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => PageSetting()),
-                                        ).then((value) {
-                                          //戻ってきたら再描画
-                                          setState(() {});
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.settings,
-                                        color: Constant.glay,
-                                        size: 55,
-                                      )))
+                              Atoms.PageShiftIcon(
+                                context,
+                                Icons.settings,
+                                PageSetting(),
+                              )
                             ],
                           ))),
 
@@ -189,9 +151,13 @@ class _PageHomeState extends State<PageHome> {
                 child: InkWell(
                   onTap: () {
                     // ページ遷移
+                    // 建設予定 選択したタスクのルームに自動遷移
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PageTask()),
+                      MaterialPageRoute(
+                          builder: (context) => PageTask(
+                                roomNum: items.taskList['id'][index]['roomid'],
+                              )),
                     ).then((value) {
                       // 戻ってきたら再描画
                       setState(() {});
