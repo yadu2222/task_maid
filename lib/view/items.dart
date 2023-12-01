@@ -20,34 +20,25 @@ class items {
       'roomName': 'てすとるーむ',
       'leader': '12345',
       'workers': ['12345'],
-      'tasks': [
-        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'タスク追加機能', 'day': '10', 'month': '09', 'limitDay': '10-09', 'limitTime': '13:00', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1111'},
-      ],
+      'tasks': [],
     },
     '3456': {
       'roomName': '参加できない; ;',
       'leader': '12345',
       'workers': ['12345'],
-      'tasks': [
-        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'タスク追加機能', 'day': '10', 'month': '09', 'limitDay': '10-09', 'limitTime': '13:00', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '3456'},
-      ],
+      'tasks': [],
     },
     '1234': {
       'roomName': 'てくてくてっく',
       'leader': '12345',
       'workers': ['12345', '67890'],
-      'tasks': [
-        {'user': 'せろり', 'worker': 'おさかな', 'task': 'ニャリオットとあそぶ', 'day': '09', 'month': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
-        {'user': 'せろり', 'worker': 'おさかな', 'day': '09', 'month': '23', 'task': 'フロント完成', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 1, 'roomid': '1234'},
-      ],
+      'tasks': [],
     },
     '2345': {
       'roomName': 'ニャリオットのお世話',
       'leader': '67890',
       'workers': ['67890'],
-      'tasks': [
-        {'user': 'おさかな', 'worker': 'おさかな', 'task': 'ニャリオットにごはんあげる', 'day': '09', 'month': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '2345'},
-      ],
+      'tasks': [],
     }
   };
 
@@ -80,11 +71,13 @@ class items {
     'sender': [1234]
   };
 
+  static DateTime now = DateTime.now();
+
   static Map message = {
     // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
     // idに、すべきや、、、！！！
     '1234': [
-      {'msgid': 1234556, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'chatRoom': '1234'},
+      {'msgid': 1234556, 'time': now.subtract(Duration(days: 1)), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'chatRoom': '1234'},
       {'msgid': 1234553, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '12345', 'chatRoom': '1234'},
     ],
   };
