@@ -67,8 +67,10 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE userAccount (
       userid INTEGER PRIMARY KEY,
-      userName TEXT,
-      account TEXT
+      mail TEXT,
+      name TEXT,
+      tasks  text,
+      rooms text,
     )
   ''');
 
@@ -87,22 +89,24 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE tasks (
       taskid INTEGER PRIMARY KEY,
-      timeLimit DATETIME NOT NULL,
-      userid INTEGER NOT NULL,
-      workerid INTEGER NOT NULL,
-      level INTEGER,
-      content TEXT NOT NULL
+      limit DATETIME NOT NULL,
+      leaders integer,
+      worker integer,
+      contents text,
     )
   ''');
 
     // メッセージを管理するためのテーブル
     await db.execute('''
-  CREATE TABLE messages (
-    senderid INTEGER,
-    receiveid INTEGER,
-    time DATETIME NOT NULL,
-    message TEXT,
-    PRIMARY KEY (senderid, receiveid)
+  CREATE TABLE msgchats (
+    msgid integer,
+    roomid integer,
+    time datetime,
+    sender integer,
+    receiver integer,
+    level integer,
+    status integer,
+    msg text 
   )
 ''');
   }

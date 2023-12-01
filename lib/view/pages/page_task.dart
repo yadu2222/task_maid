@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
-import '../Atoms.dart';
+import '../Molecules.dart';
 
 class PageTask extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
@@ -30,6 +31,9 @@ class _PageTask extends State<PageTask> {
   // 部屋名のコントローラー
   final TextEditingController roomNameController = TextEditingController();
 
+  // サイドバー表示用のkey
+  var sideBarKey = GlobalKey<ScaffoldState>();
+
   String roomNum;
   _PageTask({required this.roomNum});
 
@@ -48,6 +52,16 @@ class _PageTask extends State<PageTask> {
 
   static String roomNames = roomName();
   static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
+  static String dateText = '期日を入力してね';
+  static String please = 'リスケしてほしい日付を入力してね';
+
+  // 初期化メソッド
+  @override
+  void initState() {
+    super.initState();
+    // インスタンスメンバーを初期化
+    taskRoomIndex = widget.roomNum;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +71,7 @@ class _PageTask extends State<PageTask> {
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
+        key: sideBarKey,
         body: Center(
             child: Container(
           width: _screenSizeWidth,
@@ -70,94 +85,64 @@ class _PageTask extends State<PageTask> {
                     width: _screenSizeWidth,
                     // バー部分
                     child: Row(children: [
-                      Atoms.PageTitle(context, 'タスク'),
+                      Molecules.PageTitle(context, 'タスク'),
+                      SizedBox(
+                        width: _screenSizeWidth * 0.3,
+                      ),
                       // タスク追加ボタン　リーダーのみ表示
-                      items.room[roomNum]['leader'] == items.userInfo['userid']
+                      items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
                           ? Container(
-                              width: _screenSizeWidth * 0.5,
                               alignment: Alignment.centerRight,
                               child: IconButton(
+                                // ダイアログ表示
                                 onPressed: () {
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        // constantに用意しているクラス呼び出し
-                                        return dialog(
-                                            screenSizeWidth: _screenSizeWidth,
-                                            screenSizeHeight: _screenSizeHeight,
-                                            pabool: true,
-                                            widthin: 0.9,
-                                            heightin: 0.4,
-                                            widget: Column(children: [
+                                        return Molecules.dialog(
+                                            context,
+                                            0.9,
+                                            0.4,
+                                            true,
+                                            Column(children: [
                                               Container(
                                                 margin: EdgeInsets.all(_screenSizeWidth * 0.02),
                                                 alignment: Alignment(0, 0),
                                                 child: CustomText(text: 'タスク追加', fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
                                               ),
 
-                                              // 期日入力 くるくる回るやつ実装したかったけど時間なかった
-                                              Container(
-                                                  width: _screenSizeWidth * 0.8,
-                                                  alignment: const Alignment(0.0, 0.0),
-                                                  margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
-                                                  child: Row(children: [
-                                                    Container(
-                                                        width: _screenSizeWidth * 0.075,
-                                                        height: _screenSizeHeight * 0.04,
-                                                        alignment: const Alignment(0.0, 0.0),
-                                                        margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                              // 期日入力
+                                              // データピッカー
+                                              InkWell(
+                                                  onTap: () {
+                                                    DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
+                                                      setState(() {
+                                                        items.limitTime = date;
+                                                        dateText = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
+                                                      });
+                                                    }, currentTime: DateTime.now(), locale: LocaleType.jp);
+                                                  },
+                                                  child: Container(
+                                                      width: _screenSizeWidth * 0.5,
+                                                      height: _screenSizeHeight * 0.05,
+                                                      alignment: const Alignment(-1, 0),
+                                                      //margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
+                                                      decoration: const BoxDecoration(
+                                                          border: Border(
+                                                        bottom: BorderSide(
+                                                          color: Constant.blackGlay, //枠線の色
+                                                          width: 1, //枠線の太さ
+                                                        ),
+                                                      )),
+                                                      child: Text(
+                                                        dateText,
 
-                                                        // 日付 月
-                                                        child: TextField(
-                                                          controller: monthController,
-                                                          decoration: const InputDecoration(
-                                                            hintText: 'xx',
-                                                          ),
-                                                          onChanged: (month) {
-                                                            items.limitMonth = month;
-                                                          },
-                                                          textInputAction: TextInputAction.next,
-                                                        )),
-                                                    Container(
-                                                      width: _screenSizeWidth * 0.02,
-                                                      alignment: Alignment(0, 0),
-                                                      child: CustomText(text: '/', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
-                                                    ),
-                                                    Container(
-                                                        width: _screenSizeWidth * 0.075,
-                                                        height: _screenSizeHeight * 0.04,
-                                                        alignment: const Alignment(0.0, 0.0),
-                                                        margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(color: Constant.blackGlay),
 
-                                                        // 日付 日
-                                                        child: TextField(
-                                                          controller: dayController,
-                                                          decoration: const InputDecoration(
-                                                            hintText: 'yy',
-                                                          ),
-                                                          onChanged: (day) {
-                                                            items.limitDay = day;
-                                                          },
-                                                          textInputAction: TextInputAction.next,
-                                                        )),
-                                                    Container(
-                                                        width: _screenSizeWidth * 0.15,
-                                                        height: _screenSizeHeight * 0.04,
-                                                        alignment: const Alignment(0.0, 0.0),
-                                                        margin: EdgeInsets.all(_screenSizeWidth * 0.03),
-
-                                                        // 時間
-                                                        child: TextField(
-                                                          controller: timeController,
-                                                          decoration: const InputDecoration(
-                                                            hintText: 'nn:mm',
-                                                          ),
-                                                          onChanged: (time) {
-                                                            items.limitTime = time;
-                                                          },
-                                                          textInputAction: TextInputAction.next,
-                                                        ))
-                                                  ])),
+                                                        // _screenSizeWidth * 0.04,
+                                                        // Constant.blackGlay,
+                                                      ))),
                                               Container(
                                                   width: _screenSizeWidth * 0.5,
                                                   height: _screenSizeHeight * 0.04,
@@ -206,15 +191,16 @@ class _PageTask extends State<PageTask> {
                                               InkWell(
                                                 onTap: () {
                                                   // 空文字だったら通さない
-                                                  if (dayController.text.isNotEmpty && timeController.text.isNotEmpty && taskThinkController.text.isNotEmpty) {
+                                                  if (taskThinkController.text.isNotEmpty) {
                                                     FocusScope.of(context).unfocus(); //キーボードを閉じる
                                                     Navigator.of(context).pop(); //もどる
 
                                                     setState(() {
                                                       // タスクを追加
-                                                      addTask(items.userInfo['name'], items.worker, items.newtask, items.limitMonth, items.limitDay, items.limit, items.limitTime, taskRoomIndex);
+                                                      addTask(items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex);
 
                                                       // 入力フォームの初期化
+                                                      dateText = '期日を入力してね';
                                                       dayController.clear();
                                                       timeController.clear();
                                                       taskThinkController.clear();
@@ -239,7 +225,16 @@ class _PageTask extends State<PageTask> {
                                 color: Constant.glay,
                               ),
                             )
-                          : SizedBox.shrink()
+                          : SizedBox.shrink(),
+                      IconButton(
+                          onPressed: () {
+                            sideBarKey.currentState!.openEndDrawer();
+                          },
+                          icon: Icon(
+                            Icons.menu,
+                            color: Constant.glay,
+                            size: 35,
+                          ))
                     ])),
 
                 // 現在表示しているルームのボタン
@@ -249,13 +244,12 @@ class _PageTask extends State<PageTask> {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return dialog(
-                                screenSizeWidth: _screenSizeWidth,
-                                screenSizeHeight: _screenSizeHeight,
-                                pabool: false,
-                                widthin: 0.9,
-                                heightin: 0.465,
-                                widget: Column(children: [
+                            return Molecules.dialog(
+                                context,
+                                0.9,
+                                0.465,
+                                false,
+                                Column(children: [
                                   // 検索バー
                                   Container(
                                       width: _screenSizeWidth * 0.7,
@@ -628,25 +622,28 @@ class _PageTask extends State<PageTask> {
                       padding: EdgeInsets.all(_screenSizeWidth * 0.04),
                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
                       margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.03),
-                      child: CustomText(text: items.room[roomNum]['roomName'], fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
+                      child: CustomText(text: items.room[taskRoomIndex]['roomName'], fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
                     )),
 
                 // タスク表示
                 Container(
                   width: _screenSizeWidth * 0.95,
                   height: _screenSizeHeight * 0.7,
-                  child: taskList(_screenSizeWidth, _screenSizeHeight, items.taskList['id']),
+                  child: taskList(items.taskList),
                 )
               ],
             ),
           ])),
-        )));
+        )),
+
+        // サイドバー設定
+        endDrawer: sideBar());
   }
 
   Widget _test_taskList(var _screenSizeWidth) {
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.taskList['id'].length,
+      itemCount: items.taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(color: Constant.glay, elevation: 0, child: SizedBox());
@@ -654,14 +651,52 @@ class _PageTask extends State<PageTask> {
     );
   }
 
+  // サイドバー
+  Widget sideBar() {
+    return Drawer(
+      // 変更箇所
+      child: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text("ルームマップ"),
+            onTap: () {
+              // ここにメニュータップ時の処理を記述
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text("メンバー"),
+            onTap: () {
+              // ここにメニュータップ時の処理を記述
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.login),
+            title: const Text("サブルームの追加"),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text("権限の編集"),
+            onTap: () {},
+          )
+        ],
+      ),
+    );
+  }
+
   // タスク表示の処理
-  Widget taskList(var _screenSizeWidth, var _screenSizeHeight, List item) {
+  Widget taskList(List item) {
+    //画面サイズ
+    var _screenSizeWidth = MediaQuery.of(context).size.width;
+    var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: item.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return !item[index]['bool'] && item[index]['roomid'] == taskRoomIndex
+        return item[index]['status'] == 0 && item[index]['roomid'] == taskRoomIndex
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
@@ -710,7 +745,8 @@ class _PageTask extends State<PageTask> {
                                               child: Column(children: [
                                                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                   CustomText(
-                                                      text: '依頼者：${item[index]['user']}\n期限：${item[index]['limitDay']}\t${item[index]['limitTime']}\n-------------------------------',
+                                                      text:
+                                                          '依頼者：${item[index]['leader']}\n期限：${item[index]['limit'].month}月${item[index]['limit'].day}日${item[index]['limit'].hour}時${item[index]['limit'].minute}分\n-------------------------------',
                                                       fontSize: _screenSizeWidth * 0.035,
                                                       color: Constant.blackGlay),
                                                 ]),
@@ -719,7 +755,7 @@ class _PageTask extends State<PageTask> {
                                                 ),
 
                                                 // タスク内容の表示
-                                                CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                                CustomText(text: item[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
                                               ])),
 
                                           Container(
@@ -735,19 +771,17 @@ class _PageTask extends State<PageTask> {
                                                     // 見ているタスクを引用してリスケを希望
                                                     // 辞書に追加
                                                     items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
-                                                        ? addMessage(item[index]['user'], true, '進捗どうですか？？？？？？？', false, 0, 0, true, index, false)
-                                                        : addMessage(item[index]['user'], true, 'できました！！！！！！！', false, 0, 0, true, index, false);
+                                                        ? addMessage(items.karioki,'進捗どうですか？？？？？？？', 0, 0, 5,item[index]['roomid'])
+                                                        : addMessage(items.karioki, 'できました！！！！！！！', 3, 0, 0, item[index]['roomid']);
 
                                                     if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
 
-                                                    // タスクの状態を変更
-                                                    item[index]['bool'] = true;
                                                     // ページ遷移
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) => PageMassages(
-                                                                messenger: item[index]['user'],
+                                                                messenger: item[index]['roomid'],
                                                               )),
                                                     ).then((value) {
                                                       //戻ってきたら再描画
@@ -776,24 +810,33 @@ class _PageTask extends State<PageTask> {
                                                 // リスケおねがいします、、ボタン
                                                 InkWell(
                                                   onTap: () {
+                                                    // 建設予定
+                                                    DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
+                                                      setState(() {
+                                                        items.limitTime = date;
+                                                        please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
+                                                      });
+                                                    }, currentTime: DateTime.now(), locale: LocaleType.jp);
+
                                                     // 見ているタスクを引用してリスケを希望
                                                     // 辞書に追加
-                                                    addMessage(item[index]['user'], true, 'リスケお願いします', false, 0, 0, true, index, false);
+                                                    addMessage(items.karioki, 'リスケお願いします', 3, 0, 2, item[index]['roomid']);
                                                     items.indexBool = false;
-                                                    // ページ遷移
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => PageMassages(
-                                                                messenger: item[index]['user'],
-                                                              )),
-                                                    ).then((value) {
-                                                      //戻ってきたら再描画
 
-                                                      setState(() {
-                                                        Navigator.pop(context);
-                                                      });
-                                                    });
+                                                    // // ページ遷移
+                                                    // Navigator.push(
+                                                    //   context,
+                                                    //   MaterialPageRoute(
+                                                    //       builder: (context) => PageMassages(
+                                                    //             messenger: item[index]['user'],
+                                                    //           )),
+                                                    // ).then((value) {
+                                                    //   //戻ってきたら再描画
+
+                                                    //   setState(() {
+                                                    //     Navigator.pop(context);
+                                                    //   });
+                                                    // });
                                                   },
                                                   child: Container(
                                                     width: _screenSizeWidth * 0.275,
@@ -843,7 +886,7 @@ class _PageTask extends State<PageTask> {
                           height: _screenSizeHeight * 0.1,
                           alignment: const Alignment(0.0, 0.0), //真ん中に配置
                           padding: EdgeInsets.all(_screenSizeWidth * 0.025),
-                          child: CustomText(text: '${item[index]['month']}\n${item[index]['day']}', fontSize: _screenSizeWidth * 0.055, color: Constant.blackGlay),
+                          child: CustomText(text: '${item[index]['limit'].month}\n${item[index]['limit'].day}', fontSize: _screenSizeWidth * 0.055, color: Constant.blackGlay),
                         ),
                         SizedBox(
                           width: _screenSizeWidth * 0.01,
@@ -855,15 +898,15 @@ class _PageTask extends State<PageTask> {
                               Container(
                                   width: _screenSizeWidth * 0.625,
                                   alignment: Alignment.centerLeft,
-                                  child: CustomText(text: '${item[index]['limitTime']}まで\n-------------------------------', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                                  child: CustomText(text: '${item[index]['limit'].hour}:${item[index]['limit'].minute}まで\n-------------------------------', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
                               Container(
                                   width: _screenSizeWidth * 0.625,
                                   alignment: Alignment.centerLeft,
-                                  child: CustomText(text: item[index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                                  child: CustomText(text: item[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
                             ]))
                       ])),
                 ))
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }

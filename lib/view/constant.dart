@@ -37,91 +37,51 @@ class CustomText extends StatelessWidget {
   }
 }
 
-// dialog表示用クラス
-class dialog extends StatefulWidget {
-  // 箱のサイズ
-  double screenSizeWidth;
-  double screenSizeHeight;
-  // paddingの有無
-  bool pabool;
-
-  // 中身のサイズ
-  double widthin;
-  double heightin;
-
-  Widget widget;
-  dialog({Key? key, required this.screenSizeWidth, required this.screenSizeHeight, required this.widget, required this.pabool, required this.widthin, required this.heightin});
-
-  @override
-  _dialog createState() => _dialog();
-}
-
-class _dialog extends State<dialog> {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        elevation: 0.0, // ダイアログの影を削除
-        backgroundColor: Constant.white.withOpacity(0), // 背景色
-
-        content: Container(
-            width: widget.screenSizeWidth * widget.widthin,
-            height: widget.screenSizeHeight * widget.heightin,
-            decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-            padding: widget.pabool
-                ? EdgeInsets.only(
-                    left: widget.screenSizeWidth * 0.03,
-                    right: widget.screenSizeWidth * 0.03,
-                    top: widget.screenSizeWidth * 0.05,
-                  )
-                : EdgeInsets.all(0),
-            child: widget.widget));
-  }
-}
-
 // 辞書に追加するメソッド
-void addMessage(String messenger, bool messagebool, String message, bool StampBool, int stamp, int level, bool indexBool, int index, bool whose) {
-  // 現在時刻を保存する変数
-  DateTime now = DateTime.now();
-  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-  String formattedTime = DateFormat.Hm().format(now);
+void addMessage(
+  int msgid,
+  String message,
+  int status,
+  int index,
+  int level,
+  String chatRoom
+) {
 
   // 辞書に追加
-  var newMessage = {
-    'sendDay': formattedDate,
-    'sendTime': formattedTime,
-    'messagebool': messagebool,
-    'message': message,
-    'stampBool': StampBool,
-    'stamp': stamp,
-    'level': level,
-    'indexBool': indexBool,
-    'index': index,
-    'whose': whose,
+  Map<String,Object> newMessage = {
+    'msgid': msgid, 
+    'time': DateTime.now(),
+    'message': message, 
+    'status': status, 
+    'index': index, 
+    'level':level,
+    'sender':items.userInfo['userid'],
+    'chatRoom':chatRoom
+     
   };
-  items.message[messenger].add(newMessage);
+  items.message[chatRoom].add(newMessage);
 }
 
 // タスクを辞書に追加するメソッド
-void addTask(String user, String worker, String task, String limitMonth, String limitDay, String limit, String limitTime, String taskRoomIndex) {
+void addTask(String user, String worker, String task, DateTime limitTime, String taskRoomIndex) {
   // 辞書に追加
   var newtask = {
     'user': user,
     'worker': worker,
     'task': task,
-    'day': limitMonth,
-    'month': limitDay,
-    'limitDay': limit,
-    'limitTime': limitTime,
+    'day': limitTime.day,
+    'month': limitTime.month,
+    'limitDay': limitTime.day,
+    'limitTime': '${limitTime.hour}時${limitTime.minute}分',
     'level': 3,
     'bool': false,
     'taskIndex': 0,
     'roomid': taskRoomIndex
   };
+
+  // 事故発生中
   items.room[taskRoomIndex]['tasks'].add(newtask);
-  items.taskList['id'].add(newtask);
+  items.taskList.add(newtask);
 }
 
 // ルームIDチェッカー

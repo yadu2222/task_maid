@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_maid/view/Atoms.dart';
+import 'package:task_maid/view/Molecules.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database_helper.dart';
@@ -30,6 +30,7 @@ class _PageMassages extends State<PageMassages> {
   String message = '';
   int level = 0;
   bool whose = false;
+  int status = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +55,9 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    Atoms.PageTitle(context, messenger),
+                    Molecules.PageTitle(context, items.room[messenger]['roomName']),
                     // メッセージ部分
-                    Container(width: _screenSizeWidth * 0.9, height: _screenSizeHeight * 0.8, child: messageList(items.message['$messenger'])),
+                    Container(width: _screenSizeWidth * 0.9, height: _screenSizeHeight * 0.8, child: messageList(items.message[messenger])),
                   ]),
                 ),
 
@@ -91,7 +92,7 @@ class _PageMassages extends State<PageMassages> {
                                                   icon: Icon(Icons.close),
                                                   color: Constant.blackGlay,
                                                 ),
-                                                CustomText(text: items.taskList['id'][items.taskIndex]['task'], fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)
+                                                CustomText(text: items.taskList[items.taskIndex]['contents'], fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)
                                               ],
                                             ),
                                           )
@@ -146,7 +147,7 @@ class _PageMassages extends State<PageMassages> {
                                                                       width: _screenSizeWidth * 0.6,
                                                                       height: _screenSizeHeight * 0.35,
                                                                       // タスク選択処理
-                                                                      child: taskList(items.taskList['id'])),
+                                                                      child: taskList(items.taskList)),
                                                                 ],
                                                               ),
                                                             )
@@ -164,7 +165,7 @@ class _PageMassages extends State<PageMassages> {
                                           ),
                                           onPressed: () {
                                             //
-                                            items.stamplist = true;
+                                            items.stamplist = !items.stamplist;
                                             setState(() {});
                                           },
                                         ),
@@ -211,7 +212,8 @@ class _PageMassages extends State<PageMassages> {
                                               FocusScope.of(context).unfocus(); //キーボードを閉じる
 
                                               // メッセージ追加メソッド呼び出し
-                                              addMessage(messenger, true, message, false, 0, 5, items.indexBool, items.taskIndex, false);
+                                              // 怒りレベル建設予定地
+                                              addMessage(items.karioki, message, status, items.taskIndex, 0, messenger);
                                               // 入力フォームの初期化
                                               _messageController.clear();
                                               items.indexBool = false;
@@ -310,26 +312,27 @@ class _PageMassages extends State<PageMassages> {
             child: Container(
                 width: screenSizeWidth,
                 // 相手のメッセージならば左 自分のメッセージなら右に寄せて表示
-                alignment: messages[index]['whose'] ? Alignment.centerLeft : Alignment.centerRight,
+                alignment: messages[index]['sender'] != items.userInfo['userid'] ? Alignment.centerLeft : Alignment.centerRight,
                 margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
                 child: Column(children: [
                   Container(
                       width: screenSizeWidth * 0.5,
-                      padding: messages[index]['messagebool']
+                      padding: messages[index]['status'] != 2
                           ? EdgeInsets.only(top: screenSizeWidth * 0.035, left: screenSizeWidth * 0.035, right: screenSizeWidth * 0.035, bottom: screenSizeWidth * 0.03)
                           : EdgeInsets.all(0),
                       decoration: BoxDecoration(
-                        color: messages[index]['messagebool'] ? Constant.glay : Constant.glay.withOpacity(0),
+                        color: messages[index]['status'] == 0 || messages[index]['status'] == 1 || messages[index]['status'] == 3 ? Constant.glay : Constant.glay.withOpacity(0),
                         borderRadius: BorderRadius.circular(10), // 角丸
                       ),
 
                       // 文章部分
-                      child: messages[index]['messagebool']
+                      child: messages[index]['status'] != 2
                           ? Column(children: [
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: CustomText(
-                                      text: '${messages[index]['sendDay']}\t${messages[index]['sendTime']}\n----------------------------',
+                                      text:
+                                          '${messages[index]['time'].month}.${messages[index]['time'].day}\t${messages[index]['time'].hour}:${messages[index]['time'].minute}\n----------------------------',
                                       fontSize: screenSizeWidth * 0.035,
                                       color: Constant.blackGlay)),
                               Container(
@@ -341,7 +344,7 @@ class _PageMassages extends State<PageMassages> {
                                       color: messages[index]['message'] == 'リスケお願いします' ? Constant.red : Constant.blackGlay)),
 
                               // 引用するタスク部分
-                              messages[index]['indexBool']
+                              messages[index]['status'] == 1
                                   ? Container(
                                       // 引用してるか否かを判定
                                       child: Container(
@@ -365,8 +368,7 @@ class _PageMassages extends State<PageMassages> {
                                                     child: Column(children: [
                                                       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                         CustomText(
-                                                            text:
-                                                                '期限：${items.taskList['id'][messages[index]['index']]['limitDay']}\t${items.taskList['id'][messages[index]['index']]['limitTime']}\n---------------------',
+                                                            text: '期限：${items.taskList[messages[index]['index']]['limit']}\n---------------------',
                                                             fontSize: screenSizeWidth * 0.0325,
                                                             color: Constant.blackGlay),
                                                       ]),
@@ -375,10 +377,10 @@ class _PageMassages extends State<PageMassages> {
                                                       ),
 
                                                       // タスク内容の表示
-                                                      CustomText(text: items.taskList['id'][messages[index]['index']]['task'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                                      CustomText(text: items.taskList[messages[index]['index']]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
                                                     ])),
 
-                                                messages[index]['whose']
+                                                messages[index]['sender'] != items.userInfo['name']
                                                     ? Container(
                                                         alignment: const Alignment(0.0, 0.0),
                                                         margin: EdgeInsets.all(screenSizeWidth * 0.03),
@@ -387,7 +389,7 @@ class _PageMassages extends State<PageMassages> {
                                                           InkWell(
                                                             onTap: () {
                                                               // メッセージ追加
-                                                              addMessage(messenger, true, '順調です！', false, 0, 0, true, messages[index]['index'], false);
+                                                              addMessage(items.karioki, '順調です！', 1, messages[index]['index'], 0, messenger);
                                                               items.indexBool = false;
                                                               // 再読み込みとスクロール
                                                               setState(() {
@@ -418,7 +420,7 @@ class _PageMassages extends State<PageMassages> {
                                                           InkWell(
                                                             onTap: () {
                                                               // メッセージ追加
-                                                              addMessage(messenger, true, 'リスケお願いします', false, 0, 0, true, messages[index]['index'], false);
+                                                              addMessage(items.karioki, 'リスケお願いします', 1, messages[index]['index'], 0, messenger);
                                                               items.indexBool = false;
                                                               // 再読み込みとスクロール
                                                               setState(() {
@@ -459,13 +461,13 @@ class _PageMassages extends State<PageMassages> {
                   // スタンプの表示
                   Container(
                     // そもスタンプを選択しているかの判定
-                    child: messages[index]['stampBool']
+                    child: messages[index]['status'] == 2
                         ? Container(
                             width: screenSizeWidth * 0.5,
                             height: screenSizeWidth * 0.5,
                             margin: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                             child: Image.asset(
-                              items.taskMaid['stamp'][messages[index]['stamp']],
+                              items.taskMaid['stamp'][messages[index]['index']],
                               fit: BoxFit.contain,
                             ))
                         : const SizedBox(
@@ -478,17 +480,19 @@ class _PageMassages extends State<PageMassages> {
     );
   }
 
-  // スタンプの表示
+  // スタンプ選択の表示
   Widget stampPicture(int picture) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     return InkWell(
         onTap: () {
           items.stampIndex = picture;
-          addMessage(messenger, false, '', true, items.stampIndex, 0, false, 0, false);
+          status = 2;
+          addMessage(items.karioki, '', status, items.stampIndex, 0, messenger);
           setState(() {
+            // ステータス書き換え
             items.stamplist = false;
-
+            status = 0;
             void reloadWidgetTree() {
               _scaffoldKey.currentState?.reassemble();
             }
@@ -513,7 +517,7 @@ class _PageMassages extends State<PageMassages> {
         ));
   }
 
-  // スタンプ表示の繰り返し
+  // スタンプ選択表示の繰り返し
   Widget stampPictures() {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
@@ -563,6 +567,7 @@ class _PageMassages extends State<PageMassages> {
                   onTap: () {
                     // 引用中に変更
                     setState(() {
+                      status = 1;
                       items.indexBool = true;
                       // この変数がどこの子なのかわからない、、
                       // items.taskIndex = quoteIndex;
@@ -586,7 +591,7 @@ class _PageMassages extends State<PageMassages> {
                   ),
                 ))
             // falseなら空の箱を返す
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }

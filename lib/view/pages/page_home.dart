@@ -4,7 +4,7 @@ import '../items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_massage.dart';
-import '../Atoms.dart';
+import '../Molecules.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -43,21 +43,21 @@ class _PageHomeState extends State<PageHome> {
                             children: [
                               //メール
                               // Componentsless.PageShiftIcon(functionIcon: Icons.mail_outline, widget:const PageMail()),
-                              Atoms.PageShiftIcon(
+                              Molecules.PageShiftIcon(
                                 context,
                                 Icons.mail_outline,
                                 PageMail(),
                               ),
 
                               //タスク
-                              Atoms.PageShiftIcon(
+                              Molecules.PageShiftIcon(
                                 context,
                                 Icons.check_box,
                                 PageTask(roomNum: '1111'),
                               ),
 
                               //設定
-                              Atoms.PageShiftIcon(
+                              Molecules.PageShiftIcon(
                                 context,
                                 Icons.settings,
                                 PageSetting(),
@@ -72,7 +72,6 @@ class _PageHomeState extends State<PageHome> {
                       child: Stack(children: <Widget>[
                         // Row(
                         //   children: [
-
                         //右半分 メイドさんの立ち絵
                         Align(
                           alignment: Alignment.bottomRight,
@@ -126,7 +125,7 @@ class _PageHomeState extends State<PageHome> {
                                     borderRadius: BorderRadius.circular(10), // 角丸
                                   ),
                                   // ループ
-                                  child: _taskList(_screenSizeWidth))
+                                  child: _taskList())
                             ])),
                       ]))
                 ],
@@ -138,13 +137,17 @@ class _PageHomeState extends State<PageHome> {
 
   // task_listの繰り返し処理
   // これで全部かきなおします、、、、
-  Widget _taskList(var _screenSizeWidth) {
+  Widget _taskList() {
+     //画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.taskList['id'].length,
+      itemCount: items.taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return !items.taskList['id'][index]['bool']
+        return items.taskList[index]['status'] == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
@@ -156,24 +159,30 @@ class _PageHomeState extends State<PageHome> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => PageTask(
-                                roomNum: items.taskList['id'][index]['roomid'],
+                                roomNum: items.taskList[index]['roomid'],
                               )),
                     ).then((value) {
                       // 戻ってきたら再描画
                       setState(() {});
                     });
                   },
-                  child: Container(
-                      // width: _screenSizeWidth * 0.3,
-                      padding: EdgeInsets.all(_screenSizeWidth * 0.04),
-                      margin: EdgeInsets.only(left: _screenSizeWidth * 0.025, right: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.01),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: screenSizeHeight * 0.07
+                    ),
+                    child:  Container(
+                      width: screenSizeWidth * 0.3,
+                      
+                      padding: EdgeInsets.all(screenSizeWidth * 0.04),
+                      margin: EdgeInsets.only(left: screenSizeWidth * 0.025, right: screenSizeWidth * 0.025, bottom: screenSizeWidth * 0.01),
                       alignment: const Alignment(0.0, 0.0),
-                      // boxに下線
                       decoration: BoxDecoration(
                         color: Constant.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: CustomText(text: items.taskList['id'][index]['task'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                      child: CustomText(text: items.taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),)
+                  
+                 
                 ))
             : SizedBox.shrink();
       },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
-import '../Atoms.dart';
+import '../Molecules.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -29,8 +29,8 @@ class _PageMail extends State<PageMail> {
         child: Column(
           children: [
             // バー部分
-            Atoms.PageTitle(context, 'メッセージ'),
-            Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages(_screenSizeWidth, _screenSizeHeight))
+            Molecules.PageTitle(context, 'メッセージ'),
+            Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),
       ),
@@ -38,7 +38,10 @@ class _PageMail extends State<PageMail> {
   }
 
   // トークルームの繰り返し処理
-  Widget _messages(var _screenSizeWidth, var _screenSizeHeight) {
+  Widget _messages() {
+        //画面サイズ
+    var _screenSizeWidth = MediaQuery.of(context).size.width;
+    var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: items.sender['sender'].length,
@@ -54,7 +57,7 @@ class _PageMail extends State<PageMail> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messenger: items.sender['sender'][index],
+                          messenger: items.sender['sender'][index].toString(),
                         )),
               ).then((value) {
                 //戻ってきたら再描画
@@ -80,7 +83,7 @@ class _PageMail extends State<PageMail> {
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
-                      child: CustomText(text: items.sender['sender'][index], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                      child: CustomText(text: items.sender['sender'][index].toString(), fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                     ),
                     Container(
                         width: _screenSizeWidth * 0.7,

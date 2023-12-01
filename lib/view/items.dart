@@ -6,6 +6,7 @@ class items {
 
   static Map<String, dynamic> friend = {
     '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
+    '23456': {'name': 'せろり', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
     '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
   };
 
@@ -56,72 +57,36 @@ class items {
 
   // タスクを追加するときに値を保存する変数
   static String worker = '';
-  static String limitMonth = '';
-  static String limitDay = '';
-  static String limit = '${limitMonth}-${limitDay}';
-  static String limitTime = '0000';
   static String newtask = '0000';
+  static DateTime limitTime = DateTime.now();
 
   // でーたべーすから自分でとってくるようにしないといけないんだろうなあとおもっているなう
   //タスクリスト
-  static Map taskList = {
-    'id': [
-      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
-      {'user': 'せろり', 'worker': 'おさかな', 'task': 'webソケット', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
-      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
-      {'user': 'おさかな', 'worker': 'おさかな', 'task': 'でーたべーす', 'month': '09', 'day': '23', 'limitDay': '09-23', 'limitTime': '10:25', 'level': 3, 'bool': false, 'taskIndex': 0, 'roomid': '1234'},
-      //  誰からか　タスクの内容　残り日数　残り時間　優先度　進捗状況
-    ]
+  static List taskList = [
+    {
+      'taskid': '123456654',
+      'limit': DateTime.now(),
+      'leader': 12345,
+      'worker': 12345,
+      'contents': 'でーたべーすどうにかしろ',
+      'roomid': '1234',
+      'status': 0,
+    }
+  ];
+
+  static int karioki = 1234565;
+
+  static Map sender = {
+    'sender': [1234]
   };
 
-  static Map sender = {'sender': [
-    'せろり',
-    'おさかな'
-  ]};
-
   static Map message = {
-      // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
-      // idに、すべきや、、、！！！
-      'せろり': [
-        {
-          'sendDay': '2023-9-25',
-          'sendTime': '12:03',
-          'messagebool': true,
-          'message': '進捗いかがですか？',
-          'stampBool': false,
-          'stamp': 0,
-          'level': 5,
-          'indexBool': true,
-          'index': 1,
-          'whose': true,
-        },
-        {
-          'sendDay': '2023-9-25',
-          'sendTime': '12:03',
-          'messagebool': true,
-          'message': 'ぜんぜんだめです',
-          'stampBool': true,
-          'stamp': 0,
-          'level': 5,
-          'indexBool': true,
-          'index': 1,
-          'whose': false,
-        },
-      ],
-      'おさかな': [
-        {
-          'sendDay': '2023-9-25',
-          'sendTime': '12:03',
-          'messagebool': true,
-          'message': 'なうすすんでますか？',
-          'stampBool': false,
-          'stamp': 0,
-          'level': 5,
-          'indexBool': false,
-          'index': 0,
-          'whose': true,
-        }
-      ]
+    // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
+    // idに、すべきや、、、！！！
+    '1234': [
+      {'msgid': 1234556, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'chatRoom': '1234'},
+      {'msgid': 1234553, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '12345', 'chatRoom': '1234'},
+    ],
   };
 
   // メッセージ
@@ -160,7 +125,7 @@ class items {
   Widget _test_taskList(var _screenSizeWidth) {
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.taskList['id'].length,
+      itemCount: items.taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(color: Constant.glay, elevation: 0, child: SizedBox());
