@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/page_home.dart';
+import 'items.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -22,8 +23,10 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  
   @override
   Widget build(BuildContext context) {
+    items.Nums();
     return Scaffold(
       body: PageHome(),
     );

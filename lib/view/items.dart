@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'constant.dart';
+import 'package:task_maid/database_helper.dart';
 
 class items {
-  static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'userTask': taskList, 'message': message, 'myroom': myroom};
+  static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'tasks': taskList, 'rooms': myroom, 'mail': ''};
 
   static Map<String, dynamic> friend = {
     '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
@@ -10,9 +11,7 @@ class items {
     '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
   };
 
-  static Map myroom = {
-    'myroomID': ['1111', '1234', '2345']
-  };
+  static List myroom = ['1111', '1234', '2345'];
 
   // ルーム
   static Map room = {
@@ -51,36 +50,37 @@ class items {
   static String newtask = '0000';
   static DateTime limitTime = DateTime.now();
 
-  // でーたべーすから自分でとってくるようにしないといけないんだろうなあとおもっているなう
+  // db用テーブル名まとめ
+  static List table = ['userAccount', 'rooms', 'tasks', 'msgchats'];
+
   //タスクリスト
-  static List taskList = [
-    {
-      'taskid': '123456654',
-      'limit': DateTime.now(),
-      'leader': 12345,
-      'worker': 12345,
-      'contents': 'でーたべーすどうにかしろ',
-      'roomid': '1234',
-      'status': 0,
-    }
-  ];
+  // dbからデータの取得
+  static List taskList = [];
+  static Map userAccount = {};
+  static List rooms = [];
+  static List message = [];
+
+  static void Nums() async {
+    taskList = await DatabaseHelper.queryAllRows('tasks');
+    // print(taskList);
+    message = await DatabaseHelper.queryAllRows('msgchats');
+    // print(msgchats);
+  }
 
   static int karioki = 1234565;
 
   static Map sender = {
-    'sender': [1234]
+    'sender': ['1234']
   };
 
   static DateTime now = DateTime.now();
 
-  static Map message = {
-    // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
-    // idに、すべきや、、、！！！
-    '1234': [
-      {'msgid': 1234556, 'time': now.subtract(Duration(days: 1)), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'chatRoom': '1234'},
-      {'msgid': 1234553, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '12345', 'chatRoom': '1234'},
-    ],
-  };
+  // static List message = [
+  //   // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
+  //   // idに、すべきや、、、！！！
+  //     {'msgid': 1234556, 'time': now.subtract(Duration(days: 1)), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'roomid': '1234'},
+  //     {'msgid': 1234553, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '12345', 'roomid': '1234'},
+  //   ];
 
   // メッセージ
   static Map<String, dynamic> leaderWord = {

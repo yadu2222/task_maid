@@ -70,7 +70,7 @@ class DatabaseHelper {
       mail TEXT,
       name TEXT,
       tasks  text,
-      rooms text,
+      rooms text
     )
   ''');
 
@@ -89,60 +89,101 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE tasks (
       taskid INTEGER PRIMARY KEY,
-      limit DATETIME NOT NULL,
+      limitTime text NOT NULL,
       leaders integer,
       worker integer,
       contents text,
+      roomid text,
+      status integer
     )
   ''');
 
     // メッセージを管理するためのテーブル
     await db.execute('''
   CREATE TABLE msgchats (
-    msgid integer,
-    roomid integer,
-    time datetime,
-    sender integer,
-    receiver integer,
+    msgid integer PRIMARY KEY,
+    roomid text,
+    time text,
+    sender text,
     level integer,
     status integer,
-    msg text 
+    message text,
+    quote integer
   )
 ''');
   }
 
   // 登録処理
   // 引数：table名、追加するmap
-  Future<int> insert(String tableName, Map<String, dynamic> row) async {
+  static Future<int> insert(String tableName, Map<String, dynamic> row) async {
     Database? db = await instance.database;
     return await db!.insert(tableName, row);
   }
 
   // 照会処理
   // 引数：table名
-  Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
+  static Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
     Database? db = await instance.database;
-    return await db!.query(tableName);
+    return await db!.rawQuery("select * from ${tableName}");
   }
 
-  // レコード数を確認
+  static Future<List> getTasks() async {
+    Database? db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db!.rawQuery("select * from tasks");
+    return List.generate(
+      maps.length,
+      (index) {
+        return (
+          taskid: maps[index]['taskid'],
+          limitTime: DateTime.parse(maps[index]['limitTime']),
+          leaders: maps[index]['leaders'],
+          woker: maps[index]['worker'],
+          contents: maps[index]['contents'],
+          roomid: maps[index]['roomid'],
+          status: maps[index]['status']
+        );
+      },
+    );
+  }
+
+  // レコード数を確認t
   // 引数：table名
-  Future<int?> queryRowCount(String tableName) async {
+  static Future<int?> queryRowCount(String tableName) async {
     Database? db = await instance.database;
     return Sqflite.firstIntValue(await db!.rawQuery('SELECT COUNT(*) FROM $tableName'));
   }
 
   // 更新処理
   // 引数：table名、更新後のmap、検索キー
-  Future<int> update(String tableName, String colum, Map<String, dynamic> row, int id) async {
+  static Future<int> update(String tableName, String colum, Map<String, dynamic> row, int id) async {
     Database? db = await instance.database;
     return await db!.update(tableName, row, where: '$colum = ?', whereArgs: [id]);
   }
 
   // 削除処理
   // 引数：table名、更新後のmap、検索キー
-  Future<int> delete(String tableName, String colum, int id) async {
+  static Future<int> delete(String tableName, String colum, int id) async {
     Database? db = await instance.database;
     return await db!.delete(tableName, where: '$colum = ?', whereArgs: [id]);
   }
+}
+
+class Task {
+  final int taskid;
+  final DateTime limitTime;
+  final String leaders;
+  final String worker;
+  final String contents;
+  final String roomid;
+  final int status;
+
+  Task({
+    required this.taskid,
+    required this.limitTime,
+    required this.leaders,
+    required this.worker,
+    required this.contents,
+    required this.roomid,
+    required this.status,
+  });
 }

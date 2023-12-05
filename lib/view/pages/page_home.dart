@@ -14,8 +14,58 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  // task_listの繰り返し処理
+  // これで全部かきなおします、、、、
+  Widget _taskList(List taskList) {
+    //画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+
+    return ListView.builder(
+      // indexの作成 widgetが表示される数
+      itemCount: taskList.length,
+      itemBuilder: (context, index) {
+        // 繰り返し描画されるwidget
+        return taskList[index]['status'] == 0
+            ? Card(
+                color: Constant.glay,
+                elevation: 0,
+                child: InkWell(
+                    onTap: () {
+                      // ページ遷移
+                      // 建設予定 選択したタスクのルームに自動遷移
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PageTask(
+                                  roomNum: taskList[index]['roomid'],
+                                )),
+                      ).then((value) {
+                        // 戻ってきたら再描画
+                        setState(() {});
+                      });
+                    },
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: screenSizeHeight * 0.07),
+                      child: Container(
+                          width: screenSizeWidth * 0.3,
+                          padding: EdgeInsets.all(screenSizeWidth * 0.04),
+                          margin: EdgeInsets.only(left: screenSizeWidth * 0.025, right: screenSizeWidth * 0.025, bottom: screenSizeWidth * 0.01),
+                          alignment: const Alignment(0.0, 0.0),
+                          decoration: BoxDecoration(
+                            color: Constant.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                    )))
+            : SizedBox.shrink();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    items.Nums();
     // 画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
@@ -125,7 +175,7 @@ class _PageHomeState extends State<PageHome> {
                                     borderRadius: BorderRadius.circular(10), // 角丸
                                   ),
                                   // ループ
-                                  child: _taskList())
+                                  child: _taskList(items.taskList))
                             ])),
                       ]))
                 ],
@@ -133,59 +183,5 @@ class _PageHomeState extends State<PageHome> {
             ])),
       ),
     ));
-  }
-
-  // task_listの繰り返し処理
-  // これで全部かきなおします、、、、
-  Widget _taskList() {
-     //画面サイズ
-    var screenSizeWidth = MediaQuery.of(context).size.width;
-    var screenSizeHeight = MediaQuery.of(context).size.height;
-
-    return ListView.builder(
-      // indexの作成 widgetが表示される数
-      itemCount: items.taskList.length,
-      itemBuilder: (context, index) {
-        // 繰り返し描画されるwidget
-        return items.taskList[index]['status'] == 0
-            ? Card(
-                color: Constant.glay,
-                elevation: 0,
-                child: InkWell(
-                  onTap: () {
-                    // ページ遷移
-                    // 建設予定 選択したタスクのルームに自動遷移
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PageTask(
-                                roomNum: items.taskList[index]['roomid'],
-                              )),
-                    ).then((value) {
-                      // 戻ってきたら再描画
-                      setState(() {});
-                    });
-                  },
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: screenSizeHeight * 0.07
-                    ),
-                    child:  Container(
-                      width: screenSizeWidth * 0.3,
-                      
-                      padding: EdgeInsets.all(screenSizeWidth * 0.04),
-                      margin: EdgeInsets.only(left: screenSizeWidth * 0.025, right: screenSizeWidth * 0.025, bottom: screenSizeWidth * 0.01),
-                      alignment: const Alignment(0.0, 0.0),
-                      decoration: BoxDecoration(
-                        color: Constant.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: CustomText(text: items.taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),)
-                  
-                 
-                ))
-            : SizedBox.shrink();
-      },
-    );
   }
 }

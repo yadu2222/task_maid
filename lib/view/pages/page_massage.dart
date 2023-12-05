@@ -12,39 +12,14 @@ class PageMail extends StatefulWidget {
 }
 
 class _PageMail extends State<PageMail> {
-  @override
-  Widget build(BuildContext context) {
-    //画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
-
-    return Scaffold(
-        body: Center(
-            child: Container(
-      width: _screenSizeWidth,
-      height: _screenSizeHeight,
-      decoration: BoxDecoration(color: Constant.main),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // バー部分
-            Molecules.PageTitle(context, 'メッセージ'),
-            Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
-          ],
-        ),
-      ),
-    )));
-  }
-
   // トークルームの繰り返し処理
   Widget _messages() {
-        //画面サイズ
+    //画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.sender['sender'].length,
+      itemCount: items.myroom.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(
@@ -57,7 +32,7 @@ class _PageMail extends State<PageMail> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messenger: items.sender['sender'][index].toString(),
+                          messenger: items.myroom[index],
                         )),
               ).then((value) {
                 //戻ってきたら再描画
@@ -83,7 +58,7 @@ class _PageMail extends State<PageMail> {
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
-                      child: CustomText(text: items.sender['sender'][index].toString(), fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                      child: CustomText(text: items.room[items.myroom[index]]['roomName'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                     ),
                     Container(
                         width: _screenSizeWidth * 0.7,
@@ -99,5 +74,31 @@ class _PageMail extends State<PageMail> {
         );
       },
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    //画面サイズ
+    var _screenSizeWidth = MediaQuery.of(context).size.width;
+    var _screenSizeHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+        body: Center(
+            child: Container(
+      width: _screenSizeWidth,
+      height: _screenSizeHeight,
+      decoration: BoxDecoration(color: Constant.main),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // バー部分
+            Molecules.PageTitle(context, 'メッセージ'),
+            Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
+          ],
+        ),
+      ),
+    )));
   }
 }

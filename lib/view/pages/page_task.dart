@@ -4,6 +4,7 @@ import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
 import '../Molecules.dart';
+import 'package:task_maid/database_helper.dart';
 
 class PageTask extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
@@ -54,13 +55,287 @@ class _PageTask extends State<PageTask> {
   static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
   static String dateText = '期日を入力してね';
   static String please = 'リスケしてほしい日付を入力してね';
+  static int karioki2 = 1239;
+  
 
   // 初期化メソッド
   @override
   void initState() {
     super.initState();
+    items.Nums();
     // インスタンスメンバーを初期化
     taskRoomIndex = widget.roomNum;
+  }
+
+
+
+  // サイドバー
+  Widget sideBar() {
+    return Drawer(
+      // 変更箇所
+      child: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text("ルームマップ"),
+            onTap: () {
+              // ここにメニュータップ時の処理を記述
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text("メンバー"),
+            onTap: () {
+              // ここにメニュータップ時の処理を記述
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.login),
+            title: const Text("サブルームの追加"),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text("権限の編集"),
+            onTap: () {},
+          )
+        ],
+      ),
+    );
+  }
+
+  // タスク表示の処理
+  Widget taskList(List taskList) {
+    //画面サイズ
+    var _screenSizeWidth = MediaQuery.of(context).size.width;
+    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    return ListView.builder(
+      // indexの作成 widgetが表示される数
+      itemCount: taskList.length,
+      itemBuilder: (context, index) {
+        // 繰り返し描画されるwidget
+        return taskList[index]['status'] == 0 && taskList[index]['roomid'] == taskRoomIndex
+            ? Card(
+                color: Constant.glay.withAlpha(0),
+                elevation: 0,
+                child: // タスクの状態を判定して表示
+                    InkWell(
+                  onTap: () {
+                    // 詳細ダイアログ表示
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                // side: const BorderSide(
+                                //   color: Constant.sub3, width: 5, // ダイアログの形状を変更
+                                // ),
+                              ),
+                              elevation: 0.0, // ダイアログの影を削除
+                              backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+                              content: Container(
+                                width: _screenSizeWidth * 0.8,
+                                height: _screenSizeHeight * 0.465,
+                                decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                child: Column(
+                                  children: [
+                                    // タスク内容表示
+                                    Container(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                              width: _screenSizeWidth * 0.4,
+                                              height: _screenSizeHeight * 0.05,
+                                              alignment: const Alignment(0.0, 0.0),
+                                              margin: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.02),
+                                              child: CustomText(text: "詳細", fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay)),
+
+                                          // 箱の中身
+                                          Container(
+                                              width: _screenSizeWidth * 0.6,
+                                              height: _screenSizeHeight * 0.2,
+                                              padding: EdgeInsets.all(_screenSizeWidth * 0.05),
+                                              alignment: const Alignment(0.0, 0.0),
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
+                                              child: Column(children: [
+                                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                  CustomText(
+                                                      text:
+                                                          '依頼者：${taskList[index]['leader']}\n期限：${DateTime.parse(taskList[index]['limitTime']).month}月${DateTime.parse(taskList[index]['limitTime']).day}日${DateTime.parse(taskList[index]['limitTime']).hour}時${DateTime.parse(taskList[index]['limitTime']).minute}分\n-------------------------------',
+                                                      fontSize: _screenSizeWidth * 0.035,
+                                                      color: Constant.blackGlay),
+                                                ]),
+                                                SizedBox(
+                                                  height: _screenSizeHeight * 0.01,
+                                                ),
+
+                                                // タスク内容の表示
+                                                CustomText(text: taskList[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                              ])),
+
+                                          Container(
+                                              alignment: const Alignment(0.0, 0.0),
+                                              margin: EdgeInsets.only(top: _screenSizeHeight * 0.02, left: _screenSizeWidth * 0.03, bottom: _screenSizeHeight * 0.0225
+                                                  //right: _screenSizeWidth * 0.05,
+                                                  ),
+                                              padding: EdgeInsets.only(left: _screenSizeWidth * 0.02, right: _screenSizeWidth * 0.02),
+                                              child: Row(children: [
+                                                // できました！！ボタン
+                                                InkWell(
+                                                  onTap: () {
+                                                    // 見ているタスクを引用してリスケを希望
+                                                    // 辞書に追加
+                                                    karioki2++;
+                                                    items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
+                                                        ? addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5, taskList[index]['roomid'])
+                                                        : addMessage(karioki2, 'できました！！！！！！！', 3, index, 0, taskList[index]['roomid']);
+
+                                                    if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
+
+                                                    // ページ遷移
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => PageMassages(
+                                                                messenger: taskList[index]['roomid'],
+                                                              )),
+                                                    ).then((value) {
+                                                      //戻ってきたら再描画
+                                                      setState(() {
+                                                        Navigator.pop(context);
+                                                      });
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: _screenSizeWidth * 0.275,
+                                                    height: _screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                                                    child: CustomText(
+                                                        text: items.room[taskRoomIndex]['leader'] == items.userInfo['userid'] ? '進捗どう\nですか？？？' : 'できました\n！！！！！！',
+                                                        fontSize: _screenSizeWidth * 0.04,
+                                                        color: Constant.blackGlay),
+                                                  ),
+                                                ),
+
+                                                SizedBox(
+                                                  width: _screenSizeWidth * 0.035,
+                                                ),
+
+                                                // リスケおねがいします、、ボタン
+                                                InkWell(
+                                                  onTap: () {
+                                                    // 建設予定
+                                                    // データの取り出し、決定ボタンを押したら遷移の処理
+                                                    DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
+                                                      setState(() {
+                                                        items.limitTime = date;
+                                                        please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
+                                                      });
+                                                    }, currentTime: DateTime.now(), locale: LocaleType.jp);
+
+                                                    // 見ているタスクを引用してリスケを希望
+                                                    // 辞書に追加
+                                                    karioki2++;
+                                                    addMessage(karioki2, 'リスケお願いします', 3, index, 2, taskList[index]['roomid']);
+                                                    items.indexBool = false;
+
+                                                    // ページ遷移
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => PageMassages(
+                                                                messenger: taskList[index]['roomid'],
+                                                              )),
+                                                    ).then((value) {
+                                                      //戻ってきたら再描画
+
+                                                      setState(() {
+                                                        Navigator.pop(context);
+                                                      });
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: _screenSizeWidth * 0.275,
+                                                    height: _screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    alignment: const Alignment(0.0, 0.0),
+                                                    decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
+                                                    child: CustomText(text: 'リスケお願いします！！！', fontSize: _screenSizeWidth * 0.04, color: Constant.glay),
+                                                  ),
+                                                ),
+                                              ])),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 戻るボタン
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).pop(); //もどる
+                                      },
+                                      child: Container(
+                                        width: _screenSizeWidth * 0.3,
+                                        height: _screenSizeHeight * 0.05,
+                                        alignment: const Alignment(0.0, 0.0),
+                                        margin: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                        decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+                                        child: CustomText(text: "もどる", fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ));
+                        });
+                  },
+                  child: Container(
+                      width: _screenSizeWidth * 0.95,
+                      height: _screenSizeHeight * 0.1,
+                      padding: EdgeInsets.only(right: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
+                      //alignment: const Alignment(0.0, 0.0), //真ん中に配置
+                      decoration: BoxDecoration(
+                        color: Constant.glay,
+                        borderRadius: BorderRadius.circular(10), // 角丸
+                      ),
+                      child: Row(children: [
+                        Container(
+                          width: _screenSizeWidth * 0.15,
+                          height: _screenSizeHeight * 0.1,
+                          alignment: const Alignment(0.0, 0.0), //真ん中に配置
+                          padding: EdgeInsets.all(_screenSizeWidth * 0.025),
+                          child: CustomText(
+                              text: '${DateTime.parse(taskList[index]['limitTime']).month}\n${DateTime.parse(taskList[index]['limitTime']).day}',
+                              fontSize: _screenSizeWidth * 0.055,
+                              color: Constant.blackGlay),
+                        ),
+                        SizedBox(
+                          width: _screenSizeWidth * 0.01,
+                        ),
+                        Container(
+                            width: _screenSizeWidth * 0.5,
+                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.04, bottom: _screenSizeWidth * 0.04),
+                            child: Column(children: [
+                              Container(
+                                  width: _screenSizeWidth * 0.625,
+                                  alignment: Alignment.centerLeft,
+                                  child: CustomText(
+                                      text: '${DateTime.parse(taskList[index]['limitTime']).hour}:${DateTime.parse(taskList[index]['limitTime']).minute}まで\n-------------------------------',
+                                      fontSize: _screenSizeWidth * 0.035,
+                                      color: Constant.blackGlay)),
+                              Container(
+                                  width: _screenSizeWidth * 0.625,
+                                  alignment: Alignment.centerLeft,
+                                  child: CustomText(text: taskList[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                            ]))
+                      ])),
+                ))
+            : const SizedBox.shrink();
+      },
+    );
   }
 
   @override
@@ -197,7 +472,9 @@ class _PageTask extends State<PageTask> {
 
                                                     setState(() {
                                                       // タスクを追加
-                                                      addTask(items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex);
+                                                      karioki2++;
+                                                      addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex, 0);
+                                                      items.Nums();
 
                                                       // 入力フォームの初期化
                                                       dateText = '期日を入力してね';
@@ -406,12 +683,12 @@ class _PageTask extends State<PageTask> {
                                                                                     try {
                                                                                       if (!roomIDcheck(roomID)) {
                                                                                         // 参加した部屋番号を保持
-                                                                                        items.myroom['myroomID'].add(roomID);
+                                                                                        items.myroom.add(roomID);
 
                                                                                         List<Map<String, dynamic>> friendRoomadd = [];
                                                                                         String leaderName = items.friend[items.room[roomID]['leader']]['name']; // 本来はデータベースに問い合わせる
                                                                                         // friendRoomadd[leaderName] = {};
-                                                                                        items.message['sender'][leaderName] = friendRoomadd;
+                                                                                        //  items.message['sender'][leaderName] = friendRoomadd;
                                                                                       }
                                                                                     } catch (e) {
                                                                                       // 今だけ
@@ -470,145 +747,156 @@ class _PageTask extends State<PageTask> {
                                         Container(
                                           width: _screenSizeWidth * 0.7,
                                           height: _screenSizeHeight * 0.35,
-                                          child: ListView(
-                                            children: [
-                                              ...((items.myroom['myroomID'] as List<String>).map<Widget>((roomId) {
-                                                return ListTile(
-                                                  title: InkWell(
-                                                    onTap: () {
-                                                      // 表示する部屋の切り替え
-                                                      setState(() {
-                                                        taskRoomIndex = roomId;
-                                                        Navigator.pop(context); // 前のページに戻る
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      width: _screenSizeWidth * 0.7,
-                                                      height: _screenSizeHeight * 0.05,
-                                                      decoration: BoxDecoration(
-                                                        color: Constant.main,
-                                                        borderRadius: BorderRadius.circular(10),
-                                                      ),
-                                                      alignment: const Alignment(0, 0),
-                                                      child: CustomText(
-                                                        text: items.room[roomId]['roomName'],
-                                                        color: Constant.white,
-                                                        fontSize: _screenSizeWidth * 0.04,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }).toList()),
-
-                                              // 部屋を作成するためのaddボタン
-                                              IconButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context); // 前のページに戻る
-                                                  // ダイアログ表示 ここで部屋を作成
-                                                  // 新規の番号もらってこないとなんですけどどうしましょう
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext context) {
-                                                        return AlertDialog(
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(16.0),
+                                          // 繰り返し表示
+                                          child: ListView.builder(
+                                            itemCount: items.myroom.length + 1,
+                                            itemBuilder: (context, index) {
+                                              return Card(
+                                                  color: Constant.glay.withAlpha(0),
+                                                  elevation: 0,
+                                                  child: index != items.myroom.length
+                                                      ? InkWell(
+                                                          onTap: () {
+                                                            // 表示する部屋の切り替え
+                                                            setState(() {
+                                                              taskRoomIndex = items.myroom[index];
+                                                              Navigator.pop(context); // 前のページに戻る
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            width: _screenSizeWidth * 0.7,
+                                                            height: _screenSizeHeight * 0.05,
+                                                            decoration: BoxDecoration(
+                                                              color: Constant.main,
+                                                              borderRadius: BorderRadius.circular(10),
                                                             ),
-                                                            elevation: 0.0, // ダイアログの影を削除
-                                                            backgroundColor: Constant.white.withOpacity(0), // 背景色
+                                                            alignment: const Alignment(0, 0),
+                                                            child: CustomText(
+                                                              text: items.room[items.myroom[index]]['roomName'],
+                                                              color: Constant.white,
+                                                              fontSize: _screenSizeWidth * 0.04,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      :
 
-                                                            content: Container(
-                                                                width: _screenSizeWidth * 0.9,
-                                                                height: _screenSizeHeight * 0.3,
-                                                                padding: EdgeInsets.only(
-                                                                    left: _screenSizeWidth * 0.03, right: _screenSizeWidth * 0.03, top: _screenSizeWidth * 0.05, bottom: _screenSizeWidth * 0.05),
-                                                                decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                                                child: Column(children: [
-                                                                  Container(
-                                                                    margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                                    alignment: Alignment(0, 0),
-                                                                    child: CustomText(text: '新規作成', fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
-                                                                  ),
-                                                                  Container(
-                                                                      width: _screenSizeWidth * 0.5,
-                                                                      height: _screenSizeHeight * 0.04,
-                                                                      alignment: const Alignment(0.0, 0.0),
-                                                                      margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                                      // 部屋を作成するためのaddボタン
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(context); // 前のページに戻る
+                                                            // ダイアログ表示 ここで部屋を作成
+                                                            // 新規の番号もらってこないとなんですけどどうしましょう
+                                                            showDialog(
+                                                                context: context,
+                                                                builder: (BuildContext context) {
+                                                                  return AlertDialog(
+                                                                      shape: RoundedRectangleBorder(
+                                                                        borderRadius: BorderRadius.circular(16.0),
+                                                                      ),
+                                                                      elevation: 0.0, // ダイアログの影を削除
+                                                                      backgroundColor: Constant.white.withOpacity(0), // 背景色
 
-                                                                      // テキストフィールド
-                                                                      child: TextField(
-                                                                        controller: roomNumController,
-                                                                        decoration: const InputDecoration(
-                                                                          hintText: '部屋番号を入力してね',
-                                                                        ),
-                                                                        onChanged: (num) {
-                                                                          items.roomNum = num;
-                                                                        },
-                                                                        textInputAction: TextInputAction.next,
-                                                                      )),
-                                                                  Container(
-                                                                      width: _screenSizeWidth * 0.5,
-                                                                      height: _screenSizeHeight * 0.04,
-                                                                      alignment: const Alignment(0.0, 0.0),
-                                                                      margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                                                      content: Container(
+                                                                          width: _screenSizeWidth * 0.9,
+                                                                          height: _screenSizeHeight * 0.3,
+                                                                          padding: EdgeInsets.only(
+                                                                              left: _screenSizeWidth * 0.03,
+                                                                              right: _screenSizeWidth * 0.03,
+                                                                              top: _screenSizeWidth * 0.05,
+                                                                              bottom: _screenSizeWidth * 0.05),
+                                                                          decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                                                          child: Column(children: [
+                                                                            Container(
+                                                                              margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                                              alignment: Alignment(0, 0),
+                                                                              child: CustomText(text: '新規作成', fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
+                                                                            ),
+                                                                            Container(
+                                                                                width: _screenSizeWidth * 0.5,
+                                                                                height: _screenSizeHeight * 0.04,
+                                                                                alignment: const Alignment(0.0, 0.0),
+                                                                                margin: EdgeInsets.all(_screenSizeWidth * 0.03),
 
-                                                                      // テキストフィールド
-                                                                      child: TextField(
-                                                                        controller: roomNameController,
-                                                                        decoration: const InputDecoration(
-                                                                          hintText: '部屋の名前を入力してね',
-                                                                        ),
-                                                                        onChanged: (newroomname) {
-                                                                          items.roomName = newroomname;
-                                                                        },
-                                                                        textInputAction: TextInputAction.done,
-                                                                      )),
+                                                                                // テキストフィールド
+                                                                                // dbとの通信建設予定地
+                                                                                // 部屋番号をもらう
+                                                                                child: TextField(
+                                                                                  controller: roomNumController,
+                                                                                  decoration: const InputDecoration(
+                                                                                    hintText: '部屋番号を入力してね',
+                                                                                  ),
+                                                                                  onChanged: (num) {
+                                                                                    items.roomNum = num;
+                                                                                  },
+                                                                                  textInputAction: TextInputAction.next,
+                                                                                )),
+                                                                            Container(
+                                                                                width: _screenSizeWidth * 0.5,
+                                                                                height: _screenSizeHeight * 0.04,
+                                                                                alignment: const Alignment(0.0, 0.0),
+                                                                                margin: EdgeInsets.all(_screenSizeWidth * 0.03),
 
-                                                                  // 作成ボタン
-                                                                  // かぶりがないかチェックしないといけないけど未実装です がば
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      // 空文字だったら通さない
-                                                                      if (roomNameController.text.isNotEmpty && roomNumController.text.isNotEmpty) {
-                                                                        FocusScope.of(context).unfocus(); //キーボードを閉じる
-                                                                        Navigator.of(context).pop(); //もどる
+                                                                                // テキストフィールド
+                                                                                child: TextField(
+                                                                                  controller: roomNameController,
+                                                                                  decoration: const InputDecoration(
+                                                                                    hintText: '部屋の名前を入力してね',
+                                                                                  ),
+                                                                                  onChanged: (newroomname) {
+                                                                                    items.roomName = newroomname;
+                                                                                  },
+                                                                                  textInputAction: TextInputAction.done,
+                                                                                )),
 
-                                                                        setState(() {
-                                                                          // 追加する部屋のひな型
-                                                                          var newroom = {
-                                                                            'roomName': items.roomName,
-                                                                            'leader': items.userInfo['userid'],
-                                                                            'workers': [items.userInfo['userid']],
-                                                                            'task': [],
-                                                                          };
-                                                                          items.room[items.roomNum] = newroom;
-                                                                          items.myroom['myroomID'].add(items.roomNum);
+                                                                            // 作成ボタン
+                                                                            // かぶりがないかチェックしないといけないけど未実装です がば
+                                                                            InkWell(
+                                                                              onTap: () {
+                                                                                // 空文字だったら通さない
+                                                                                if (roomNameController.text.isNotEmpty && roomNumController.text.isNotEmpty) {
+                                                                                  FocusScope.of(context).unfocus(); //キーボードを閉じる
+                                                                                  Navigator.of(context).pop(); //もどる
 
-                                                                          // 入力フォームの初期化
-                                                                          roomNameController.clear();
-                                                                          roomNumController.clear();
-                                                                        });
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                      width: _screenSizeWidth * 0.25,
-                                                                      alignment: Alignment(0, 0),
-                                                                      padding: EdgeInsets.only(
-                                                                          left: _screenSizeWidth * 0.03, right: _screenSizeWidth * 0.03, top: _screenSizeWidth * 0.02, bottom: _screenSizeWidth * 0.02),
-                                                                      margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
-                                                                      decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                                      child: CustomText(text: '作成', fontSize: _screenSizeWidth * 0.05, color: Constant.glay),
-                                                                    ),
-                                                                  )
-                                                                ])));
-                                                      });
-                                                },
-                                                icon: const Icon(
-                                                  Icons.add,
-                                                  size: 35,
-                                                  color: Constant.blackGlay,
-                                                ),
-                                              ),
-                                            ],
+                                                                                  setState(() {
+                                                                                    // 追加する部屋のひな型
+                                                                                    var newroom = {
+                                                                                      'roomName': items.roomName,
+                                                                                      'leader': items.userInfo['userid'],
+                                                                                      'workers': [items.userInfo['userid']],
+                                                                                      'task': [],
+                                                                                    };
+                                                                                    items.room[items.roomNum] = newroom;
+                                                                                    items.myroom.add(items.roomNum);
+
+                                                                                    // 入力フォームの初期化
+                                                                                    roomNameController.clear();
+                                                                                    roomNumController.clear();
+                                                                                  });
+                                                                                }
+                                                                              },
+                                                                              child: Container(
+                                                                                width: _screenSizeWidth * 0.25,
+                                                                                alignment: Alignment(0, 0),
+                                                                                padding: EdgeInsets.only(
+                                                                                    left: _screenSizeWidth * 0.03,
+                                                                                    right: _screenSizeWidth * 0.03,
+                                                                                    top: _screenSizeWidth * 0.02,
+                                                                                    bottom: _screenSizeWidth * 0.02),
+                                                                                margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
+                                                                                decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
+                                                                                child: CustomText(text: '作成', fontSize: _screenSizeWidth * 0.05, color: Constant.glay),
+                                                                              ),
+                                                                            )
+                                                                          ])));
+                                                                });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.add,
+                                                            size: 35,
+                                                            color: Constant.blackGlay,
+                                                          ),
+                                                        ));
+                                            },
                                           ),
                                         )
                                       ])),
@@ -638,276 +926,5 @@ class _PageTask extends State<PageTask> {
 
         // サイドバー設定
         endDrawer: sideBar());
-  }
-
-  Widget _test_taskList(var _screenSizeWidth) {
-    return ListView.builder(
-      // indexの作成 widgetが表示される数
-      itemCount: items.taskList.length,
-      itemBuilder: (context, index) {
-        // 繰り返し描画されるwidget
-        return Card(color: Constant.glay, elevation: 0, child: SizedBox());
-      },
-    );
-  }
-
-  // サイドバー
-  Widget sideBar() {
-    return Drawer(
-      // 変更箇所
-      child: ListView(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text("ルームマップ"),
-            onTap: () {
-              // ここにメニュータップ時の処理を記述
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text("メンバー"),
-            onTap: () {
-              // ここにメニュータップ時の処理を記述
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.login),
-            title: const Text("サブルームの追加"),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.favorite),
-            title: const Text("権限の編集"),
-            onTap: () {},
-          )
-        ],
-      ),
-    );
-  }
-
-  // タスク表示の処理
-  Widget taskList(List item) {
-    //画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
-    return ListView.builder(
-      // indexの作成 widgetが表示される数
-      itemCount: item.length,
-      itemBuilder: (context, index) {
-        // 繰り返し描画されるwidget
-        return item[index]['status'] == 0 && item[index]['roomid'] == taskRoomIndex
-            ? Card(
-                color: Constant.glay.withAlpha(0),
-                elevation: 0,
-                child: // タスクの状態を判定して表示
-                    InkWell(
-                  onTap: () {
-                    // 詳細ダイアログ表示
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                                // side: const BorderSide(
-                                //   color: Constant.sub3, width: 5, // ダイアログの形状を変更
-                                // ),
-                              ),
-                              elevation: 0.0, // ダイアログの影を削除
-                              backgroundColor: Constant.white.withOpacity(0), // 背景色
-
-                              content: Container(
-                                width: _screenSizeWidth * 0.8,
-                                height: _screenSizeHeight * 0.465,
-                                decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                child: Column(
-                                  children: [
-                                    // タスク内容表示
-                                    Container(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                              width: _screenSizeWidth * 0.4,
-                                              height: _screenSizeHeight * 0.05,
-                                              alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.02),
-                                              child: CustomText(text: "詳細", fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay)),
-
-                                          // 箱の中身
-                                          Container(
-                                              width: _screenSizeWidth * 0.6,
-                                              height: _screenSizeHeight * 0.2,
-                                              padding: EdgeInsets.all(_screenSizeWidth * 0.05),
-                                              alignment: const Alignment(0.0, 0.0),
-                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
-                                              child: Column(children: [
-                                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                  CustomText(
-                                                      text:
-                                                          '依頼者：${item[index]['leader']}\n期限：${item[index]['limit'].month}月${item[index]['limit'].day}日${item[index]['limit'].hour}時${item[index]['limit'].minute}分\n-------------------------------',
-                                                      fontSize: _screenSizeWidth * 0.035,
-                                                      color: Constant.blackGlay),
-                                                ]),
-                                                SizedBox(
-                                                  height: _screenSizeHeight * 0.01,
-                                                ),
-
-                                                // タスク内容の表示
-                                                CustomText(text: item[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
-                                              ])),
-
-                                          Container(
-                                              alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.only(top: _screenSizeHeight * 0.02, left: _screenSizeWidth * 0.03, bottom: _screenSizeHeight * 0.0225
-                                                  //right: _screenSizeWidth * 0.05,
-                                                  ),
-                                              padding: EdgeInsets.only(left: _screenSizeWidth * 0.02, right: _screenSizeWidth * 0.02),
-                                              child: Row(children: [
-                                                // できました！！ボタン
-                                                InkWell(
-                                                  onTap: () {
-                                                    // 見ているタスクを引用してリスケを希望
-                                                    // 辞書に追加
-                                                    items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
-                                                        ? addMessage(items.karioki,'進捗どうですか？？？？？？？', 0, 0, 5,item[index]['roomid'])
-                                                        : addMessage(items.karioki, 'できました！！！！！！！', 3, 0, 0, item[index]['roomid']);
-
-                                                    if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
-
-                                                    // ページ遷移
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => PageMassages(
-                                                                messenger: item[index]['roomid'],
-                                                              )),
-                                                    ).then((value) {
-                                                      //戻ってきたら再描画
-                                                      setState(() {
-                                                        Navigator.pop(context);
-                                                      });
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    width: _screenSizeWidth * 0.275,
-                                                    height: _screenSizeWidth * 0.15,
-                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                                    child: CustomText(
-                                                        text: items.room[taskRoomIndex]['leader'] == items.userInfo['userid'] ? '進捗どう\nですか？？？' : 'できました\n！！！！！！',
-                                                        fontSize: _screenSizeWidth * 0.04,
-                                                        color: Constant.blackGlay),
-                                                  ),
-                                                ),
-
-                                                SizedBox(
-                                                  width: _screenSizeWidth * 0.035,
-                                                ),
-
-                                                // リスケおねがいします、、ボタン
-                                                InkWell(
-                                                  onTap: () {
-                                                    // 建設予定
-                                                    DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
-                                                      setState(() {
-                                                        items.limitTime = date;
-                                                        please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
-                                                      });
-                                                    }, currentTime: DateTime.now(), locale: LocaleType.jp);
-
-                                                    // 見ているタスクを引用してリスケを希望
-                                                    // 辞書に追加
-                                                    addMessage(items.karioki, 'リスケお願いします', 3, 0, 2, item[index]['roomid']);
-                                                    items.indexBool = false;
-
-                                                    // // ページ遷移
-                                                    // Navigator.push(
-                                                    //   context,
-                                                    //   MaterialPageRoute(
-                                                    //       builder: (context) => PageMassages(
-                                                    //             messenger: item[index]['user'],
-                                                    //           )),
-                                                    // ).then((value) {
-                                                    //   //戻ってきたら再描画
-
-                                                    //   setState(() {
-                                                    //     Navigator.pop(context);
-                                                    //   });
-                                                    // });
-                                                  },
-                                                  child: Container(
-                                                    width: _screenSizeWidth * 0.275,
-                                                    height: _screenSizeWidth * 0.15,
-                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                                    alignment: const Alignment(0.0, 0.0),
-                                                    decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
-                                                    child: CustomText(text: 'リスケお願いします！！！', fontSize: _screenSizeWidth * 0.04, color: Constant.glay),
-                                                  ),
-                                                ),
-                                              ])),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // 戻るボタン
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.of(context).pop(); //もどる
-                                      },
-                                      child: Container(
-                                        width: _screenSizeWidth * 0.3,
-                                        height: _screenSizeHeight * 0.05,
-                                        alignment: const Alignment(0.0, 0.0),
-                                        margin: EdgeInsets.all(_screenSizeWidth * 0.01),
-                                        decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                        child: CustomText(text: "もどる", fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ));
-                        });
-                  },
-                  child: Container(
-                      width: _screenSizeWidth * 0.95,
-                      height: _screenSizeHeight * 0.1,
-                      padding: EdgeInsets.only(right: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
-                      //alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                      decoration: BoxDecoration(
-                        color: Constant.glay,
-                        borderRadius: BorderRadius.circular(10), // 角丸
-                      ),
-                      child: Row(children: [
-                        Container(
-                          width: _screenSizeWidth * 0.15,
-                          height: _screenSizeHeight * 0.1,
-                          alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                          padding: EdgeInsets.all(_screenSizeWidth * 0.025),
-                          child: CustomText(text: '${item[index]['limit'].month}\n${item[index]['limit'].day}', fontSize: _screenSizeWidth * 0.055, color: Constant.blackGlay),
-                        ),
-                        SizedBox(
-                          width: _screenSizeWidth * 0.01,
-                        ),
-                        Container(
-                            width: _screenSizeWidth * 0.5,
-                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.04, bottom: _screenSizeWidth * 0.04),
-                            child: Column(children: [
-                              Container(
-                                  width: _screenSizeWidth * 0.625,
-                                  alignment: Alignment.centerLeft,
-                                  child: CustomText(text: '${item[index]['limit'].hour}:${item[index]['limit'].minute}まで\n-------------------------------', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay)),
-                              Container(
-                                  width: _screenSizeWidth * 0.625,
-                                  alignment: Alignment.centerLeft,
-                                  child: CustomText(text: item[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
-                            ]))
-                      ])),
-                ))
-            : const SizedBox.shrink();
-      },
-    );
   }
 }

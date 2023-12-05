@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../view/pages/page_massages.dart';
 import './items.dart';
+import 'package:task_maid/database_helper.dart';
 
 class Constant {
   static const Color main = Color(0xFF00849C);
@@ -37,52 +38,46 @@ class CustomText extends StatelessWidget {
   }
 }
 
-// 辞書に追加するメソッド
-void addMessage(
-  int msgid,
-  String message,
-  int status,
-  int index,
-  int level,
-  String chatRoom
-) {
-
+// メッセージをdbに追加するメソッド
+void addMessage(int msgid, String message, int status, int index, int level, String chatRoom) async {
   // 辞書に追加
-  Map<String,Object> newMessage = {
-    'msgid': msgid, 
-    'time': DateTime.now(),
-    'message': message, 
-    'status': status, 
-    'index': index, 
-    'level':level,
-    'sender':items.userInfo['userid'],
-    'chatRoom':chatRoom
-     
+  // indexじゃなくてtaskidを追加すべきと思ったけどstampとかのこと考えたらそうとも言えないな困ったな
+  var newmsg = {
+    'msgid': msgid,
+    'roomid': chatRoom,
+    'time': DateTime.now().toString(),
+    'sender': items.userInfo['userid'],
+    'level': level,
+    'status': status,
+    'message': message,
+    'quote': index,
   };
-  items.message[chatRoom].add(newMessage);
+  // dbに追加
+  DatabaseHelper.insert('msgchats', newmsg);
+  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('msgchats');
+  print(await result);
 }
 
-// タスクを辞書に追加するメソッド
-void addTask(String user, String worker, String task, DateTime limitTime, String taskRoomIndex) {
+// タスクをdbに追加するメソッド
+void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
-  var newtask = {
-    'user': user,
-    'worker': worker,
-    'task': task,
-    'day': limitTime.day,
-    'month': limitTime.month,
-    'limitDay': limitTime.day,
-    'limitTime': '${limitTime.hour}時${limitTime.minute}分',
-    'level': 3,
-    'bool': false,
-    'taskIndex': 0,
-    'roomid': taskRoomIndex
-  };
+  var newtask = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
+  // var newtask_2 = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
 
   // 事故発生中
-  items.room[taskRoomIndex]['tasks'].add(newtask);
-  items.taskList.add(newtask);
+  items.room[roomid]['tasks'].add(taskid);
+  // items.taskList.add(newtask);
+
+  // dbに追加
+  DatabaseHelper.insert('tasks', newtask);
+
+  // 例えば tasks テーブルから全ての行を取得
+  // 仮置きをやめることになりそう?
+  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('tasks');
+  print(await result);
 }
+
+void printer() {}
 
 // ルームIDチェッカー
 bool roomIDcheck(String roomID) {
