@@ -160,7 +160,8 @@ class _PageHomeState extends State<PageHome> {
                                 // ふきだしの中身
                                 child: CustomText(
                                     text: //'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
-                                        '${items.leaderWord['idWord'][0]['sender']}様が「${items.leaderWord['idWord'][0]['word']}」と大変お怒りです！',
+                                      // 処理建設予定地
+                                        'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！',
                                     fontSize: _screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),

@@ -68,20 +68,7 @@ class items {
   }
 
   static int karioki = 1234565;
-
-  static Map sender = {
-    'sender': ['1234']
-  };
-
-  static DateTime now = DateTime.now();
-
-  // メッセージ
-  static Map<String, dynamic> leaderWord = {
-    'idWord': [
-      {'sender': 'せろり', 'time': '2023-10-02', 'word': '遊んでないで仕事してください！！', 'level': 5, 'index': 0},
-    ]
-  };
-
+  
   // 画像リスト
   static Map taskMaid = {
     'standing': [

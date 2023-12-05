@@ -31,7 +31,7 @@ class _PageMassages extends State<PageMassages> {
   String message = '';
   int level = 0;
   int status = 0;
-  int karioki = 12380;
+  int karioki = 12800;
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();

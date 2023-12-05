@@ -62,7 +62,7 @@ class _PageTask extends State<PageTask> {
   static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
   static String dateText = '期日を入力してね';
   static String please = 'リスケしてほしい日付を入力してね';
-  static int karioki2 = 1395;
+  static int karioki2 = 4587679;
 
   // 初期化メソッド
   @override
@@ -116,7 +116,7 @@ class _PageTask extends State<PageTask> {
     var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: taskList.length,
+      itemCount: taskList.length,                             
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return taskList[index]['status'] == 0 && taskList[index]['roomid'] == taskRoomIndex
@@ -472,9 +472,6 @@ class _PageTask extends State<PageTask> {
                                                 onTap: () {
                                                   // 空文字だったら通さない
                                                   if (taskThinkController.text.isNotEmpty) {
-                                                    FocusScope.of(context).unfocus(); //キーボードを閉じる
-                                                    Navigator.of(context).pop(); //もどる
-
                                                     setState(() {
                                                       // タスクを追加
                                                       addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex, 0);
@@ -490,9 +487,15 @@ class _PageTask extends State<PageTask> {
                                                         WidgetsBinding.instance.addPostFrameCallback((_) {
                                                           const Duration(milliseconds: 300);
                                                           items.Nums();
+
+                                                          FocusScope.of(context).unfocus(); //キーボードを閉じる
+                                                          // Navigator.of(context).pop(); //もどる
+
+                                                          
                                                         });
+
+                                                        reloadWidgetTree();
                                                       });
-                                                      reloadWidgetTree();
                                                     });
                                                   }
                                                 },
