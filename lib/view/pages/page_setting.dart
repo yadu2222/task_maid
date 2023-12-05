@@ -61,6 +61,17 @@ class _PageSetting extends State<PageSetting> {
                       },
                     ),
                   ),
+                  InkWell(
+                    onTap: () {
+                      // ここに処理を書いてね
+                    },
+                    child: Container(
+                        width: _screenSizeWidth * 0.8,
+                        height: _screenSizeHeight * 0.065,
+                        padding: EdgeInsets.only(left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.05, top: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.025),
+                        decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                        child: CustomText(text: ';~~~;', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)),
+                  )
                 ],
               ),
             ),
