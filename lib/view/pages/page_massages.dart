@@ -31,6 +31,7 @@ class _PageMassages extends State<PageMassages> {
   String message = '';
   int level = 0;
   int status = 0;
+  int karioki = 12380;
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -234,7 +235,8 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
       onTap: () {
         // メッセージ追加
-        addMessage(items.karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote'], 0, messenger);
+        karioki++;
+        addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote'], 0, messenger);
         items.indexBool = false;
         // 再読み込みとスクロール
         setState(() {
@@ -247,7 +249,6 @@ class _PageMassages extends State<PageMassages> {
             );
           });
         });
-
         reloadWidgetTree();
       },
       child: Container(
@@ -283,7 +284,8 @@ class _PageMassages extends State<PageMassages> {
         onTap: () {
           items.stampIndex = picture;
           status = 2;
-          addMessage(items.karioki, '', status, items.stampIndex, 0, messenger);
+          karioki++;
+          addMessage(karioki, '', status, items.stampIndex, 0, messenger);
           setState(() {
             // ステータス書き換え
             items.stamplist = false;
@@ -575,7 +577,8 @@ class _PageMassages extends State<PageMassages> {
 
                                               // メッセージ追加メソッド呼び出し
                                               // 怒りレベル建設予定地
-                                              addMessage(items.karioki, message, status, items.taskIndex, 0, messenger);
+                                              karioki++;
+                                              addMessage(karioki, message, status, items.taskIndex, 0, messenger);
                                               // 入力フォームの初期化
                                               _messageController.clear();
                                               items.indexBool = false;

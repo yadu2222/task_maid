@@ -75,13 +75,6 @@ class items {
 
   static DateTime now = DateTime.now();
 
-  // static List message = [
-  //   // ここ相手のgoogleアカウントとかにしないと名前変えたとき困るねとおもった
-  //   // idに、すべきや、、、！！！
-  //     {'msgid': 1234556, 'time': now.subtract(Duration(days: 1)), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '23456', 'roomid': '1234'},
-  //     {'msgid': 1234553, 'time': DateTime.now(), 'message': 'おわりませんね', 'status': 1, 'index': 0, 'level': 2, 'sender': '12345', 'roomid': '1234'},
-  //   ];
-
   // メッセージ
   static Map<String, dynamic> leaderWord = {
     'idWord': [

@@ -53,7 +53,6 @@ class _PageMail extends State<PageMail> {
                     // 最終送信日時とかも入れたいね
 
                     // 最新を入れたいのでソートを行わないといけない
-                    // CustomText(text: messages[]['day'], fontSize:_screenSizeWidth*0.03, color: Constant.blackGlay),
                     // 名前の表示
                     Container(
                       width: _screenSizeWidth * 0.7,

@@ -127,25 +127,6 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from ${tableName}");
   }
 
-  static Future<List> getTasks() async {
-    Database? db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db!.rawQuery("select * from tasks");
-    return List.generate(
-      maps.length,
-      (index) {
-        return (
-          taskid: maps[index]['taskid'],
-          limitTime: DateTime.parse(maps[index]['limitTime']),
-          leaders: maps[index]['leaders'],
-          woker: maps[index]['worker'],
-          contents: maps[index]['contents'],
-          roomid: maps[index]['roomid'],
-          status: maps[index]['status']
-        );
-      },
-    );
-  }
-
   // レコード数を確認t
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {
@@ -166,24 +147,4 @@ class DatabaseHelper {
     Database? db = await instance.database;
     return await db!.delete(tableName, where: '$colum = ?', whereArgs: [id]);
   }
-}
-
-class Task {
-  final int taskid;
-  final DateTime limitTime;
-  final String leaders;
-  final String worker;
-  final String contents;
-  final String roomid;
-  final int status;
-
-  Task({
-    required this.taskid,
-    required this.limitTime,
-    required this.leaders,
-    required this.worker,
-    required this.contents,
-    required this.roomid,
-    required this.status,
-  });
 }

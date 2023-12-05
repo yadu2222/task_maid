@@ -35,6 +35,13 @@ class _PageTask extends State<PageTask> {
   // サイドバー表示用のkey
   var sideBarKey = GlobalKey<ScaffoldState>();
 
+  // 画面の再構築メソッド
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  void reloadWidgetTree() {
+    _scaffoldKey.currentState?.reassemble();
+  }
+
+  // どこの部屋のタスクを参照したいのか引数でもらう
   String roomNum;
   _PageTask({required this.roomNum});
 
@@ -55,8 +62,7 @@ class _PageTask extends State<PageTask> {
   static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
   static String dateText = '期日を入力してね';
   static String please = 'リスケしてほしい日付を入力してね';
-  static int karioki2 = 1239;
-  
+  static int karioki2 = 1395;
 
   // 初期化メソッド
   @override
@@ -66,8 +72,6 @@ class _PageTask extends State<PageTask> {
     // インスタンスメンバーを初期化
     taskRoomIndex = widget.roomNum;
   }
-
-
 
   // サイドバー
   Widget sideBar() {
@@ -106,6 +110,7 @@ class _PageTask extends State<PageTask> {
 
   // タスク表示の処理
   Widget taskList(List taskList) {
+    items.Nums();
     //画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
@@ -472,15 +477,22 @@ class _PageTask extends State<PageTask> {
 
                                                     setState(() {
                                                       // タスクを追加
-                                                      karioki2++;
                                                       addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex, 0);
-                                                      items.Nums();
 
                                                       // 入力フォームの初期化
                                                       dateText = '期日を入力してね';
                                                       dayController.clear();
                                                       timeController.clear();
                                                       taskThinkController.clear();
+
+                                                      setState(() {
+                                                        // ちょっと待たせて実行
+                                                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                          const Duration(milliseconds: 300);
+                                                          items.Nums();
+                                                        });
+                                                      });
+                                                      reloadWidgetTree();
                                                     });
                                                   }
                                                 },

@@ -62,11 +62,9 @@ void addMessage(int msgid, String message, int status, int index, int level, Str
 void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
   var newtask = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
-  // var newtask_2 = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
-
+  
   // 事故発生中
   items.room[roomid]['tasks'].add(taskid);
-  // items.taskList.add(newtask);
 
   // dbに追加
   DatabaseHelper.insert('tasks', newtask);
