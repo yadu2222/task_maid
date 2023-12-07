@@ -77,7 +77,7 @@ class DatabaseHelper {
     // ルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE rooms (
-      roomid INTEGER PRIMARY KEY,
+      roomid TEXT PRIMARY KEY,
       roomName TEXT NOT NULL,
       leader TEXT,
       workers TEXT,
@@ -88,11 +88,11 @@ class DatabaseHelper {
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
-      taskid INTEGER PRIMARY KEY,
+      taskid INTEGER,
       limitTime text NOT NULL,
       leaders integer,
       worker integer,
-      contents text,
+      contents text PRIMARY KEY,
       roomid text,
       status integer
     )
@@ -101,13 +101,13 @@ class DatabaseHelper {
     // メッセージを管理するためのテーブル
     await db.execute('''
   CREATE TABLE msgchats (
-    msgid integer PRIMARY KEY,
+    msgid integer,
     roomid text,
-    time text,
+    time text PRIMARY KEY,
     sender text,
     level integer,
     status integer,
-    message text,
+    message text ,
     quote integer
   )
 ''');
@@ -126,6 +126,28 @@ class DatabaseHelper {
     Database? db = await instance.database;
     return await db!.rawQuery("select * from ${tableName}");
   }
+
+  // その2
+  // 毎回全部落とすより差分もらってくるほうがええんとちゃますののやつ
+  static Future<List<Map<String, dynamic>>> queryRow(String key) async {
+    Database? db = await instance.database;
+    return await db!.rawQuery("select * from msgchats where '${key}' == 'message'");
+  }
+
+  // その3
+  // idでの検索に返してくれるやつ
+   static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
+    Database? db = await instance.database;
+    return await db!.rawQuery("select * from msgchats where '${key}' == 'roomid'");
+  }
+
+  // その3
+  // idでの検索に返してくれるやつ
+  static Future<List<Map<String, dynamic>>> queryworer(String key) async {
+    Database? db = await instance.database;
+    return await db!.rawQuery("select * from msgchats where '${key}' == 'roomid'");
+  }
+
 
   // レコード数を確認t
   // 引数：table名

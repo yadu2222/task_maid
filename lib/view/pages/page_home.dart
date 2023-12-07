@@ -64,6 +64,13 @@ class _PageHomeState extends State<PageHome> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    items.Nums();
+  }
+
+  @override
   Widget build(BuildContext context) {
     items.Nums();
     // 画面サイズ
@@ -87,30 +94,27 @@ class _PageHomeState extends State<PageHome> {
                   Container(
                       width: _screenSizeWidth,
                       height: _screenSizeHeight * 0.075,
-                      child: Align(
+                      child: const Align(
                           alignment: Alignment.topRight,
                           child: Row(
                             children: [
                               //メール
                               // Componentsless.PageShiftIcon(functionIcon: Icons.mail_outline, widget:const PageMail()),
-                              Molecules.PageShiftIcon(
-                                context,
-                                Icons.mail_outline,
-                                PageMail(),
+                              PageShiftIcon(
+                                functionIcon: Icons.mail_outline,
+                                widget: PageMail(),
                               ),
 
                               //タスク
-                              Molecules.PageShiftIcon(
-                                context,
-                                Icons.check_box,
-                                PageTask(roomNum: '1111'),
+                              PageShiftIcon(
+                                functionIcon: Icons.check_box,
+                                widget: PageTask(roomNum: '1111'),
                               ),
 
                               //設定
-                              Molecules.PageShiftIcon(
-                                context,
-                                Icons.settings,
-                                PageSetting(),
+                              PageShiftIcon(
+                                functionIcon: Icons.settings,
+                                widget: PageSetting(),
                               )
                             ],
                           ))),
@@ -160,7 +164,7 @@ class _PageHomeState extends State<PageHome> {
                                 // ふきだしの中身
                                 child: CustomText(
                                     text: //'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
-                                      // 処理建設予定地
+                                        // 処理建設予定地
                                         'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！',
                                     fontSize: _screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),

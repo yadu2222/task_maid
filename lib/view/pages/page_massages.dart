@@ -235,7 +235,6 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
       onTap: () {
         // メッセージ追加
-        karioki++;
         addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote'], 0, messenger);
         items.indexBool = false;
         // 再読み込みとスクロール
@@ -281,7 +280,7 @@ class _PageMassages extends State<PageMassages> {
   Widget stampPicture(int picture) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     return InkWell(
-        onTap: () {
+        onTap: () async {
           items.stampIndex = picture;
           status = 2;
           karioki++;
@@ -290,10 +289,21 @@ class _PageMassages extends State<PageMassages> {
             // ステータス書き換え
             items.stamplist = false;
             status = 0;
-            void reloadWidgetTree() {
-              _scaffoldKey.currentState?.reassemble();
-            }
+            items.Nums();
+          });
 
+          // 1秒待たせることの重要性
+          // ラグがひどい
+          // どうしよう
+          await Future.delayed(Duration(seconds: 1));
+
+          setState(() {});
+
+          // ビルドサイクルが完了するまで待機
+          Future.delayed(Duration.zero, () {
+            // 画面更新のための処理をここに記述
+            print('ビルドサイクル完了後の処理');
+            reloadWidgetTree();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _scrollController.animateTo(
                 _scrollController.position.maxScrollExtent,
@@ -569,7 +579,7 @@ class _PageMassages extends State<PageMassages> {
                                             color: Constant.blackGlay,
                                             size: 35,
                                           ),
-                                          onPressed: () {
+                                          onPressed: () async {
                                             // 入力フォームが空じゃなければ
                                             // ここでデータベース送信と受け取り？
                                             if (_messageController.text.isNotEmpty) {
@@ -589,7 +599,19 @@ class _PageMassages extends State<PageMassages> {
 
                                             // 再読み込みとスクロール
                                             setState(() {
-                                              // ちょっと待たせて実行
+                                              // 値の更新
+                                              items.Nums();
+                                            });
+
+                                            // 1秒待たせることの重要性
+                                            // ラグがひどい
+                                            // どうしよう
+                                            await Future.delayed(Duration(seconds: 1));
+
+                                            setState(() {});
+
+                                            // ビルドサイクルが完了するまで待機
+                                            Future.delayed(Duration.zero, () {
                                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                                 _scrollController.animateTo(
                                                   _scrollController.position.maxScrollExtent,
@@ -598,8 +620,6 @@ class _PageMassages extends State<PageMassages> {
                                                 );
                                               });
                                             });
-
-                                            reloadWidgetTree();
                                           },
                                         ),
                                       ],

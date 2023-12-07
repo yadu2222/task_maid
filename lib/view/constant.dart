@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -62,7 +64,7 @@ void addMessage(int msgid, String message, int status, int index, int level, Str
 void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
   var newtask = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
-  
+
   // 事故発生中
   items.room[roomid]['tasks'].add(taskid);
 
@@ -74,6 +76,21 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
   Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('tasks');
   print(await result);
 }
+
+// 新しい部屋をdbに追加するメソッド
+void dbAddRoom(String roomid,String roomName,List leaders,List workers,List tasks) {
+  // Roomをデータベースに追加する際の例
+var newRoom = {
+  'roomid':roomid,
+  'roomName': roomName,
+  'leader': jsonEncode(leaders),
+  'workers':jsonEncode(workers),
+  'tasks': jsonEncode(tasks),
+};
+
+  DatabaseHelper.insert('rooms', newRoom);
+}
+
 
 void printer() {}
 

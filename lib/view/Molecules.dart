@@ -6,29 +6,6 @@ import './items.dart';
 import 'constant.dart';
 
 class Molecules {
-  // ページ遷移アイコン
-  // アイコン、遷移先
-  static Widget PageShiftIcon(BuildContext context, IconData functionIcon, Widget widget) {
-    double screenSizeWidth = MediaQuery.of(context).size.width;
-    // double screenSizeHeight = MediaQuery.of(context).size.height;
-
-    return Container(
-        margin: EdgeInsets.only(left: screenSizeWidth * 0.025, right: screenSizeWidth * 0.025, top: screenSizeWidth * 0.0225),
-        child: IconButton(
-            onPressed: () {
-              // ページ遷移
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => widget),
-              ).then((value) {});
-            },
-            icon: Icon(
-              functionIcon,
-              color: Constant.glay,
-              size: 55,
-            )));
-  }
-
   // 画面上部バー
   // 戻るボタンとタイトル
   static Widget PageTitle(BuildContext context, String text) {
@@ -101,16 +78,47 @@ class Molecules {
       print(date);
     }, onConfirm: (date) {
       print(date);
-     
     }, currentTime: DateTime.now(), locale: LocaleType.jp);
   }
-
-
-
-
 }
 
+// ページ遷移アイコン
+// setStateを使いたかったので移動
+class PageShiftIcon extends StatefulWidget {
+  final IconData functionIcon;
+  final Widget widget;
 
+  const PageShiftIcon({Key? key, required this.functionIcon, required this.widget}) : super(key: key);
 
+  @override
+  _PageShiftIconState createState() => _PageShiftIconState();
+}
 
+class _PageShiftIconState extends State<PageShiftIcon> {
+  @override
+  Widget build(BuildContext context) {
+    double screenSizeWidth = MediaQuery.of(context).size.width;
 
+    return Container(
+      margin: EdgeInsets.only(left: screenSizeWidth * 0.025, right: screenSizeWidth * 0.025, top: screenSizeWidth * 0.0225),
+      child: IconButton(
+        onPressed: () {
+          // ページ遷移
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => widget.widget),
+          ).then((value) {
+            setState(() {
+              items.Nums();
+            });
+          });
+        },
+        icon: Icon(
+          widget.functionIcon,
+          color: Constant.glay,
+          size: 55,
+        ),
+      ),
+    );
+  }
+}

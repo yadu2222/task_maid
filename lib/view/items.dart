@@ -14,6 +14,7 @@ class items {
   static List myroom = ['1111', '1234', '2345'];
 
   // ルーム
+  // でーたべーすから自分が参加してるルームをもらってくる
   static Map room = {
     '1111': {
       'roomName': 'てすとるーむ',
@@ -41,10 +42,6 @@ class items {
     }
   };
 
-  // 部屋を作るときに値を保存する変数
-  static String roomName = '';
-  static String roomNum = '0000';
-
   // タスクを追加するときに値を保存する変数
   static String worker = '';
   static String newtask = '0000';
@@ -57,18 +54,41 @@ class items {
   // dbからデータの取得
   static List taskList = [];
   static Map userAccount = {};
-  static List rooms = [];
+  static List rooms = [
+    {
+      'roomid':'1111',
+      'roomName': 'てすとるーむ',
+      'leader': '12345',
+      'workers': ['12345'],
+      'tasks': [],
+    }
+  ];
   static List message = [];
+  static List newTask = [];
 
-  static void Nums() async {
+  static Nums() async {
     taskList = await DatabaseHelper.queryAllRows('tasks');
     // print(taskList);
     message = await DatabaseHelper.queryAllRows('msgchats');
     // print(msgchats);
+    rooms = await DatabaseHelper.queryAllRows('rooms');
+  }
+
+  static Future<void> getTask(String key) async {
+    newTask = await DatabaseHelper.queryRow(key);
+    // newTask が空でない場合のみ処理を行う
+    if (newTask.isNotEmpty) {
+      taskList.add(newTask[0]);
+    }
+  }
+
+  static List getList() {
+    Nums();
+    return taskList;
   }
 
   static int karioki = 1234565;
-  
+
   // 画像リスト
   static Map taskMaid = {
     'standing': [

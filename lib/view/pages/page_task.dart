@@ -112,11 +112,11 @@ class _PageTask extends State<PageTask> {
   Widget taskList(List taskList) {
     items.Nums();
     //画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: taskList.length,                             
+      itemCount: taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return taskList[index]['status'] == 0 && taskList[index]['roomid'] == taskRoomIndex
@@ -142,8 +142,8 @@ class _PageTask extends State<PageTask> {
                               backgroundColor: Constant.white.withOpacity(0), // 背景色
 
                               content: Container(
-                                width: _screenSizeWidth * 0.8,
-                                height: _screenSizeHeight * 0.465,
+                                width: screenSizeWidth * 0.8,
+                                height: screenSizeHeight * 0.465,
                                 decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                                 child: Column(
                                   children: [
@@ -152,17 +152,17 @@ class _PageTask extends State<PageTask> {
                                       child: Column(
                                         children: [
                                           Container(
-                                              width: _screenSizeWidth * 0.4,
-                                              height: _screenSizeHeight * 0.05,
+                                              width: screenSizeWidth * 0.4,
+                                              height: screenSizeHeight * 0.05,
                                               alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.02),
-                                              child: CustomText(text: "詳細", fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay)),
+                                              margin: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.02),
+                                              child: CustomText(text: "詳細", fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay)),
 
                                           // 箱の中身
                                           Container(
-                                              width: _screenSizeWidth * 0.6,
-                                              height: _screenSizeHeight * 0.2,
-                                              padding: EdgeInsets.all(_screenSizeWidth * 0.05),
+                                              width: screenSizeWidth * 0.6,
+                                              height: screenSizeHeight * 0.2,
+                                              padding: EdgeInsets.all(screenSizeWidth * 0.05),
                                               alignment: const Alignment(0.0, 0.0),
                                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
                                               child: Column(children: [
@@ -170,23 +170,23 @@ class _PageTask extends State<PageTask> {
                                                   CustomText(
                                                       text:
                                                           '依頼者：${taskList[index]['leader']}\n期限：${DateTime.parse(taskList[index]['limitTime']).month}月${DateTime.parse(taskList[index]['limitTime']).day}日${DateTime.parse(taskList[index]['limitTime']).hour}時${DateTime.parse(taskList[index]['limitTime']).minute}分\n-------------------------------',
-                                                      fontSize: _screenSizeWidth * 0.035,
+                                                      fontSize: screenSizeWidth * 0.035,
                                                       color: Constant.blackGlay),
                                                 ]),
                                                 SizedBox(
-                                                  height: _screenSizeHeight * 0.01,
+                                                  height: screenSizeHeight * 0.01,
                                                 ),
 
                                                 // タスク内容の表示
-                                                CustomText(text: taskList[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay),
+                                                CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
                                               ])),
 
                                           Container(
                                               alignment: const Alignment(0.0, 0.0),
-                                              margin: EdgeInsets.only(top: _screenSizeHeight * 0.02, left: _screenSizeWidth * 0.03, bottom: _screenSizeHeight * 0.0225
-                                                  //right: _screenSizeWidth * 0.05,
+                                              margin: EdgeInsets.only(top: screenSizeHeight * 0.02, left: screenSizeWidth * 0.03, bottom: screenSizeHeight * 0.0225
+                                                  //right: screenSizeWidth * 0.05,
                                                   ),
-                                              padding: EdgeInsets.only(left: _screenSizeWidth * 0.02, right: _screenSizeWidth * 0.02),
+                                              padding: EdgeInsets.only(left: screenSizeWidth * 0.02, right: screenSizeWidth * 0.02),
                                               child: Row(children: [
                                                 // できました！！ボタン
                                                 InkWell(
@@ -215,20 +215,20 @@ class _PageTask extends State<PageTask> {
                                                     });
                                                   },
                                                   child: Container(
-                                                    width: _screenSizeWidth * 0.275,
-                                                    height: _screenSizeWidth * 0.15,
-                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    width: screenSizeWidth * 0.275,
+                                                    height: screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(screenSizeWidth * 0.01),
                                                     alignment: const Alignment(0.0, 0.0),
                                                     decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
                                                     child: CustomText(
                                                         text: items.room[taskRoomIndex]['leader'] == items.userInfo['userid'] ? '進捗どう\nですか？？？' : 'できました\n！！！！！！',
-                                                        fontSize: _screenSizeWidth * 0.04,
+                                                        fontSize: screenSizeWidth * 0.04,
                                                         color: Constant.blackGlay),
                                                   ),
                                                 ),
 
                                                 SizedBox(
-                                                  width: _screenSizeWidth * 0.035,
+                                                  width: screenSizeWidth * 0.035,
                                                 ),
 
                                                 // リスケおねがいします、、ボタン
@@ -265,12 +265,12 @@ class _PageTask extends State<PageTask> {
                                                     });
                                                   },
                                                   child: Container(
-                                                    width: _screenSizeWidth * 0.275,
-                                                    height: _screenSizeWidth * 0.15,
-                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                                    width: screenSizeWidth * 0.275,
+                                                    height: screenSizeWidth * 0.15,
+                                                    padding: EdgeInsets.all(screenSizeWidth * 0.01),
                                                     alignment: const Alignment(0.0, 0.0),
                                                     decoration: BoxDecoration(color: const Color.fromARGB(255, 184, 35, 35), borderRadius: BorderRadius.circular(10)),
-                                                    child: CustomText(text: 'リスケお願いします！！！', fontSize: _screenSizeWidth * 0.04, color: Constant.glay),
+                                                    child: CustomText(text: 'リスケお願いします！！！', fontSize: screenSizeWidth * 0.04, color: Constant.glay),
                                                   ),
                                                 ),
                                               ])),
@@ -284,12 +284,12 @@ class _PageTask extends State<PageTask> {
                                         Navigator.of(context).pop(); //もどる
                                       },
                                       child: Container(
-                                        width: _screenSizeWidth * 0.3,
-                                        height: _screenSizeHeight * 0.05,
+                                        width: screenSizeWidth * 0.3,
+                                        height: screenSizeHeight * 0.05,
                                         alignment: const Alignment(0.0, 0.0),
-                                        margin: EdgeInsets.all(_screenSizeWidth * 0.01),
+                                        margin: EdgeInsets.all(screenSizeWidth * 0.01),
                                         decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                        child: CustomText(text: "もどる", fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                        child: CustomText(text: "もどる", fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                       ),
                                     )
                                   ],
@@ -298,9 +298,9 @@ class _PageTask extends State<PageTask> {
                         });
                   },
                   child: Container(
-                      width: _screenSizeWidth * 0.95,
-                      height: _screenSizeHeight * 0.1,
-                      padding: EdgeInsets.only(right: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
+                      width: screenSizeWidth * 0.95,
+                      height: screenSizeHeight * 0.1,
+                      padding: EdgeInsets.only(right: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
                       //alignment: const Alignment(0.0, 0.0), //真ん中に配置
                       decoration: BoxDecoration(
                         color: Constant.glay,
@@ -308,33 +308,33 @@ class _PageTask extends State<PageTask> {
                       ),
                       child: Row(children: [
                         Container(
-                          width: _screenSizeWidth * 0.15,
-                          height: _screenSizeHeight * 0.1,
+                          width: screenSizeWidth * 0.15,
+                          height: screenSizeHeight * 0.1,
                           alignment: const Alignment(0.0, 0.0), //真ん中に配置
-                          padding: EdgeInsets.all(_screenSizeWidth * 0.025),
+                          padding: EdgeInsets.all(screenSizeWidth * 0.025),
                           child: CustomText(
                               text: '${DateTime.parse(taskList[index]['limitTime']).month}\n${DateTime.parse(taskList[index]['limitTime']).day}',
-                              fontSize: _screenSizeWidth * 0.055,
+                              fontSize: screenSizeWidth * 0.055,
                               color: Constant.blackGlay),
                         ),
                         SizedBox(
-                          width: _screenSizeWidth * 0.01,
+                          width: screenSizeWidth * 0.01,
                         ),
                         Container(
-                            width: _screenSizeWidth * 0.5,
-                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.04, bottom: _screenSizeWidth * 0.04),
+                            width: screenSizeWidth * 0.5,
+                            margin: EdgeInsets.only(top: screenSizeWidth * 0.04, bottom: screenSizeWidth * 0.04),
                             child: Column(children: [
                               Container(
-                                  width: _screenSizeWidth * 0.625,
+                                  width: screenSizeWidth * 0.625,
                                   alignment: Alignment.centerLeft,
                                   child: CustomText(
                                       text: '${DateTime.parse(taskList[index]['limitTime']).hour}:${DateTime.parse(taskList[index]['limitTime']).minute}まで\n-------------------------------',
-                                      fontSize: _screenSizeWidth * 0.035,
+                                      fontSize: screenSizeWidth * 0.035,
                                       color: Constant.blackGlay)),
                               Container(
-                                  width: _screenSizeWidth * 0.625,
+                                  width: screenSizeWidth * 0.625,
                                   alignment: Alignment.centerLeft,
-                                  child: CustomText(text: taskList[index]['contents'], fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                                  child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay))
                             ]))
                       ])),
                 ))
@@ -343,31 +343,155 @@ class _PageTask extends State<PageTask> {
     );
   }
 
+  // 部屋を作成するためのaddボタン
+  Widget addRoom() {
+    //画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+    return IconButton(
+      onPressed: () {
+        Navigator.pop(context); // 前のページに戻る
+        // ダイアログ表示 ここで部屋を作成
+        // 新規の番号もらってこないとなんですけどどうしましょう
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // 部屋作成用の値を仮置きする変数
+              String roomName = '';
+              String roomid = '0000';
+              return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  elevation: 0.0, // ダイアログの影を削除
+                  backgroundColor: Constant.white.withOpacity(0), // 背景色
+
+                  content: Container(
+                      width: screenSizeWidth * 0.9,
+                      height: screenSizeHeight * 0.3,
+                      padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.05, bottom: screenSizeWidth * 0.05),
+                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                      child: Column(children: [
+                        Container(
+                          margin: EdgeInsets.all(screenSizeWidth * 0.02),
+                          alignment: Alignment(0, 0),
+                          child: CustomText(text: '新規作成', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
+                        ),
+                        Container(
+                            width: screenSizeWidth * 0.5,
+                            height: screenSizeHeight * 0.04,
+                            alignment: const Alignment(0.0, 0.0),
+                            margin: EdgeInsets.all(screenSizeWidth * 0.03),
+
+                            // テキストフィールド
+                            // dbとの通信建設予定地
+                            // 部屋番号をもらう
+                            child: TextField(
+                              controller: roomNumController,
+                              decoration: const InputDecoration(
+                                hintText: '部屋番号を入力してね',
+                              ),
+                              onChanged: (num) {
+                                roomNum = num;
+                              },
+                              textInputAction: TextInputAction.next,
+                            )),
+                        Container(
+                            width: screenSizeWidth * 0.5,
+                            height: screenSizeHeight * 0.04,
+                            alignment: const Alignment(0.0, 0.0),
+                            margin: EdgeInsets.all(screenSizeWidth * 0.03),
+
+                            // テキストフィールド
+                            child: TextField(
+                              controller: roomNameController,
+                              decoration: const InputDecoration(
+                                hintText: '部屋の名前を入力してね',
+                              ),
+                              onChanged: (newroomname) {
+                                roomName = newroomname;
+                              },
+                              textInputAction: TextInputAction.done,
+                            )),
+
+                        // 作成ボタン
+                        // かぶりがないかチェックしないといけないけど未実装です がば
+                        InkWell(
+                          onTap: () {
+                            // 空文字だったら通さない
+                            if (roomNameController.text.isNotEmpty && roomNumController.text.isNotEmpty) {
+                              FocusScope.of(context).unfocus(); //キーボードを閉じる
+                              Navigator.of(context).pop(); //もどる
+
+                              setState(() {
+                                // 追加する部屋の変数
+                                // roomidはサーバー側で決められるようにしたい
+                                var leaders = [
+                                  {'leader': items.userInfo['userid']}
+                                ];
+                                var workers = [
+                                  {'worker': items.userInfo['userid']}
+                                ];
+                                var tasks = [{}];
+                                
+                                // db追加メソッド呼び出し
+                                dbAddRoom(roomid, roomName, leaders, workers, tasks);
+
+                                // 入力フォームの初期化
+                                roomNameController.clear();
+                                roomNumController.clear();
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: screenSizeWidth * 0.25,
+                            alignment: Alignment(0, 0),
+                            padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
+                            margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
+                            decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
+                            child: CustomText(text: '作成', fontSize: screenSizeWidth * 0.05, color: Constant.glay),
+                          ),
+                        )
+                      ])));
+            });
+      },
+      icon: const Icon(
+        Icons.add,
+        size: 35,
+        color: Constant.blackGlay,
+      ),
+    );
+  }
+
+  /**
+   * 
+   * 表示部分
+   */
   @override
   Widget build(BuildContext context) {
     //画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
         key: sideBarKey,
         body: Center(
             child: Container(
-          width: _screenSizeWidth,
-          height: _screenSizeHeight,
+          width: screenSizeWidth,
+          height: screenSizeHeight,
           decoration: BoxDecoration(color: Constant.main),
           child: SafeArea(
               child: Stack(children: [
             Column(
               children: [
                 Container(
-                    width: _screenSizeWidth,
+                    width: screenSizeWidth,
                     // バー部分
                     child: Row(children: [
                       Molecules.PageTitle(context, 'タスク'),
                       SizedBox(
-                        width: _screenSizeWidth * 0.3,
+                        width: screenSizeWidth * 0.3,
                       ),
                       // タスク追加ボタン　リーダーのみ表示
                       items.room[taskRoomIndex]['leader'] == items.userInfo['userid']
@@ -386,9 +510,9 @@ class _PageTask extends State<PageTask> {
                                             true,
                                             Column(children: [
                                               Container(
-                                                margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                margin: EdgeInsets.all(screenSizeWidth * 0.02),
                                                 alignment: Alignment(0, 0),
-                                                child: CustomText(text: 'タスク追加', fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
+                                                child: CustomText(text: 'タスク追加', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                                               ),
 
                                               // 期日入力
@@ -403,10 +527,10 @@ class _PageTask extends State<PageTask> {
                                                     }, currentTime: DateTime.now(), locale: LocaleType.jp);
                                                   },
                                                   child: Container(
-                                                      width: _screenSizeWidth * 0.5,
-                                                      height: _screenSizeHeight * 0.05,
+                                                      width: screenSizeWidth * 0.5,
+                                                      height: screenSizeHeight * 0.05,
                                                       alignment: const Alignment(-1, 0),
-                                                      //margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
+                                                      //margin: EdgeInsets.only(left: screenSizeWidth * 0.03),
                                                       decoration: const BoxDecoration(
                                                           border: Border(
                                                         bottom: BorderSide(
@@ -420,14 +544,14 @@ class _PageTask extends State<PageTask> {
                                                         textAlign: TextAlign.left,
                                                         style: TextStyle(color: Constant.blackGlay),
 
-                                                        // _screenSizeWidth * 0.04,
+                                                        // screenSizeWidth * 0.04,
                                                         // Constant.blackGlay,
                                                       ))),
                                               Container(
-                                                  width: _screenSizeWidth * 0.5,
-                                                  height: _screenSizeHeight * 0.04,
+                                                  width: screenSizeWidth * 0.5,
+                                                  height: screenSizeHeight * 0.04,
                                                   alignment: const Alignment(0.0, 0.0),
-                                                  margin: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                                  margin: EdgeInsets.all(screenSizeWidth * 0.03),
 
                                                   // 内容
                                                   child: TextField(
@@ -441,10 +565,10 @@ class _PageTask extends State<PageTask> {
                                                     textInputAction: TextInputAction.done,
                                                   )),
 
-                                              Container(child: CustomText(text: '誰に頼む？', fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay)),
+                                              Container(child: CustomText(text: '誰に頼む？', fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay)),
 
                                               Container(
-                                                height: _screenSizeHeight * 0.1,
+                                                height: screenSizeHeight * 0.1,
                                                 child: ListView(
                                                   children: (items.room[taskRoomIndex]['workers'] as List<dynamic>).map<Widget>((workerId) {
                                                     // workerId を使って該当の情報を取得し、ウィジェットを生成する
@@ -457,10 +581,10 @@ class _PageTask extends State<PageTask> {
                                                         items.friend[workerId]['bool'] = true;
                                                       },
                                                       child: Container(
-                                                        padding: EdgeInsets.only(top: _screenSizeWidth * 0.02, bottom: _screenSizeWidth * 0.02),
+                                                        padding: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                                                         alignment: Alignment(0, 0),
                                                         decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                                        child: CustomText(text: items.friend[workerId]['name'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                                        child: CustomText(text: items.friend[workerId]['name'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                                       ),
                                                     ));
                                                   }).toList(),
@@ -469,44 +593,49 @@ class _PageTask extends State<PageTask> {
 
                                               // タスク作成ボタン
                                               InkWell(
-                                                onTap: () {
+                                                onTap: () async {
                                                   // 空文字だったら通さない
                                                   if (taskThinkController.text.isNotEmpty) {
+                                                    // タスクを追加
+                                                    addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex, 0);
+
+                                                    // 入力フォームの初期化
+                                                    dateText = '期日を入力してね';
+                                                    dayController.clear();
+                                                    timeController.clear();
+                                                    taskThinkController.clear();
+
+                                                    // 画面を更新
+                                                    FocusScope.of(context).unfocus(); // キーボードを閉じる
+                                                    Navigator.of(context).pop(); // 戻る
+                                                    //  String key = items.newtask;
+
+                                                    // items.getTask(key);
+                                                    print(items.taskList);
+
                                                     setState(() {
-                                                      // タスクを追加
-                                                      addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, taskRoomIndex, 0);
+                                                      items.taskList = items.getList(); // タスクリストを更新
+                                                    });
 
-                                                      // 入力フォームの初期化
-                                                      dateText = '期日を入力してね';
-                                                      dayController.clear();
-                                                      timeController.clear();
-                                                      taskThinkController.clear();
+                                                    await Future.delayed(Duration(seconds: 1));
 
-                                                      setState(() {
-                                                        // ちょっと待たせて実行
-                                                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                          const Duration(milliseconds: 300);
-                                                          items.Nums();
+                                                    setState(() {});
 
-                                                          FocusScope.of(context).unfocus(); //キーボードを閉じる
-                                                          // Navigator.of(context).pop(); //もどる
-
-                                                          
-                                                        });
-
-                                                        reloadWidgetTree();
-                                                      });
+                                                    // ビルドサイクルが完了するまで待機
+                                                    Future.delayed(Duration.zero, () {
+                                                      // 画面更新のための処理をここに記述
+                                                      print('ビルドサイクル完了後の処理');
+                                                      reloadWidgetTree();
                                                     });
                                                   }
                                                 },
                                                 child: Container(
-                                                  width: _screenSizeWidth * 0.25,
+                                                  width: screenSizeWidth * 0.25,
                                                   alignment: Alignment(0, 0),
-                                                  padding:
-                                                      EdgeInsets.only(left: _screenSizeWidth * 0.03, right: _screenSizeWidth * 0.03, top: _screenSizeWidth * 0.02, bottom: _screenSizeWidth * 0.02),
-                                                  margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
+                                                  padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
+                                                  margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
                                                   decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                  child: CustomText(text: '作成', fontSize: _screenSizeWidth * 0.05, color: Constant.white),
+                                                  child: CustomText(text: '作成', fontSize: screenSizeWidth * 0.05, color: Constant.white),
                                                 ),
                                               )
                                             ]));
@@ -544,15 +673,15 @@ class _PageTask extends State<PageTask> {
                                 Column(children: [
                                   // 検索バー
                                   Container(
-                                      width: _screenSizeWidth * 0.7,
-                                      //height: _screenSizeHeight * 0.067,
+                                      width: screenSizeWidth * 0.7,
+                                      //height: screenSizeHeight * 0.067,
                                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(50)),
-                                      margin: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                      margin: EdgeInsets.all(screenSizeWidth * 0.02),
                                       child: Column(children: [
                                         Row(
                                           children: [
                                             SizedBox(
-                                              width: _screenSizeWidth * 0.02,
+                                              width: screenSizeWidth * 0.02,
                                             ),
                                             const Icon(
                                               Icons.search,
@@ -560,12 +689,12 @@ class _PageTask extends State<PageTask> {
                                               color: Constant.blackGlay,
                                             ),
                                             SizedBox(
-                                              width: _screenSizeWidth * 0.02,
+                                              width: screenSizeWidth * 0.02,
                                             ),
 
                                             Container(
-                                                width: _screenSizeWidth * 0.4,
-                                                height: _screenSizeHeight * 0.04,
+                                                width: screenSizeWidth * 0.4,
+                                                height: screenSizeHeight * 0.04,
                                                 alignment: const Alignment(0.0, 0.0),
 
                                                 // テキストフィールド
@@ -580,7 +709,7 @@ class _PageTask extends State<PageTask> {
                                                   textInputAction: TextInputAction.search,
                                                 )),
                                             SizedBox(
-                                              width: _screenSizeWidth * 0.01,
+                                              width: screenSizeWidth * 0.01,
                                             ),
 
                                             // やじるし
@@ -606,25 +735,25 @@ class _PageTask extends State<PageTask> {
                                                             backgroundColor: Constant.white.withOpacity(0), // 背景色
 
                                                             content: Container(
-                                                              width: _screenSizeWidth * 0.95,
-                                                              height: _screenSizeHeight * 0.215,
+                                                              width: screenSizeWidth * 0.95,
+                                                              height: screenSizeHeight * 0.215,
                                                               alignment: const Alignment(0.0, 0.0),
                                                               padding: roomNames == ex
-                                                                  ? EdgeInsets.only(top: _screenSizeWidth * 0.085, left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.05)
-                                                                  : EdgeInsets.all(_screenSizeWidth * 0.05),
+                                                                  ? EdgeInsets.only(top: screenSizeWidth * 0.085, left: screenSizeWidth * 0.05, right: screenSizeWidth * 0.05)
+                                                                  : EdgeInsets.all(screenSizeWidth * 0.05),
                                                               decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                                                               child: Column(
                                                                 children: [
                                                                   Container(
                                                                     // 検索した部屋の名前を表示
-                                                                    width: _screenSizeWidth * 0.7,
-                                                                    // height: _screenSizeHeight * 0.05,
+                                                                    width: screenSizeWidth * 0.7,
+                                                                    // height: screenSizeHeight * 0.05,
                                                                     alignment: const Alignment(0.0, 0.0),
                                                                     margin: EdgeInsets.only(
-                                                                      top: _screenSizeWidth * 0.0475,
-                                                                      bottom: _screenSizeWidth * 0.02,
+                                                                      top: screenSizeWidth * 0.0475,
+                                                                      bottom: screenSizeWidth * 0.02,
                                                                     ),
-                                                                    child: CustomText(text: roomNames, fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
+                                                                    child: CustomText(text: roomNames, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                                                                   ),
                                                                   roomNames == ex
                                                                       ? const SizedBox(
@@ -632,11 +761,11 @@ class _PageTask extends State<PageTask> {
                                                                           height: 0,
                                                                         )
                                                                       : Container(
-                                                                          width: _screenSizeWidth * 0.7,
-                                                                          //height: _screenSizeHeight * 0.05,
+                                                                          width: screenSizeWidth * 0.7,
+                                                                          //height: screenSizeHeight * 0.05,
                                                                           alignment: const Alignment(0.0, 0.0),
-                                                                          margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.02),
-                                                                          child: CustomText(text: '参加しますか？', fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
+                                                                          margin: EdgeInsets.only(bottom: screenSizeWidth * 0.02),
+                                                                          child: CustomText(text: '参加しますか？', fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                                                                         ),
                                                                   roomNames == ex
                                                                       ? InkWell(
@@ -645,20 +774,20 @@ class _PageTask extends State<PageTask> {
                                                                             Navigator.of(context).pop(); //もどる
                                                                           },
                                                                           child: Container(
-                                                                            width: _screenSizeWidth * 0.3,
-                                                                            height: _screenSizeHeight * 0.05,
+                                                                            width: screenSizeWidth * 0.3,
+                                                                            height: screenSizeHeight * 0.05,
                                                                             alignment: const Alignment(0.0, 0.0),
-                                                                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.03),
-                                                                            //margin: EdgeInsets.only(left: _screenSizeWidth * 0.04),
+                                                                            margin: EdgeInsets.only(top: screenSizeWidth * 0.03),
+                                                                            //margin: EdgeInsets.only(left: screenSizeWidth * 0.04),
 
                                                                             decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                                            child: CustomText(text: 'はい', fontSize: _screenSizeWidth * 0.035, color: Constant.white),
+                                                                            child: CustomText(text: 'はい', fontSize: screenSizeWidth * 0.035, color: Constant.white),
                                                                           ),
                                                                         )
                                                                       : Container(
-                                                                          width: _screenSizeWidth * 0.9,
+                                                                          width: screenSizeWidth * 0.9,
                                                                           alignment: const Alignment(0.0, 0.0),
-                                                                          margin: EdgeInsets.only(left: _screenSizeWidth * 0.05),
+                                                                          margin: EdgeInsets.only(left: screenSizeWidth * 0.05),
                                                                           child: Row(
                                                                             children: [
                                                                               // 参加する
@@ -676,8 +805,8 @@ class _PageTask extends State<PageTask> {
                                                                                               backgroundColor: Constant.white.withOpacity(0), // 背景色
 
                                                                                               content: Container(
-                                                                                                width: _screenSizeWidth * 0.8,
-                                                                                                height: _screenSizeHeight * 0.215,
+                                                                                                width: screenSizeWidth * 0.8,
+                                                                                                height: screenSizeHeight * 0.215,
                                                                                                 alignment: Alignment(0, 0),
                                                                                                 decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                                                                                                 child: CustomText(
@@ -685,7 +814,7 @@ class _PageTask extends State<PageTask> {
                                                                                                     //     ? '既に参加しています'
                                                                                                     //     : '参加しました！',
                                                                                                     text: '参加しました！',
-                                                                                                    fontSize: _screenSizeWidth * 0.05,
+                                                                                                    fontSize: screenSizeWidth * 0.05,
                                                                                                     color: Constant.blackGlay),
                                                                                               ));
                                                                                         });
@@ -714,13 +843,13 @@ class _PageTask extends State<PageTask> {
                                                                                     items.room[roomID]['workers'].add(items.userInfo['userid']);
                                                                                   },
                                                                                   child: Container(
-                                                                                    width: _screenSizeWidth * 0.2,
-                                                                                    height: _screenSizeHeight * 0.05,
-                                                                                    margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                                                    width: screenSizeWidth * 0.2,
+                                                                                    height: screenSizeHeight * 0.05,
+                                                                                    margin: EdgeInsets.all(screenSizeWidth * 0.02),
+                                                                                    padding: EdgeInsets.all(screenSizeWidth * 0.02),
                                                                                     alignment: const Alignment(0.0, 0.0),
                                                                                     decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                                                    child: CustomText(text: 'はい', fontSize: _screenSizeWidth * 0.035, color: Constant.white),
+                                                                                    child: CustomText(text: 'はい', fontSize: screenSizeWidth * 0.035, color: Constant.white),
                                                                                   )),
 
                                                                               // 参加しない
@@ -730,13 +859,13 @@ class _PageTask extends State<PageTask> {
                                                                                     Navigator.of(context).pop(); //もどる
                                                                                   },
                                                                                   child: Container(
-                                                                                    width: _screenSizeWidth * 0.2,
-                                                                                    height: _screenSizeHeight * 0.05,
-                                                                                    margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                                                    padding: EdgeInsets.all(_screenSizeWidth * 0.02),
+                                                                                    width: screenSizeWidth * 0.2,
+                                                                                    height: screenSizeHeight * 0.05,
+                                                                                    margin: EdgeInsets.all(screenSizeWidth * 0.02),
+                                                                                    padding: EdgeInsets.all(screenSizeWidth * 0.02),
                                                                                     alignment: const Alignment(0.0, 0.0),
                                                                                     decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                                                    child: CustomText(text: 'いいえ', fontSize: _screenSizeWidth * 0.035, color: Constant.white),
+                                                                                    child: CustomText(text: 'いいえ', fontSize: screenSizeWidth * 0.035, color: Constant.white),
                                                                                   )),
                                                                             ],
                                                                           ))
@@ -760,8 +889,8 @@ class _PageTask extends State<PageTask> {
 
                                         // 現在参加中部屋のリスト
                                         Container(
-                                          width: _screenSizeWidth * 0.7,
-                                          height: _screenSizeHeight * 0.35,
+                                          width: screenSizeWidth * 0.7,
+                                          height: screenSizeHeight * 0.35,
                                           // 繰り返し表示
                                           child: ListView.builder(
                                             itemCount: items.myroom.length + 1,
@@ -779,8 +908,8 @@ class _PageTask extends State<PageTask> {
                                                             });
                                                           },
                                                           child: Container(
-                                                            width: _screenSizeWidth * 0.7,
-                                                            height: _screenSizeHeight * 0.05,
+                                                            width: screenSizeWidth * 0.7,
+                                                            height: screenSizeHeight * 0.05,
                                                             decoration: BoxDecoration(
                                                               color: Constant.main,
                                                               borderRadius: BorderRadius.circular(10),
@@ -789,128 +918,11 @@ class _PageTask extends State<PageTask> {
                                                             child: CustomText(
                                                               text: items.room[items.myroom[index]]['roomName'],
                                                               color: Constant.white,
-                                                              fontSize: _screenSizeWidth * 0.04,
+                                                              fontSize: screenSizeWidth * 0.04,
                                                             ),
                                                           ),
                                                         )
-                                                      :
-
-                                                      // 部屋を作成するためのaddボタン
-                                                      IconButton(
-                                                          onPressed: () {
-                                                            Navigator.pop(context); // 前のページに戻る
-                                                            // ダイアログ表示 ここで部屋を作成
-                                                            // 新規の番号もらってこないとなんですけどどうしましょう
-                                                            showDialog(
-                                                                context: context,
-                                                                builder: (BuildContext context) {
-                                                                  return AlertDialog(
-                                                                      shape: RoundedRectangleBorder(
-                                                                        borderRadius: BorderRadius.circular(16.0),
-                                                                      ),
-                                                                      elevation: 0.0, // ダイアログの影を削除
-                                                                      backgroundColor: Constant.white.withOpacity(0), // 背景色
-
-                                                                      content: Container(
-                                                                          width: _screenSizeWidth * 0.9,
-                                                                          height: _screenSizeHeight * 0.3,
-                                                                          padding: EdgeInsets.only(
-                                                                              left: _screenSizeWidth * 0.03,
-                                                                              right: _screenSizeWidth * 0.03,
-                                                                              top: _screenSizeWidth * 0.05,
-                                                                              bottom: _screenSizeWidth * 0.05),
-                                                                          decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                                                          child: Column(children: [
-                                                                            Container(
-                                                                              margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-                                                                              alignment: Alignment(0, 0),
-                                                                              child: CustomText(text: '新規作成', fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
-                                                                            ),
-                                                                            Container(
-                                                                                width: _screenSizeWidth * 0.5,
-                                                                                height: _screenSizeHeight * 0.04,
-                                                                                alignment: const Alignment(0.0, 0.0),
-                                                                                margin: EdgeInsets.all(_screenSizeWidth * 0.03),
-
-                                                                                // テキストフィールド
-                                                                                // dbとの通信建設予定地
-                                                                                // 部屋番号をもらう
-                                                                                child: TextField(
-                                                                                  controller: roomNumController,
-                                                                                  decoration: const InputDecoration(
-                                                                                    hintText: '部屋番号を入力してね',
-                                                                                  ),
-                                                                                  onChanged: (num) {
-                                                                                    items.roomNum = num;
-                                                                                  },
-                                                                                  textInputAction: TextInputAction.next,
-                                                                                )),
-                                                                            Container(
-                                                                                width: _screenSizeWidth * 0.5,
-                                                                                height: _screenSizeHeight * 0.04,
-                                                                                alignment: const Alignment(0.0, 0.0),
-                                                                                margin: EdgeInsets.all(_screenSizeWidth * 0.03),
-
-                                                                                // テキストフィールド
-                                                                                child: TextField(
-                                                                                  controller: roomNameController,
-                                                                                  decoration: const InputDecoration(
-                                                                                    hintText: '部屋の名前を入力してね',
-                                                                                  ),
-                                                                                  onChanged: (newroomname) {
-                                                                                    items.roomName = newroomname;
-                                                                                  },
-                                                                                  textInputAction: TextInputAction.done,
-                                                                                )),
-
-                                                                            // 作成ボタン
-                                                                            // かぶりがないかチェックしないといけないけど未実装です がば
-                                                                            InkWell(
-                                                                              onTap: () {
-                                                                                // 空文字だったら通さない
-                                                                                if (roomNameController.text.isNotEmpty && roomNumController.text.isNotEmpty) {
-                                                                                  FocusScope.of(context).unfocus(); //キーボードを閉じる
-                                                                                  Navigator.of(context).pop(); //もどる
-
-                                                                                  setState(() {
-                                                                                    // 追加する部屋のひな型
-                                                                                    var newroom = {
-                                                                                      'roomName': items.roomName,
-                                                                                      'leader': items.userInfo['userid'],
-                                                                                      'workers': [items.userInfo['userid']],
-                                                                                      'task': [],
-                                                                                    };
-                                                                                    items.room[items.roomNum] = newroom;
-                                                                                    items.myroom.add(items.roomNum);
-
-                                                                                    // 入力フォームの初期化
-                                                                                    roomNameController.clear();
-                                                                                    roomNumController.clear();
-                                                                                  });
-                                                                                }
-                                                                              },
-                                                                              child: Container(
-                                                                                width: _screenSizeWidth * 0.25,
-                                                                                alignment: Alignment(0, 0),
-                                                                                padding: EdgeInsets.only(
-                                                                                    left: _screenSizeWidth * 0.03,
-                                                                                    right: _screenSizeWidth * 0.03,
-                                                                                    top: _screenSizeWidth * 0.02,
-                                                                                    bottom: _screenSizeWidth * 0.02),
-                                                                                margin: EdgeInsets.only(top: _screenSizeWidth * 0.02),
-                                                                                decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
-                                                                                child: CustomText(text: '作成', fontSize: _screenSizeWidth * 0.05, color: Constant.glay),
-                                                                              ),
-                                                                            )
-                                                                          ])));
-                                                                });
-                                                          },
-                                                          icon: const Icon(
-                                                            Icons.add,
-                                                            size: 35,
-                                                            color: Constant.blackGlay,
-                                                          ),
-                                                        ));
+                                                      : addRoom());
                                             },
                                           ),
                                         )
@@ -920,18 +932,18 @@ class _PageTask extends State<PageTask> {
                     },
                     // 現在のルーム名表示部分
                     child: Container(
-                      width: _screenSizeWidth * 0.625,
+                      width: screenSizeWidth * 0.625,
                       alignment: Alignment(0, 0),
-                      padding: EdgeInsets.all(_screenSizeWidth * 0.04),
+                      padding: EdgeInsets.all(screenSizeWidth * 0.04),
                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
-                      margin: EdgeInsets.only(bottom: _screenSizeWidth * 0.03),
-                      child: CustomText(text: items.room[taskRoomIndex]['roomName'], fontSize: _screenSizeWidth * 0.045, color: Constant.blackGlay),
+                      margin: EdgeInsets.only(bottom: screenSizeWidth * 0.03),
+                      child: CustomText(text: items.room[taskRoomIndex]['roomName'], fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                     )),
 
                 // タスク表示
                 Container(
-                  width: _screenSizeWidth * 0.95,
-                  height: _screenSizeHeight * 0.7,
+                  width: screenSizeWidth * 0.95,
+                  height: screenSizeHeight * 0.7,
                   child: taskList(items.taskList),
                 )
               ],
