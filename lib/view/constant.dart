@@ -66,13 +66,12 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
   var newtask = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
 
   // 事故発生中
-  items.room[roomid]['tasks'].add(taskid);
+  // items.room[roomid]['tasks'].add(taskid);
 
   // dbに追加
   DatabaseHelper.insert('tasks', newtask);
 
   // 例えば tasks テーブルから全ての行を取得
-  // 仮置きをやめることになりそう?
   Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('tasks');
   print(await result);
 }
@@ -87,8 +86,8 @@ void dbAddRoom(String roomid, String roomName, List leaders, List workers, List 
     'workers': jsonEncode(workers),
     'tasks': jsonEncode(tasks),
   };
-
   DatabaseHelper.insert('rooms', newRoom);
+  
 }
 
 // 日付を変換して返す
@@ -101,8 +100,6 @@ String dateformat(String dateTime, int type) {
   List formatType = [formatType_1, formatType_2, formatType_3,formatType_4];
   return formatType[type].format(DateTime.parse(dateTime));
 }
-
-void printer() {}
 
 // ルームIDチェッカー
 bool roomIDcheck(String roomID) {

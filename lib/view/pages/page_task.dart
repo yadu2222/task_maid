@@ -45,16 +45,6 @@ class _PageTask extends State<PageTask> {
   String roomNum;
   _PageTask({required this.roomNum});
 
-  // 例外にぎりつぶし文
-  static String roomName(String roomID) {
-    String ex = '検索結果はありません';
-    try {
-      return '『${items.room[roomID]['roomName']}』';
-    } catch (e) {
-      return ex;
-    }
-  }
-
   // static String roomNames = roomName();
   static String taskRoomIndex = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
   static String dateText = '期日を入力してね';
@@ -361,13 +351,13 @@ class _PageTask extends State<PageTask> {
       onPressed: () {
         Navigator.pop(context); // 前のページに戻る
         // ダイアログ表示 ここで部屋を作成
-        // 新規の番号もらってこないとなんですけどどうしましょう
+        // 新規の番号もらってくる
+        // サーバー処理設置願い
         showDialog(
             context: context,
             builder: (BuildContext context) {
               // 部屋作成用の値を仮置きする変数
-              String roomName = '';
-              String roomid = '0000';
+              String newRoomName = '';
               return AlertDialog(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -377,7 +367,7 @@ class _PageTask extends State<PageTask> {
 
                   content: Container(
                       width: screenSizeWidth * 0.9,
-                      height: screenSizeHeight * 0.3,
+                      height: screenSizeHeight * 0.25,
                       padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.05, bottom: screenSizeWidth * 0.05),
                       decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                       child: Column(children: [
@@ -386,25 +376,7 @@ class _PageTask extends State<PageTask> {
                           alignment: Alignment(0, 0),
                           child: CustomText(text: '新規作成', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                         ),
-                        Container(
-                            width: screenSizeWidth * 0.5,
-                            height: screenSizeHeight * 0.04,
-                            alignment: const Alignment(0.0, 0.0),
-                            margin: EdgeInsets.all(screenSizeWidth * 0.03),
-
-                            // テキストフィールド
-                            // dbとの通信建設予定地
-                            // 部屋番号をもらう
-                            child: TextField(
-                              controller: roomNumController,
-                              decoration: const InputDecoration(
-                                hintText: '部屋番号を入力してね',
-                              ),
-                              onChanged: (num) {
-                                roomNum = num;
-                              },
-                              textInputAction: TextInputAction.next,
-                            )),
+                        
                         Container(
                             width: screenSizeWidth * 0.5,
                             height: screenSizeHeight * 0.04,
@@ -418,19 +390,24 @@ class _PageTask extends State<PageTask> {
                                 hintText: '部屋の名前を入力してね',
                               ),
                               onChanged: (newroomname) {
-                                roomName = newroomname;
+                                newRoomName = newroomname;
                               },
                               textInputAction: TextInputAction.done,
                             )),
 
                         // 作成ボタン
-                        // かぶりがないかチェックしないといけないけど未実装です がば
                         InkWell(
                           onTap: () {
                             // 空文字だったら通さない
                             if (roomNameController.text.isNotEmpty && roomNumController.text.isNotEmpty) {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               Navigator.of(context).pop(); //もどる
+
+                              // 仮置き
+                              // ここでサーバーに数字をもらう
+                              // ユーザーが見える形で置いておく必要がある
+                              // サイドバーの上部に置いておけばよろしと今思いました　そうします
+                              String newRoomid = '1111';
 
                               setState(() {
                                 // 追加する部屋の変数
@@ -444,7 +421,7 @@ class _PageTask extends State<PageTask> {
                                 var tasks = [{}];
 
                                 // db追加メソッド呼び出し
-                                dbAddRoom(roomid, roomName, leaders, workers, tasks);
+                                dbAddRoom(newRoomid, newRoomName, leaders, workers, tasks);
 
                                 // 入力フォームの初期化
                                 roomNameController.clear();
@@ -472,7 +449,7 @@ class _PageTask extends State<PageTask> {
     );
   }
 
-  // 現在参加中の部屋の表示
+  // 現在参加中の部屋のリスト表示
   Widget joinRoom() {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
@@ -658,7 +635,7 @@ class _PageTask extends State<PageTask> {
     );
   }
 
-  // ルーム選択、検索、追加ボタン
+  // ルーム選択、検索ボタン
   Widget roomBottun() {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
@@ -750,6 +727,7 @@ class _PageTask extends State<PageTask> {
             // roomIDをkeyにしてここで問い合わせ
             // ひとまずは仮の結果を用意する
             // 値が帰ってくるかを判別する変数
+            // サーバー処理設置願い
             String searchRoomName = 'てすとてすと';
             bool searchBool = true;
             String falseResult = '検索結果はありません';
@@ -785,7 +763,7 @@ class _PageTask extends State<PageTask> {
                               top: screenSizeWidth * 0.0475,
                               bottom: screenSizeWidth * 0.02,
                             ),
-                            child: CustomText(text: searchBool ? '${searchRoomName}/nに参加しますか？' : falseResult, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
+                            child: CustomText(text: searchBool ? '${searchRoomName}\nに参加しますか？' : falseResult, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                           ),
 
                           // 参加しますか？
@@ -821,18 +799,18 @@ class _PageTask extends State<PageTask> {
                                                         child: CustomText(text: joinBool ? '既に参加しています' : '参加申請を送りました', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                                                       ));
                                                 });
-                                            
-                                                // 参加申請中であって参加確定ではないのでこの処理は違う
-                                                // 部屋情報のdbに申請中ユーザーのidを保持する列をつくればよいのではないか
+
+                                            // サーバーに参加申請処理願い
+                                            // 部屋情報のdbに申請中ユーザーのidを保持する列をつくればよいのではないか
                                           },
-                                          // ボタン呼び出し
+                                          // ボタン
                                           child: dialogButton(true, 0.2)),
                                       // 「いいえ」
                                       InkWell(
                                           onTap: () {
                                             Navigator.of(context).pop(); //もどる
                                           },
-                                          // ボタン呼び出し
+                                          // ボタン
                                           child: dialogButton(true, 0.2)),
                                     ],
                                   ))
