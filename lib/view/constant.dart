@@ -78,19 +78,29 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
 }
 
 // 新しい部屋をdbに追加するメソッド
-void dbAddRoom(String roomid,String roomName,List leaders,List workers,List tasks) {
+void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) {
   // Roomをデータベースに追加する際の例
-var newRoom = {
-  'roomid':roomid,
-  'roomName': roomName,
-  'leader': jsonEncode(leaders),
-  'workers':jsonEncode(workers),
-  'tasks': jsonEncode(tasks),
-};
+  var newRoom = {
+    'roomid': roomid,
+    'roomName': roomName,
+    'leader': jsonEncode(leaders),
+    'workers': jsonEncode(workers),
+    'tasks': jsonEncode(tasks),
+  };
 
   DatabaseHelper.insert('rooms', newRoom);
 }
 
+// 日付を変換して返す
+String dateformat(String dateTime, int type) {
+  final formatType_1 = DateFormat('yyyy.MM.dd HH:mm');
+  final formatType_2 = DateFormat('yyyy/MM/dd');
+  final formatType_3 = DateFormat('HH:mm');
+  final formatType_4 = DateFormat('MM月dd日HH時mm分');
+
+  List formatType = [formatType_1, formatType_2, formatType_3,formatType_4];
+  return formatType[type].format(DateTime.parse(dateTime));
+}
 
 void printer() {}
 

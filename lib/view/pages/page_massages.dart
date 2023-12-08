@@ -77,16 +77,6 @@ class _PageMassages extends State<PageMassages> {
     });
   }
 
-  // 日付を変換して返す
-  String dateformat(String dateTime, int type) {
-    final formatType_1 = DateFormat('yyyy.MM.dd HH:mm');
-    final formatType_2 = DateFormat('yyyy/MM/dd');
-    final formatType_3 = DateFormat('HH:mm');
-
-    List formatType = [formatType_1, formatType_2, formatType_3];
-    return formatType[type].format(DateTime.parse(dateTime));
-  }
-
   // メッセージ内容の表示
   // statusの値に合わせて表示するwidgetを変更
   Widget choiceMsg(int status, List messages, int index) {
@@ -124,8 +114,7 @@ class _PageMassages extends State<PageMassages> {
                           Container(
                             alignment: Alignment.centerLeft,
                             child: CustomText(
-                                text:
-                                    '期限：${dateformat(items.taskList[messages[index]['quote']]['limitTime'], 0)}\n------------------------------',
+                                text: '期限：${dateformat(items.taskList[messages[index]['quote']]['limitTime'], 0)}\n------------------------------',
                                 fontSize: screenSizeWidth * 0.0325,
                                 color: Constant.blackGlay),
                           ),
@@ -159,7 +148,7 @@ class _PageMassages extends State<PageMassages> {
 
       // スタンプ表示
       case 2:
-        return Container(
+        return SizedBox(
             width: screenSizeWidth * 0.6,
             height: screenSizeWidth * 0.6,
             // margin: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
@@ -185,7 +174,7 @@ class _PageMassages extends State<PageMassages> {
         : Container(
             height: screenSizeHeight * 0.05,
             alignment: Alignment.center,
-            child: CustomText(text: '${dateformat(messages[index]['time'], 1)}', fontSize: screenSizeWidth * 0.03, color: Constant.white),
+            child: CustomText(text: dateformat(messages[index]['time'], 1), fontSize: screenSizeWidth * 0.03, color: Constant.white),
           );
   }
 
@@ -198,7 +187,7 @@ class _PageMassages extends State<PageMassages> {
             padding: EdgeInsets.only(bottom: screenSizeHeight * 0.01),
             alignment: Alignment.bottomCenter,
             width: screenSizeWidth * 0.1,
-            child: CustomText(text: '${dateformat(messages[index]['time'], 2)}', fontSize: screenSizeWidth * 0.025, color: Constant.white),
+            child: CustomText(text: dateformat(messages[index]['time'], 2), fontSize: screenSizeWidth * 0.025, color: Constant.white),
           )
         : const SizedBox.shrink();
   }
@@ -361,7 +350,7 @@ class _PageMassages extends State<PageMassages> {
     return stamp
         ? Container(
             width: screenSizeWidth,
-            decoration: BoxDecoration(color: Constant.glay),
+            decoration: const BoxDecoration(color: Constant.glay),
             child: Column(
               children: [
                 Container(
@@ -433,7 +422,7 @@ class _PageMassages extends State<PageMassages> {
                                   child: CustomText(text: '${messenger}からのタスク', fontSize: screenSizeWidth * 0.038, color: Constant.blackGlay)),
 
                               // 箱の中身
-                              Container(
+                              SizedBox(
                                   width: screenSizeWidth * 0.6,
                                   height: screenSizeHeight * 0.35,
                                   // タスク選択処理
@@ -604,17 +593,17 @@ class _PageMassages extends State<PageMassages> {
   // ここから表示部分
   @override
   Widget build(BuildContext context) {
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
       body: Center(
         child: Container(
-          width: _screenSizeWidth,
-          height: _screenSizeHeight,
-          decoration: BoxDecoration(color: Constant.main),
+          width: screenSizeWidth,
+          height: screenSizeHeight,
+          decoration: const BoxDecoration(color: Constant.main),
 
           // セーフエリアに対応
           child: SafeArea(
@@ -627,7 +616,7 @@ class _PageMassages extends State<PageMassages> {
                     // 上部バー
                     molecules.PageTitle(context, items.room[messenger]['roomName']),
                     // メッセージ部分
-                    Container(width: _screenSizeWidth * 0.9, height: _screenSizeHeight * 0.8, child: messageList(items.message)),
+                    Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList(items.message)),
                   ]),
                 ),
 
@@ -635,15 +624,15 @@ class _PageMassages extends State<PageMassages> {
                 Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                        constraints: BoxConstraints(maxHeight: _screenSizeHeight * 0.34, minHeight: _screenSizeHeight * 0.0578),
+                        constraints: BoxConstraints(maxHeight: screenSizeHeight * 0.34, minHeight: screenSizeHeight * 0.0578),
                         alignment: Alignment.bottomCenter,
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.end, // columの要素を下詰めにする
                             children: [
                               Container(
-                                  width: _screenSizeWidth,
+                                  width: screenSizeWidth,
                                   alignment: Alignment.bottomCenter,
-                                  padding: EdgeInsets.only(top: _screenSizeWidth * 0.005, bottom: _screenSizeWidth * 0.005),
+                                  padding: EdgeInsets.only(top: screenSizeWidth * 0.005, bottom: screenSizeWidth * 0.005),
                                   decoration: const BoxDecoration(color: Constant.glay),
                                   child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                                     // 引用中のタスク
