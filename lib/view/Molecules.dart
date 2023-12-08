@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import './items.dart';
 import 'constant.dart';
 
-class Molecules {
+class molecules {
   // 画面上部バー
   // 戻るボタンとタイトル
   static Widget PageTitle(BuildContext context, String text) {
@@ -79,6 +79,19 @@ class Molecules {
     }, onConfirm: (date) {
       print(date);
     }, currentTime: DateTime.now(), locale: LocaleType.jp);
+  }
+
+  // ループして繰り返すリストウィジェットのサンプル
+  static Widget rollList(Widget widget,List list) {
+ 
+    return ListView.builder(
+      // indexの作成 widgetが表示される数
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        // 繰り返し描画されるwidget
+        return Card(color: Constant.glay, elevation: 0, child: widget);
+      },
+    );
   }
 }
 

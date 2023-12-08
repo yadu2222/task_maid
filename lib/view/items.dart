@@ -56,7 +56,7 @@ class items {
   static Map userAccount = {};
   static List rooms = [
     {
-      'roomid':'1111',
+      'roomid': '1111',
       'roomName': 'てすとるーむ',
       'leader': '12345',
       'workers': ['12345'],
@@ -99,7 +99,7 @@ class items {
     'stamp': [
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp02.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp03.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp01.png',
@@ -107,22 +107,4 @@ class items {
       'assets/images/stamp/taskMaid_stamp01.png',
     ],
   };
-
-  // messagesの画面内の状態を保存する変数
-  static bool indexBool = false;
-  static bool stamplist = false;
-  static bool stampbool = false;
-  static int stampIndex = 0;
-  static int taskIndex = 0;
-
-  Widget _test_taskList(var _screenSizeWidth) {
-    return ListView.builder(
-      // indexの作成 widgetが表示される数
-      itemCount: items.taskList.length,
-      itemBuilder: (context, index) {
-        // 繰り返し描画されるwidget
-        return Card(color: Constant.glay, elevation: 0, child: SizedBox());
-      },
-    );
-  }
 }

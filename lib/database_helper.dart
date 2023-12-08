@@ -138,7 +138,7 @@ class DatabaseHelper {
   // idでの検索に返してくれるやつ
    static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from msgchats where '${key}' == 'roomid'");
+    return await db!.rawQuery("select * from msgchats where '${key}' == 'time'");
   }
 
   // その3

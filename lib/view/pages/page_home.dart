@@ -4,7 +4,7 @@ import '../items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_massage.dart';
-import '../Molecules.dart';
+import '../molecules.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);

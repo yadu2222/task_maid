@@ -3,7 +3,7 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
-import '../Molecules.dart';
+import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
 
 class PageTask extends StatefulWidget {
@@ -198,7 +198,8 @@ class _PageTask extends State<PageTask> {
                                                         ? addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5, taskList[index]['roomid'])
                                                         : addMessage(karioki2, 'できました！！！！！！！', 3, index, 0, taskList[index]['roomid']);
 
-                                                    if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
+                                                    // なんこれ
+                                                    // if (!(items.room[taskRoomIndex]['leader'] == items.userInfo['userid'])) items.indexBool = false;
 
                                                     // ページ遷移
                                                     Navigator.push(
@@ -233,7 +234,7 @@ class _PageTask extends State<PageTask> {
 
                                                 // リスケおねがいします、、ボタン
                                                 InkWell(
-                                                  onTap: () {
+                                                  onTap: () async {
                                                     // 建設予定
                                                     // データの取り出し、決定ボタンを押したら遷移の処理
                                                     DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
@@ -245,9 +246,13 @@ class _PageTask extends State<PageTask> {
 
                                                     // 見ているタスクを引用してリスケを希望
                                                     // 辞書に追加
+                                                    // メッセージにdbからの保存
                                                     karioki2++;
                                                     addMessage(karioki2, 'リスケお願いします', 3, index, 2, taskList[index]['roomid']);
-                                                    items.indexBool = false;
+                                                    items.message = await DatabaseHelper.queryAllRows('msgchats');
+
+                                                    // いらないと、おもうんですよね、、
+                                                    // items.indexBool = false;
 
                                                     // ページ遷移
                                                     Navigator.push(
@@ -433,7 +438,7 @@ class _PageTask extends State<PageTask> {
                                   {'worker': items.userInfo['userid']}
                                 ];
                                 var tasks = [{}];
-                                
+
                                 // db追加メソッド呼び出し
                                 dbAddRoom(roomid, roomName, leaders, workers, tasks);
 
@@ -489,7 +494,7 @@ class _PageTask extends State<PageTask> {
                     width: screenSizeWidth,
                     // バー部分
                     child: Row(children: [
-                      Molecules.PageTitle(context, 'タスク'),
+                      molecules.PageTitle(context, 'タスク'),
                       SizedBox(
                         width: screenSizeWidth * 0.3,
                       ),
@@ -503,7 +508,7 @@ class _PageTask extends State<PageTask> {
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return Molecules.dialog(
+                                        return molecules.dialog(
                                             context,
                                             0.9,
                                             0.4,
@@ -605,28 +610,12 @@ class _PageTask extends State<PageTask> {
                                                     timeController.clear();
                                                     taskThinkController.clear();
 
-                                                    // 画面を更新
                                                     FocusScope.of(context).unfocus(); // キーボードを閉じる
                                                     Navigator.of(context).pop(); // 戻る
-                                                    //  String key = items.newtask;
-
-                                                    // items.getTask(key);
-                                                    print(items.taskList);
-
-                                                    setState(() {
-                                                      items.taskList = items.getList(); // タスクリストを更新
-                                                    });
-
-                                                    await Future.delayed(Duration(seconds: 1));
-
+                                                    // 値の更新
+                                                    items.taskList = await DatabaseHelper.queryAllRows('tasks');
+                                                    // 画面の更新
                                                     setState(() {});
-
-                                                    // ビルドサイクルが完了するまで待機
-                                                    Future.delayed(Duration.zero, () {
-                                                      // 画面更新のための処理をここに記述
-                                                      print('ビルドサイクル完了後の処理');
-                                                      reloadWidgetTree();
-                                                    });
                                                   }
                                                 },
                                                 child: Container(
@@ -651,7 +640,7 @@ class _PageTask extends State<PageTask> {
                           onPressed: () {
                             sideBarKey.currentState!.openEndDrawer();
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.menu,
                             color: Constant.glay,
                             size: 35,
@@ -665,7 +654,7 @@ class _PageTask extends State<PageTask> {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return Molecules.dialog(
+                            return molecules.dialog(
                                 context,
                                 0.9,
                                 0.465,

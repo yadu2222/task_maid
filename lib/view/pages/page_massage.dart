@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_massages.dart';
-import '../Molecules.dart';
+import '../molecules.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -93,7 +93,7 @@ class _PageMail extends State<PageMail> {
         child: Column(
           children: [
             // バー部分
-            Molecules.PageTitle(context, 'メッセージ'),
+            molecules.PageTitle(context, 'メッセージ'),
             Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),
