@@ -5,6 +5,7 @@ import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_massage.dart';
 import '../molecules.dart';
+import 'package:task_maid/database_helper.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -70,9 +71,11 @@ class _PageHomeState extends State<PageHome> {
     items.Nums();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    items.Nums();
+    
     // 画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;

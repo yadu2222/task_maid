@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/molecules.dart';
-import 'package:intl/intl.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database_helper.dart';
@@ -561,7 +560,7 @@ class _PageMassages extends State<PageMassages> {
         if (_messageController.text.isNotEmpty) {
           FocusScope.of(context).unfocus(); //キーボードを閉じる
 
-          // メッセージ追加メソッド呼び出し
+          // db追加メソッド呼び出し
           // 怒りレベル建設予定地
           karioki++;
           addMessage(karioki, message, status, taskIndex, 0, messenger);

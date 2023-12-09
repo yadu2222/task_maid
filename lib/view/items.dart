@@ -54,15 +54,7 @@ class items {
   // dbからデータの取得
   static List taskList = [];
   static Map userAccount = {};
-  static List rooms = [
-    {
-      'roomid': '1111',
-      'roomName': 'てすとるーむ',
-      'leader': '12345',
-      'workers': ['12345'],
-      'tasks': [],
-    }
-  ];
+  static List rooms = [];
   static List message = [];
   static List newTask = [];
 
@@ -72,6 +64,7 @@ class items {
     message = await DatabaseHelper.queryAllRows('msgchats');
     // print(msgchats);
     rooms = await DatabaseHelper.queryAllRows('rooms');
+    // print(rooms);
   }
 
   static Future<void> getTask(String key) async {

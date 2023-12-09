@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../view/pages/page_massages.dart';
 import './items.dart';
 import 'package:task_maid/database_helper.dart';
 
@@ -77,17 +75,19 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
 }
 
 // 新しい部屋をdbに追加するメソッド
-void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) {
+void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) async {
   // Roomをデータベースに追加する際の例
+  // リストを直でぶち込むことはできないらしい　不便じゃない？
   var newRoom = {
-    'roomid': roomid,
-    'roomName': roomName,
-    'leader': jsonEncode(leaders),
-    'workers': jsonEncode(workers),
-    'tasks': jsonEncode(tasks),
+    "roomid": roomid,
+    "roomName": roomName,
+    "leader": jsonEncode(leaders),
+    "workers": jsonEncode(workers),
+    "tasks": jsonEncode(tasks),
   };
   DatabaseHelper.insert('rooms', newRoom);
-  
+  // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
+  // print(await result);
 }
 
 // 日付を変換して返す
@@ -97,7 +97,7 @@ String dateformat(String dateTime, int type) {
   final formatType_3 = DateFormat('HH:mm');
   final formatType_4 = DateFormat('MM月dd日HH時mm分');
 
-  List formatType = [formatType_1, formatType_2, formatType_3,formatType_4];
+  List formatType = [formatType_1, formatType_2, formatType_3, formatType_4];
   return formatType[type].format(DateTime.parse(dateTime));
 }
 

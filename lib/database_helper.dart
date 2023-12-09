@@ -77,8 +77,8 @@ class DatabaseHelper {
     // ルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE rooms (
-      roomid TEXT PRIMARY KEY,
-      roomName TEXT NOT NULL,
+      roomid TEXT ,
+      roomName TEXT PRIMARY KEY,
       leader TEXT,
       workers TEXT,
       tasks TEXT
@@ -124,11 +124,12 @@ class DatabaseHelper {
   // 引数：table名
   static Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from ${tableName}");
+    print(await db!.rawQuery("select * from ${tableName}"));
+    return await db.rawQuery("select * from ${tableName}");
   }
 
   // その2
-  // 毎回全部落とすより差分もらってくるほうがええんとちゃますののやつ
+  // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
   static Future<List<Map<String, dynamic>>> queryRow(String key) async {
     Database? db = await instance.database;
     return await db!.rawQuery("select * from msgchats where '${key}' == 'message'");
@@ -136,20 +137,36 @@ class DatabaseHelper {
 
   // その3
   // idでの検索に返してくれるやつ
-   static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
+  static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
     Database? db = await instance.database;
     return await db!.rawQuery("select * from msgchats where '${key}' == 'time'");
   }
 
   // その3
   // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> queryworer(String key) async {
+  static Future<List<Map<String, dynamic>>> queryRowtask(String key) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from msgchats where '${key}' == 'roomid'");
+    return await db!.rawQuery("select * from tasks where '${key}' == 'roomid'");
   }
 
+  static Future<bool> firstdb() async {
+    Database? db = await instance.database;
+    List result = await db!.rawQuery("select * from rooms");
+    // 取得した結果が空でないかを確認し、存在する場合はtrueを、存在しない場合はfalseを返す
+    print(result.isNotEmpty);
+    return result.isNotEmpty;
+  }
 
-  // レコード数を確認t
+  // その3
+  // idでの検索に返してくれるやつ
+  static Future<List<Map<String, dynamic>>> selectRoom(String key) async {
+    Database? db = await instance.database;
+    print(key);
+    print(await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']));
+    return await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']);
+  }
+
+  // レコード数を確認
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {
     Database? db = await instance.database;
