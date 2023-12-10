@@ -3,7 +3,7 @@ import '../constant.dart';
 import '../items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
-import 'page_massage.dart';
+import 'page_message.dart';
 import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
 

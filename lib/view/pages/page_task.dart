@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import '../constant.dart';
 import '../items.dart';
-import 'page_massages.dart';
+import 'page_messages.dart';
 import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
 
@@ -53,12 +53,35 @@ class _PageTask extends State<PageTask> {
   static String please = 'リスケしてほしい日付を入力してね';
   static int karioki2 = 4587679;
 
+  // 変数まとめ
   List joinRoomInfo = items.rooms;
+  List nowRoomInfo = [
+    {
+      'roomid': 1111,
+      'roomName': 'てすとるーむ',
+      'leader': [
+        {"leader": "12345"}
+      ],
+      'workers': [
+        {"worker": "12345"}
+      ],
+      'tasks': [{}]
+    }
+  ];
+
+  List<dynamic> decodedLeaders = [];
+  List<dynamic> decodedWorkers = [];
+  List<dynamic> decodedTasks = [];
+  List<dynamic> decodedSubRooms = [];
+  List nowRoomTaskList = [];
+
   void dbroomInfo() async {
     // db取り出し
     joinRoomInfo = await DatabaseHelper.queryRow('rooms');
+    print(joinRoomInfo);
   }
 
+  // dbにテストルームがあるかないかを判別、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
       // 追加する部屋の変数
@@ -77,28 +100,24 @@ class _PageTask extends State<PageTask> {
     // DatabaseHelper.queryAllRows('rooms');
   }
 
-  List nowRoomInfo = [
-    {
-      'roomid': 1111,
-      'roomName': 'てすとるーむ',
-      'leader': [
-        {"leader": "12345"}
-      ],
-      'workers': [
-        {"worker": "12345"}
-      ],
-      'tasks': [{}]
-    }
-  ];
-  // 今の部屋
-  dbnowRoom() async {
-    nowRoomInfo = await DatabaseHelper.selectRoom(nowRoomid);
-    print('dbnowroom');
-    print(nowRoomInfo);
-    print('更新');
+  // JSON文字列をデコードしてListを取得する関数
+  List<dynamic> decodeJsonList(String jsonString) {
+    return jsonDecode(jsonString);
   }
 
-  List nowRoomTaskList = [];
+  // 今の部屋
+  dbnowRoom() async {
+    Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(nowRoomid);
+    nowRoomInfo = await result;
+    // データベースから取得したデータをデコードして使用
+    if (nowRoomInfo.isNotEmpty) {
+      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
+      decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
+      decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
+      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
+    }
+  }
+
   // 現在のタスクを参照する
   taskGet() async {
     nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
@@ -110,11 +129,8 @@ class _PageTask extends State<PageTask> {
     bool result = false;
     // リストが空じゃなければ
     if (nowRoomInfo.isNotEmpty) {
-      Map<String, dynamic> roomInfo = nowRoomInfo[0];
-      List checkList = roomInfo["leader"];
-
-      for (int i = 0; i < checkList.length; i++) {
-        if (checkList[i]["leader"] == items.userInfo['userid']) {
+      for (int i = 0; i < decodedLeaders.length; i++) {
+        if (decodedLeaders[i]["leader"] == items.userInfo['userid']) {
           result = true;
           break;
         }
@@ -131,34 +147,126 @@ class _PageTask extends State<PageTask> {
     nowRoomid = widget.roomNum;
   }
 
+  bool memberDisplay = false;
+  bool roomDisplay = false;
   // サイドバー
   Widget sideBar() {
+    // 画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+
     return Drawer(
-      // 変更箇所
       child: ListView(
         children: [
+          // なんか画像入れる？
+          DrawerHeader(
+            child: Text(nowRoomInfo[0]['roomName']),
+            decoration: BoxDecoration(
+              color: Constant.main,
+            ),
+          ),
           ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text("ルームマップ"),
+            // leading: const Icon(Icons.add),
+            title: CustomText(
+              text: '${nowRoomInfo[0]['roomid']}号室',
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
             onTap: () {
               // ここにメニュータップ時の処理を記述
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text("メンバー"),
+            leading: const Icon(Icons.account_box_outlined),
+            title: CustomText(
+              text: "メンバー",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
             onTap: () {
               // ここにメニュータップ時の処理を記述
+              // メンバー一覧が見れる
+              setState(() {
+                memberDisplay = !memberDisplay;
+              });
             },
           ),
+
+          // 開かれるメンバー一覧　アイコンあったほうがいいですね、、、
+          // 現在はidの表示　名前を　出したい
+          for (int i = 0; i < decodedWorkers.length; i++)
+            memberDisplay
+                ? ListTile(
+                    leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
+                    title: Row(children: [
+                      leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
+                      CustomText(text: '\t${decodedWorkers[i]['worker']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                    ]),
+                    // リーダーはタップでDMにとべる
+                    onTap: () {
+                      if (leaderCheck()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PageMassages(
+                                    messenger: nowRoomid,
+                                  )),
+                        ).then((value) {
+                          //戻ってきたら再描画
+                          setState(() {
+                            Navigator.pop(context);
+                          });
+                        });
+                      }
+                    },
+                  )
+                : const SizedBox.shrink(),
+
+          ListTile(
+            leading: const Icon(Icons.map),
+            title: CustomText(
+              text: "ルームマップ",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
+            onTap: () {
+              // ここにメニュータップ時の処理を記述
+              setState(() {
+                roomDisplay = !roomDisplay;
+              });
+            },
+          ),
+
+          for (int i = 0; i < decodedSubRooms.length; i++)
+            roomDisplay
+                ? ListTile(
+                    leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
+                    title: Row(children: [
+                      leaderCheck() ? const Icon(Icons.sensor_door) : const Icon(Icons.horizontal_rule),
+                      CustomText(text: i == 0 ? '\t${nowRoomInfo[0]['roomName']}' : '\t${decodedSubRooms[i]['subRoom']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                    ]),
+                    // タップで該当の部屋にとべる
+                    onTap: () {},
+                  )
+                : const SizedBox.shrink(),
+
           ListTile(
             leading: const Icon(Icons.login),
-            title: const Text("サブルームの追加"),
+            title: CustomText(
+              text: "サブルームの追加",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.favorite),
-            title: const Text("権限の編集"),
+            leading: const Icon(Icons.lock_outlined),
+            title: CustomText(
+              text: "権限の編集",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
             onTap: () {},
           )
         ],
@@ -303,7 +411,7 @@ class _PageTask extends State<PageTask> {
                       SizedBox(
                         width: screenSizeWidth * 0.035,
                       ),
-                      msgbutton(items.room[nowRoomid]['leader'] == items.userInfo['userid'] ? 1 : 2, taskList, index)
+                      msgbutton(leaderCheck() ? 1 : 2, taskList, index)
                     ])),
               ],
             ),
@@ -383,7 +491,7 @@ class _PageTask extends State<PageTask> {
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
 
-            addMessage(karioki2, 'リスケお願いします', 3, index, 2, taskList[index]['roomid']);
+            addMessage(karioki2, 'リスケお願いします', 3, index, 2, nowRoomTaskList[index]['roomid']);
         }
 
         // dbから取り出し
@@ -393,7 +501,7 @@ class _PageTask extends State<PageTask> {
           context,
           MaterialPageRoute(
               builder: (context) => PageMassages(
-                    messenger: taskList[index]['roomid'],
+                    messenger: nowRoomTaskList[index]['roomid'],
                   )),
         ).then((value) {
           //戻ってきたら再描画
@@ -658,7 +766,7 @@ class _PageTask extends State<PageTask> {
                       Container(
                         height: screenSizeHeight * 0.1,
                         child: ListView.builder(
-                          itemCount: nowRoomInfo[0]['workers'].length,
+                          itemCount: decodedWorkers.length,
                           itemBuilder: (context, index) {
                             return Card(
                                 color: Constant.glay,
@@ -676,8 +784,8 @@ class _PageTask extends State<PageTask> {
                                     decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    // エラーでてるよ　なおしてね　あしたのわたし
-                                    child: CustomText(text: nowRoomInfo[0]['workers'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                    
+                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
                           },
@@ -954,6 +1062,7 @@ class _PageTask extends State<PageTask> {
   @override
   Widget build(BuildContext context) {
     // items.Nums();
+
     dbroomFirstAdd();
     dbnowRoom();
     taskGet();

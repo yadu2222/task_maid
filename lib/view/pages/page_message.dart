@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
-import 'page_massages.dart';
+import 'page_messages.dart';
 import '../molecules.dart';
 
 class PageMail extends StatefulWidget {

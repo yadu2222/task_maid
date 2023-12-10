@@ -81,7 +81,8 @@ class DatabaseHelper {
       roomName TEXT PRIMARY KEY,
       leader TEXT,
       workers TEXT,
-      tasks TEXT
+      tasks TEXT,
+      subRooms TEXT
     )
   ''');
 

@@ -78,13 +78,8 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
 void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) async {
   // Roomをデータベースに追加する際の例
   // リストを直でぶち込むことはできないらしい　不便じゃない？
-  var newRoom = {
-    "roomid": roomid,
-    "roomName": roomName,
-    "leader": jsonEncode(leaders),
-    "workers": jsonEncode(workers),
-    "tasks": jsonEncode(tasks),
-  };
+  List subRooms = [{"subRoom":roomid}];
+  var newRoom = {"roomid": roomid, "roomName": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "subRooms": jsonEncode(subRooms)};
   DatabaseHelper.insert('rooms', newRoom);
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);

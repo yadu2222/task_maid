@@ -82,8 +82,7 @@ class molecules {
   }
 
   // ループして繰り返すリストウィジェットのサンプル
-  static Widget rollList(Widget widget,List list) {
- 
+  static Widget rollList(Widget widget, List list) {
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: list.length,
@@ -133,5 +132,46 @@ class _PageShiftIconState extends State<PageShiftIcon> {
         ),
       ),
     );
+  }
+}
+
+// ページのひな型
+class pageName extends StatefulWidget {
+  const pageName({Key? key}) : super(key: key);
+
+  @override
+  _pageName createState() => _pageName();
+}
+class _pageName extends State<pageName> {
+  // 初期化メソッド
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    items.Nums();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+        body: Center(
+      // ページの中身
+      child: Container(
+        width: double.infinity,
+        height: screenSizeHeight,
+        // 背景色
+        decoration: const BoxDecoration(color: Constant.main),
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [SizedBox.shrink()],
+          ),
+        ),
+      ),
+    ));
   }
 }
