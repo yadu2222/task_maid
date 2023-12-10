@@ -97,11 +97,11 @@ String dateformat(String dateTime, int type) {
 }
 
 // ルームIDチェッカー
-bool roomIDcheck(String roomID) {
-  for (int i = 0; i < items.room[roomID]['workers'].length; i++) {
-    if (items.room[roomID]['workers'][i] == items.userInfo['userid']) {
-      return true;
-    }
-  }
-  return false;
-}
+// bool roomIDcheck(String roomID) {
+//   for (int i = 0; i < items.room[roomID]['workers'].length; i++) {
+//     if (items.room[roomID]['workers'][i] == items.userInfo['userid']) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }

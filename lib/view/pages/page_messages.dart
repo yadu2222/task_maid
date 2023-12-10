@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/molecules.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database_helper.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // import 'package:intl/intl.dart';
 
@@ -33,10 +33,45 @@ class _PageMassages extends State<PageMassages> {
   int status = 0;
   int karioki = 12800;
 
-  //
+  // 引用の有無
   bool quote = false;
   bool stamp = false;
   int taskIndex = 0;
+
+  // JSON文字列をデコードしてListを取得する関数
+  List<dynamic> decodeJsonList(String jsonString) {
+    return jsonDecode(jsonString);
+  }
+
+  List nowRoomInfo = [
+    {
+      'roomid': 1111,
+      'roomName': 'てすとるーむ',
+      'leader': [
+        {"leader": "12345"}
+      ],
+      'workers': [
+        {"worker": "12345"}
+      ],
+      'tasks': [{}]
+    }
+  ];
+  List decodedLeaders = [];
+  List decodedWorkers = [];
+  List decodedTasks = [];
+  List decodedSubRooms = [];
+
+  dbnowRoom() async {
+    Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(messenger);
+    nowRoomInfo = await result;
+    // データベースから取得したデータをデコードして使用
+    if (nowRoomInfo.isNotEmpty) {
+      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
+      decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
+      decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
+      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
+    }
+  }
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -592,6 +627,7 @@ class _PageMassages extends State<PageMassages> {
   // ここから表示部分
   @override
   Widget build(BuildContext context) {
+    dbnowRoom();
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
@@ -613,7 +649,7 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    molecules.PageTitle(context, items.room[messenger]['roomName']),
+                    molecules.PageTitle(context, nowRoomInfo[0]['roomName']),
                     // メッセージ部分
                     Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList(items.message)),
                   ]),

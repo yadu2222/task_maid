@@ -11,36 +11,37 @@ class items {
     '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
   };
 
-  static List myroom = ['1111', '1234', '2345'];
+
+  static List myroom = ['1111',];
 
   // ルーム
   // でーたべーすから自分が参加してるルームをもらってくる
-  static Map room = {
-    '1111': {
-      'roomName': 'てすとるーむ',
-      'leader': '12345',
-      'workers': ['12345'],
-      'tasks': [],
-    },
-    '3456': {
-      'roomName': '参加できない; ;',
-      'leader': '12345',
-      'workers': ['12345'],
-      'tasks': [],
-    },
-    '1234': {
-      'roomName': 'てくてくてっく',
-      'leader': '12345',
-      'workers': ['12345', '67890'],
-      'tasks': [],
-    },
-    '2345': {
-      'roomName': 'ニャリオットのお世話',
-      'leader': '67890',
-      'workers': ['67890'],
-      'tasks': [],
-    }
-  };
+  // static Map room = {
+  //   '1111': {
+  //     'roomName': 'てすとるーむ',
+  //     'leader': '12345',
+  //     'workers': ['12345'],
+  //     'tasks': [],
+  //   },
+  //   '3456': {
+  //     'roomName': '参加できない; ;',
+  //     'leader': '12345',
+  //     'workers': ['12345'],
+  //     'tasks': [],
+  //   },
+  //   '1234': {
+  //     'roomName': 'てくてくてっく',
+  //     'leader': '12345',
+  //     'workers': ['12345', '67890'],
+  //     'tasks': [],
+  //   },
+  //   '2345': {
+  //     'roomName': 'ニャリオットのお世話',
+  //     'leader': '67890',
+  //     'workers': ['67890'],
+  //     'tasks': [],
+  //   }
+  // };
 
   // タスクを追加するときに値を保存する変数
   static String worker = '';
@@ -66,21 +67,6 @@ class items {
     rooms = await DatabaseHelper.queryAllRows('rooms');
     // print(rooms);
   }
-
-  static Future<void> getTask(String key) async {
-    newTask = await DatabaseHelper.queryRow(key);
-    // newTask が空でない場合のみ処理を行う
-    if (newTask.isNotEmpty) {
-      taskList.add(newTask[0]);
-    }
-  }
-
-  static List getList() {
-    Nums();
-    return taskList;
-  }
-
-  static int karioki = 1234565;
 
   // 画像リスト
   static Map taskMaid = {

@@ -3,6 +3,7 @@ import '../constant.dart';
 import '../items.dart';
 import 'page_messages.dart';
 import '../molecules.dart';
+import '../../database_helper.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -11,15 +12,20 @@ class PageMail extends StatefulWidget {
   _PageMail createState() => _PageMail();
 }
 
+dbroomGet() async {
+  items.rooms = await DatabaseHelper.queryAllRows('rooms');
+}
+
 class _PageMail extends State<PageMail> {
   // トークルームの繰り返し処理
   Widget _messages() {
+    
     //画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.myroom.length,
+      itemCount: items.rooms.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(
@@ -32,7 +38,7 @@ class _PageMail extends State<PageMail> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messenger: items.myroom[index],
+                          messenger: items.rooms[index]['roomid'],
                         )),
               ).then((value) {
                 //戻ってきたら再描画
@@ -57,7 +63,7 @@ class _PageMail extends State<PageMail> {
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
-                      child: CustomText(text: items.room[items.myroom[index]]['roomName'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                      child: CustomText(text: items.rooms[index]['roomName'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                     ),
                     Container(
                         width: _screenSizeWidth * 0.7,
@@ -77,7 +83,7 @@ class _PageMail extends State<PageMail> {
 
   @override
   Widget build(BuildContext context) {
-    
+    dbroomGet();
     //画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;

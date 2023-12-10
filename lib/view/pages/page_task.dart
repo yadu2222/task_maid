@@ -784,7 +784,6 @@ class _PageTask extends State<PageTask> {
                                     decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    
                                     child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
