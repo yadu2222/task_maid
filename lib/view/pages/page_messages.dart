@@ -9,7 +9,7 @@ import '../../database_helper.dart';
 
 class PageMassages extends StatefulWidget {
   // 誰とのメッセージなのかを引数でもらう
-  final String messenger;
+  final Map messenger;
 
   PageMassages({required this.messenger, Key? key}) : super(key: key);
   @override
@@ -17,7 +17,7 @@ class PageMassages extends StatefulWidget {
 }
 
 class _PageMassages extends State<PageMassages> {
-  String messenger;
+  Map messenger;
   _PageMassages({required this.messenger});
 
   // 画面の再構築メソッド
@@ -43,35 +43,23 @@ class _PageMassages extends State<PageMassages> {
     return jsonDecode(jsonString);
   }
 
-  List nowRoomInfo = [
-    {
-      'roomid': 1111,
-      'roomName': 'てすとるーむ',
-      'leader': [
-        {"leader": "12345"}
-      ],
-      'workers': [
-        {"worker": "12345"}
-      ],
-      'tasks': [{}]
-    }
-  ];
+  Map nowRoomInfo = {};
   List decodedLeaders = [];
   List decodedWorkers = [];
   List decodedTasks = [];
   List decodedSubRooms = [];
 
-  dbnowRoom() async {
-    Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(messenger);
-    nowRoomInfo = await result;
-    // データベースから取得したデータをデコードして使用
-    if (nowRoomInfo.isNotEmpty) {
-      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
-      decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
-      decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
-      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
-    }
-  }
+  // dbnowRoom() async {
+  //   Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(messenger);
+  //   nowRoomInfo = await result;
+  //   // データベースから取得したデータをデコードして使用
+  //   if (nowRoomInfo.isNotEmpty) {
+  //     decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
+  //     decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
+  //     decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
+  //     decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
+  //   }
+  // }
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -84,6 +72,7 @@ class _PageMassages extends State<PageMassages> {
     super.initState();
     _messageController = TextEditingController();
     _scrollController = ScrollController();
+    nowRoomInfo = widget.messenger;
 
     // ウィジェットがビルドされた後にスクロール位置を設定
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -290,7 +279,7 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
       onTap: () {
         // メッセージ追加
-        addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote'], 0, messenger);
+        addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote'], 0, nowRoomInfo['roomid']);
 
         // 再読み込みとスクロール
         setState(() {
@@ -340,7 +329,7 @@ class _PageMassages extends State<PageMassages> {
         onTap: () async {
           status = 2;
           karioki++;
-          addMessage(karioki, '', status, picture, 0, messenger);
+          addMessage(karioki, '', status, picture, 0, nowRoomInfo['roomid']);
           setState(() {
             // ステータス書き換え
             stamp = false;
@@ -598,7 +587,7 @@ class _PageMassages extends State<PageMassages> {
           // db追加メソッド呼び出し
           // 怒りレベル建設予定地
           karioki++;
-          addMessage(karioki, message, status, taskIndex, 0, messenger);
+          addMessage(karioki, message, status, taskIndex, 0, nowRoomInfo['roomid']);
           // 入力フォームの初期化
           _messageController.clear();
           quote = false;
@@ -627,7 +616,7 @@ class _PageMassages extends State<PageMassages> {
   // ここから表示部分
   @override
   Widget build(BuildContext context) {
-    dbnowRoom();
+    // dbnowRoom();
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
@@ -649,7 +638,7 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    molecules.PageTitle(context, nowRoomInfo[0]['roomName']),
+                    molecules.PageTitle(context, nowRoomInfo['roomName']),
                     // メッセージ部分
                     Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList(items.message)),
                   ]),

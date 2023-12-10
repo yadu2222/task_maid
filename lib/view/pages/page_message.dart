@@ -38,7 +38,7 @@ class _PageMail extends State<PageMail> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messenger: items.rooms[index]['roomid'],
+                          messenger: items.rooms[index],
                         )),
               ).then((value) {
                 //戻ってきたら再描画
