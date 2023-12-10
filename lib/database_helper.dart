@@ -146,7 +146,7 @@ class DatabaseHelper {
   // idでの検索に返してくれるやつ
   static Future<List<Map<String, dynamic>>> queryRowtask(String key) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from tasks where '${key}' == 'roomid'");
+    return await db!.query('tasks', where: 'roomid = ?', whereArgs: ['${key}']);
   }
 
   static Future<bool> firstdb() async {

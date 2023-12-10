@@ -59,7 +59,7 @@ class _PageTask extends State<PageTask> {
     joinRoomInfo = await DatabaseHelper.queryRow('rooms');
   }
 
-  void dbroomFirstAdd() async {
+  dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
       // 追加する部屋の変数
       // roomidはサーバー側で決められるようにしたい
@@ -100,7 +100,7 @@ class _PageTask extends State<PageTask> {
 
   List nowRoomTaskList = [];
   // 現在のタスクを参照する
-  void taskGet() async {
+  taskGet() async {
     nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
     // print(nowRoomTaskList);
   }
@@ -167,7 +167,7 @@ class _PageTask extends State<PageTask> {
   }
 
   // タスク表示の処理
-  Widget taskList(List taskList) {
+  Widget taskList() {
     return ListView.builder(
       // indexの作成 widgetが表示される数
       // 現在の部屋の情報からタスクの数を取得
@@ -547,7 +547,11 @@ class _PageTask extends State<PageTask> {
                       onTap: () async {
                         // 表示する部屋の切り替え
                         nowRoomid = joinRoomInfo[index]["roomid"];
+                        // await taskGet();
                         await dbnowRoom();
+                        print('タスクリスト更新');
+                        nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+                        print(nowRoomTaskList);
                         setState(() {});
 
                         Navigator.pop(context); // 前のページに戻る
@@ -673,7 +677,7 @@ class _PageTask extends State<PageTask> {
 
                                     // ここでサーバーから名前をもらってくる
                                     // エラーでてるよ　なおしてね　あしたのわたし
-                                    child: CustomText(text: nowRoomInfo[0]['workers'][index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                    child: CustomText(text: nowRoomInfo[0]['workers'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
                           },
@@ -688,7 +692,8 @@ class _PageTask extends State<PageTask> {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
-                            addTask(karioki2, items.userInfo['name'], items.worker, items.newtask, items.limitTime, nowRoomid, 0);
+                            // worker を改築
+                            addTask(karioki2, items.userInfo['userid'], items.userInfo['userid'], items.newtask, items.limitTime, nowRoomid, 0);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -700,6 +705,8 @@ class _PageTask extends State<PageTask> {
                             Navigator.of(context).pop(); // 戻る
                             // 値の更新
                             items.taskList = await DatabaseHelper.queryAllRows('tasks');
+                            nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+                            print(nowRoomTaskList);
                             // 画面の更新
                             setState(() {});
                           }
@@ -998,7 +1005,7 @@ class _PageTask extends State<PageTask> {
                 roomBottun(),
 
                 // タスク表示
-                SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList(items.taskList))
+                SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList())
               ],
             ),
           ])),
