@@ -501,7 +501,7 @@ class _PageTask extends State<PageTask> {
           context,
           MaterialPageRoute(
               builder: (context) => PageMassages(
-                    messenger: nowRoomTaskList[index]['roomid'],
+                    messenger: nowRoomInfo[0],
                   )),
         ).then((value) {
           //戻ってきたら再描画

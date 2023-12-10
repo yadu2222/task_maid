@@ -227,7 +227,7 @@ class _PageMassages extends State<PageMassages> {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return messages[index]['roomid'] == messenger
+        return messages[index]['roomid'] == nowRoomInfo['roomid']
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
@@ -442,7 +442,7 @@ class _PageMassages extends State<PageMassages> {
                                   height: screenSizeHeight * 0.05,
                                   alignment: const Alignment(0.0, 0.0),
                                   margin: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.02),
-                                  child: CustomText(text: '${messenger}からのタスク', fontSize: screenSizeWidth * 0.038, color: Constant.blackGlay)),
+                                  child: CustomText(text: '${nowRoomInfo['roomName']}からのタスク', fontSize: screenSizeWidth * 0.038, color: Constant.blackGlay)),
 
                               // 箱の中身
                               SizedBox(
@@ -467,7 +467,7 @@ class _PageMassages extends State<PageMassages> {
       itemCount: taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return taskList[index]['roomid'] == messenger && taskList[index]['status'] == 0
+        return taskList[index]['roomid'] == nowRoomInfo['roomid'] && taskList[index]['status'] == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
@@ -588,6 +588,8 @@ class _PageMassages extends State<PageMassages> {
           // 怒りレベル建設予定地
           karioki++;
           addMessage(karioki, message, status, taskIndex, 0, nowRoomInfo['roomid']);
+          print(nowRoomInfo);
+          print(nowRoomInfo['roomid']);
           // 入力フォームの初期化
           _messageController.clear();
           quote = false;
