@@ -85,6 +85,17 @@ void dbAddRoom(String roomid, String roomName, List leaders, List workers, List 
   // print(await result);
 }
 
+// 新しいサブルームをdbに追加するメソッド
+void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks,String mainRoomid) async {
+  // Roomをデータベースに追加する際の例
+  // リストを直でぶち込むことはできないらしい　不便じゃない？
+ 
+  var newRoom = {"roomid": roomid, "roomName": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "mainRoomid": mainRoomid};
+  DatabaseHelper.insert('subRooms', newRoom);
+  // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
+  // print(await result);
+}
+
 // 日付を変換して返す
 String dateformat(String dateTime, int type) {
   final formatType_1 = DateFormat('yyyy.MM.dd HH:mm');

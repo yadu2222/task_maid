@@ -69,6 +69,8 @@ class _PageTask extends State<PageTask> {
     }
   ];
 
+  List subRooms = [];
+
   List<dynamic> decodedLeaders = [];
   List<dynamic> decodedWorkers = [];
   List<dynamic> decodedTasks = [];
@@ -78,26 +80,8 @@ class _PageTask extends State<PageTask> {
   void dbroomInfo() async {
     // db取り出し
     joinRoomInfo = await DatabaseHelper.queryRow('rooms');
+    subRooms = await DatabaseHelper.selectSubRoom(nowRoomid);
     print(joinRoomInfo);
-  }
-
-  // dbにテストルームがあるかないかを判別、なければ追加
-  dbroomFirstAdd() async {
-    if (!await DatabaseHelper.firstdb()) {
-      // 追加する部屋の変数
-      // roomidはサーバー側で決められるようにしたい
-      var leaders = [
-        {'leader': items.userInfo['userid']}
-      ];
-      var workers = [
-        {'worker': items.userInfo['userid']}
-      ];
-      var tasks = [{}];
-
-      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks);
-      // dbnowRoom();
-    }
-    // DatabaseHelper.queryAllRows('rooms');
   }
 
   // JSON文字列をデコードしてListを取得する関数
@@ -139,6 +123,11 @@ class _PageTask extends State<PageTask> {
     return result;
   }
 
+  // メインルームチェック
+  bool mainRoomCheck(String roomid) {
+    return roomid.contains('-');
+  }
+
   // 初期化メソッド
   @override
   void initState() {
@@ -149,6 +138,8 @@ class _PageTask extends State<PageTask> {
 
   bool memberDisplay = false;
   bool roomDisplay = false;
+  bool subRoomAddDisplay = false;
+  String newSubRoomName = '';
   // サイドバー
   Widget sideBar() {
     // 画面サイズ
@@ -215,7 +206,7 @@ class _PageTask extends State<PageTask> {
                         ).then((value) {
                           //戻ってきたら再描画
                           setState(() {
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
                           });
                         });
                       }
@@ -243,8 +234,8 @@ class _PageTask extends State<PageTask> {
                 ? ListTile(
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
-                      leaderCheck() ? const Icon(Icons.sensor_door) : const Icon(Icons.horizontal_rule),
-                      CustomText(text: i == 0 ? '\t${nowRoomInfo[0]['roomName']}' : '\t${decodedSubRooms[i]['subRoom']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                      decodedSubRooms[i]['subRoom'].contains('-') ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
+                      CustomText(text: i == 0 ? '\t\t${nowRoomInfo[0]['roomName']}' : '\t\t\t${subRooms[i - 1]['roomName']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // タップで該当の部屋にとべる
                     onTap: () {},
@@ -258,8 +249,85 @@ class _PageTask extends State<PageTask> {
               color: Constant.blackGlay,
               fontSize: screenSizeWidth * 0.035,
             ),
-            onTap: () {},
+            onTap: () {
+              setState(() {
+                subRoomAddDisplay = !subRoomAddDisplay;
+              });
+            },
           ),
+
+          subRoomAddDisplay
+              ? ListTile(
+                  title: TextField(
+                    controller: roomNameController,
+                    decoration: const InputDecoration(
+                      hintText: '部屋の名前を入力してね',
+                    ),
+                    onChanged: (newroomname) {
+                      newSubRoomName = newroomname;
+                    },
+                    textInputAction: TextInputAction.done,
+                  ),
+                  trailing: IconButton(
+                      onPressed: () async {
+                        if (roomNameController.text.isNotEmpty) {
+                          FocusScope.of(context).unfocus(); //キーボードを閉じる
+                          // 仮置き
+                          // ここでサーバーに数字をもらう
+                          // ユーザーが見える形で置いておく必要がある
+                          // サイドバーの上部に置いておけばよろしと今思いました　そうします
+
+                          // 追加する部屋の変数
+                          // roomidはサーバー側で決められるようにしたい
+                          var leaders = [
+                            {'leader': items.userInfo['userid']}
+                          ];
+                          var workers = [
+                            {'worker': items.userInfo['userid']}
+                          ];
+                          var tasks = [{}];
+
+                          String newRoomid = '${nowRoomid}-4567';
+
+                          // db追加メソッド呼び出し
+                          dbAddSubRoom(newRoomid, newSubRoomName, leaders, workers, tasks, nowRoomid);
+                          Map addrecode = {'subRoom': newRoomid};
+
+                          decodedSubRooms.add(addrecode);
+
+                          // 上書き
+                          Map<String, dynamic> newRoomInfo = {
+                            'roomid': nowRoomid,
+                            'roomName': nowRoomInfo[0]['roomName'],
+                            'leader': jsonEncode(decodedLeaders),
+                            'workers': jsonEncode(decodedWorkers),
+                            'tasks': jsonEncode(decodedTasks),
+                            'subRooms': jsonEncode(decodedSubRooms)
+                          };
+
+                          // newRoomInfo['subrooms'] = jsonEncode(decodedSubRooms);
+                          DatabaseHelper.update('rooms', 'roomName', newRoomInfo, nowRoomInfo[0]['roomName']);
+
+                          // db呼び出し
+                          // nowRoomid = newRoomid;
+                          joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
+                          dbnowRoom();
+                          taskGet();
+                          setState(() {});
+
+                          // 入力フォームの初期化
+                          roomNameController.clear();
+                          roomNumController.clear();
+
+                          Navigator.of(context).pop(); //もどる
+
+                          // items.myroom.add(newRoomid);
+                        }
+                      },
+                      icon: Icon(Icons.key)),
+                )
+              : const SizedBox.shrink(),
+
           ListTile(
             leading: const Icon(Icons.lock_outlined),
             title: CustomText(
@@ -1062,8 +1130,9 @@ class _PageTask extends State<PageTask> {
   Widget build(BuildContext context) {
     // items.Nums();
 
-    dbroomFirstAdd();
+    // dbroomFirstAdd();
     dbnowRoom();
+    dbroomInfo();
     taskGet();
 
     print(nowRoomInfo);

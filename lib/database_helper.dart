@@ -86,6 +86,18 @@ class DatabaseHelper {
     )
   ''');
 
+    // サブルームを管理するためのテーブル
+    await db.execute('''
+    CREATE TABLE subRooms (
+      roomid TEXT ,
+      roomName TEXT PRIMARY KEY,
+      leader TEXT,
+      workers TEXT,
+      tasks TEXT,
+      mainRoomid TEXT
+    )
+  ''');
+
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
@@ -158,13 +170,22 @@ class DatabaseHelper {
     return result.isNotEmpty;
   }
 
-  // その3
+  // その4
   // idでの検索に返してくれるやつ
   static Future<List<Map<String, dynamic>>> selectRoom(String key) async {
     Database? db = await instance.database;
     print(key);
     print(await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']));
     return await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']);
+  }
+
+  // その5
+  // idでの検索に返してくれるやつ
+  static Future<List<Map<String, dynamic>>> selectSubRoom(String key) async {
+    Database? db = await instance.database;
+    print(key);
+    print(await db!.query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']));
+    return await db!.query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']);
   }
 
   // レコード数を確認
@@ -176,9 +197,9 @@ class DatabaseHelper {
 
   // 更新処理
   // 引数：table名、更新後のmap、検索キー
-  static Future<int> update(String tableName, String colum, Map<String, dynamic> row, int id) async {
+  static Future<int> update(String tableName, String colum, Map<String, dynamic> row, String key) async {
     Database? db = await instance.database;
-    return await db!.update(tableName, row, where: '$colum = ?', whereArgs: [id]);
+    return await db!.update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
   }
 
   // 削除処理

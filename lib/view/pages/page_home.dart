@@ -15,6 +15,25 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  // dbにテストルームがあるかないかを判別、なければ追加
+  dbroomFirstAdd() async {
+    if (!await DatabaseHelper.firstdb()) {
+      // 追加する部屋の変数
+      // roomidはサーバー側で決められるようにしたい
+      var leaders = [
+        {'leader': items.userInfo['userid']}
+      ];
+      var workers = [
+        {'worker': items.userInfo['userid']}
+      ];
+      var tasks = [{}];
+
+      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks);
+      // dbnowRoom();
+    }
+    // DatabaseHelper.queryAllRows('rooms');
+  }
+
   // task_listの繰り返し処理
   // これで全部かきなおします、、、、
   Widget _taskList(List taskList) {
@@ -69,13 +88,13 @@ class _PageHomeState extends State<PageHome> {
     // TODO: implement initState
     super.initState();
     items.Nums();
+   
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    
+     dbroomFirstAdd();
+     
     // 画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;

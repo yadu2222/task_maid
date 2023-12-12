@@ -11,8 +11,9 @@ class items {
     '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
   };
 
-
-  static List myroom = ['1111',];
+  static List myroom = [
+    '1111',
+  ];
 
   // ルーム
   // でーたべーすから自分が参加してるルームをもらってくる
@@ -58,6 +59,7 @@ class items {
   static List rooms = [];
   static List message = [];
   static List newTask = [];
+  static List subRooms = [];
 
   static Nums() async {
     taskList = await DatabaseHelper.queryAllRows('tasks');
@@ -66,6 +68,7 @@ class items {
     // print(msgchats);
     rooms = await DatabaseHelper.queryAllRows('rooms');
     // print(rooms);
+    subRooms = await DatabaseHelper.queryAllRows('subRooms');
   }
 
   // 画像リスト
@@ -79,10 +82,10 @@ class items {
       'assets/images/stamp/taskMaid_stamp01.png',
       'assets/images/stamp/taskMaid_stamp02.png',
       'assets/images/stamp/taskMaid_stamp03.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp04.png',
+      'assets/images/stamp/taskMaid_stamp05.png',
+      'assets/images/stamp/taskMaid_stamp06.png',
+      'assets/images/stamp/taskMaid_stamp07.png',
       'assets/images/stamp/taskMaid_stamp01.png',
     ],
   };
