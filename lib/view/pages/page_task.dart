@@ -123,11 +123,6 @@ class _PageTask extends State<PageTask> {
     return result;
   }
 
-  // メインルームチェック
-  bool mainRoomCheck(String roomid) {
-    return roomid.contains('-');
-  }
-
   // 初期化メソッド
   @override
   void initState() {
@@ -271,6 +266,7 @@ class _PageTask extends State<PageTask> {
                   trailing: IconButton(
                       onPressed: () async {
                         if (roomNameController.text.isNotEmpty) {
+                          roomDisplay = false;
                           FocusScope.of(context).unfocus(); //キーボードを閉じる
                           // 仮置き
                           // ここでサーバーに数字をもらう
@@ -311,6 +307,7 @@ class _PageTask extends State<PageTask> {
                           // db呼び出し
                           // nowRoomid = newRoomid;
                           joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
+                          dbroomInfo();
                           dbnowRoom();
                           taskGet();
                           setState(() {});
