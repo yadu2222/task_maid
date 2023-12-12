@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/view/pages/page_roomSetting.dart';
+import 'package:task_maid/view/pages/page_taskSetting.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_messages.dart';
@@ -178,6 +180,25 @@ class _PageTask extends State<PageTask> {
               });
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.check),
+            title: CustomText(
+              text: "タスク一覧",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
+            onTap: () {
+              // ページ遷移
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => page_taskSetting()),
+              ).then((value) {
+                setState(() {
+                  items.Nums();
+                });
+              });
+            },
+          ),
 
           // 開かれるメンバー一覧　アイコンあったほうがいいですね、、、
           // 現在はidの表示　名前を　出したい
@@ -271,7 +292,6 @@ class _PageTask extends State<PageTask> {
                           // 仮置き
                           // ここでサーバーに数字をもらう
                           // ユーザーが見える形で置いておく必要がある
-                          // サイドバーの上部に置いておけばよろしと今思いました　そうします
 
                           // 追加する部屋の変数
                           // roomidはサーバー側で決められるようにしたい
@@ -332,7 +352,17 @@ class _PageTask extends State<PageTask> {
               color: Constant.blackGlay,
               fontSize: screenSizeWidth * 0.035,
             ),
-            onTap: () {},
+            onTap: () {
+              // ページ遷移
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => page_roomSetting()),
+              ).then((value) {
+                setState(() {
+                  items.Nums();
+                });
+              });
+            },
           )
         ],
       ),
@@ -1145,12 +1175,12 @@ class _PageTask extends State<PageTask> {
             child: Container(
           width: screenSizeWidth,
           height: screenSizeHeight,
-          decoration: BoxDecoration(color: Constant.main),
+          decoration: const BoxDecoration(color: Constant.main),
           child: SafeArea(
               child: Stack(children: [
             Column(
               children: [
-                Container(
+                SizedBox(
                     width: screenSizeWidth,
                     // バー部分
                     child: Row(children: [
