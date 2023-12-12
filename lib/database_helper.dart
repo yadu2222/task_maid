@@ -20,7 +20,12 @@ class DatabaseHelper {
   static String account = 'account';
 
   // table名まとめ
-  static List<String> tableNames = ["userAccount", "rooms", "tasks", "messages"];
+  static List<String> tableNames = [
+    "userAccount",
+    "rooms",
+    "tasks",
+    "messages"
+  ];
 
   // DatabaseHelper クラスを定義
   DatabaseHelper._privateConstructor();
@@ -65,9 +70,9 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     // ユーザーのアカウントを管理するためのテーブル
     await db.execute('''
-    CREATE TABLE userAccount (
-      userid INTEGER PRIMARY KEY,
-      mail TEXT,
+    CREATE TABLE users (
+      user_id TEXT PRIMARY KEY,
+      mail TEXT PRIMARY KEY,
       name TEXT,
       tasks  text,
       rooms text
@@ -77,51 +82,53 @@ class DatabaseHelper {
     // ルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE rooms (
-      roomid TEXT ,
-      roomName TEXT PRIMARY KEY,
-      leader TEXT,
+      room_id TEXT ,
+      room_name TEXT PRIMARY KEY,
+      leaders TEXT,
       workers TEXT,
       tasks TEXT,
-      subRooms TEXT
+      room_number TEXT,
+      sub_rooms TEXT
     )
   ''');
 
     // サブルームを管理するためのテーブル
     await db.execute('''
-    CREATE TABLE subRooms (
-      roomid TEXT ,
-      roomName TEXT PRIMARY KEY,
+    CREATE TABLE sub_rooms (
+      room_id TEXT PRIMARY KEY ,
+      room_name TEXT PRIMARY KEY,
       leader TEXT,
       workers TEXT,
       tasks TEXT,
-      mainRoomid TEXT
+      main_room_id TEXT
     )
   ''');
 
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
-      taskid INTEGER,
-      limitTime text NOT NULL,
-      leaders integer,
-      worker integer,
-      contents text PRIMARY KEY,
-      roomid text,
-      status integer
+      task_id TEXT,
+      task_limit TEXT NOT NULL,
+      status_progress integer,
+      leaders TEXT,
+      worker TEXT,
+      room_id text,
+      contents TEXT,
     )
   ''');
 
     // メッセージを管理するためのテーブル
     await db.execute('''
-  CREATE TABLE msgchats (
-    msgid integer,
-    roomid text,
-    time text PRIMARY KEY,
-    sender text,
-    level integer,
-    status integer,
-    message text ,
-    quote integer
+    CREATE TABLE msg_chats (
+      msg_id integer,
+      msg_datetime TEXT PRIMARY KEY,
+      sender TEXT,
+      room_id TEXT,
+      level integer,
+      status_addition integer,
+      stamp_id integer,
+      quote_id TEXT,
+      msg TEXT
   )
 ''');
   }
@@ -135,7 +142,8 @@ class DatabaseHelper {
 
   // 照会処理
   // 引数：table名
-  static Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
+  static Future<List<Map<String, dynamic>>> queryAllRows(
+      String tableName) async {
     Database? db = await instance.database;
     print(await db!.rawQuery("select * from ${tableName}"));
     return await db.rawQuery("select * from ${tableName}");
@@ -145,14 +153,16 @@ class DatabaseHelper {
   // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
   static Future<List<Map<String, dynamic>>> queryRow(String key) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from msgchats where '${key}' == 'message'");
+    return await db!
+        .rawQuery("select * from msgchats where '${key}' == 'message'");
   }
 
   // その3
   // idでの検索に返してくれるやつ
   static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
     Database? db = await instance.database;
-    return await db!.rawQuery("select * from msgchats where '${key}' == 'time'");
+    return await db!
+        .rawQuery("select * from msgchats where '${key}' == 'time'");
   }
 
   // その3
@@ -184,22 +194,27 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> selectSubRoom(String key) async {
     Database? db = await instance.database;
     print(key);
-    print(await db!.query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']));
-    return await db!.query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']);
+    print(await db!
+        .query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']));
+    return await db!
+        .query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']);
   }
 
   // レコード数を確認
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {
     Database? db = await instance.database;
-    return Sqflite.firstIntValue(await db!.rawQuery('SELECT COUNT(*) FROM $tableName'));
+    return Sqflite.firstIntValue(
+        await db!.rawQuery('SELECT COUNT(*) FROM $tableName'));
   }
 
   // 更新処理
   // 引数：table名、更新後のmap、検索キー
-  static Future<int> update(String tableName, String colum, Map<String, dynamic> row, String key) async {
+  static Future<int> update(String tableName, String colum,
+      Map<String, dynamic> row, String key) async {
     Database? db = await instance.database;
-    return await db!.update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
+    return await db!
+        .update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
   }
 
   // 削除処理
