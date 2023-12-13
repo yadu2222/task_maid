@@ -12,12 +12,12 @@ import 'package:task_maid/database_helper.dart';
 
 class PageTask extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
-  final String roomNum;
+  final List nowRoomInfo;
 
-  const PageTask({required this.roomNum, Key? key}) : super(key: key);
+  const PageTask({required this.nowRoomInfo, Key? key}) : super(key: key);
 
   @override
-  _PageTask createState() => _PageTask(roomNum: roomNum);
+  _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo);
 }
 
 class _PageTask extends State<PageTask> {
@@ -46,8 +46,8 @@ class _PageTask extends State<PageTask> {
   }
 
   // どこの部屋のタスクを参照したいのか引数でもらう
-  String roomNum;
-  _PageTask({required this.roomNum});
+  List nowRoomInfo;
+  _PageTask({required this.nowRoomInfo});
 
   // static String roomNames = roomName();
   static String nowRoomid = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
@@ -57,22 +57,8 @@ class _PageTask extends State<PageTask> {
 
   // 変数まとめ
   List joinRoomInfo = items.rooms;
-  List nowRoomInfo = [
-    {
-      'roomid': 1111,
-      'roomName': 'てすとるーむ',
-      'leader': [
-        {"leader": "12345"}
-      ],
-      'workers': [
-        {"worker": "12345"}
-      ],
-      'tasks': [{}]
-    }
-  ];
 
   List subRooms = [];
-
   List<dynamic> decodedLeaders = [];
   List<dynamic> decodedWorkers = [];
   List<dynamic> decodedTasks = [];
@@ -81,9 +67,9 @@ class _PageTask extends State<PageTask> {
 
   void dbroomInfo() async {
     // db取り出し
-    joinRoomInfo = await DatabaseHelper.queryRow('rooms');
+
+    joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
     subRooms = await DatabaseHelper.selectSubRoom(nowRoomid);
-    print(joinRoomInfo);
   }
 
   // JSON文字列をデコードしてListを取得する関数
@@ -93,22 +79,24 @@ class _PageTask extends State<PageTask> {
 
   // 今の部屋
   dbnowRoom() async {
-    Future<List<Map<String, dynamic>>> result =
-        DatabaseHelper.selectRoom(nowRoomid);
+    Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(nowRoomid);
     nowRoomInfo = await result;
     // データベースから取得したデータをデコードして使用
     if (nowRoomInfo.isNotEmpty) {
-      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
+      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leaders']);
       decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
       decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
-      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
+      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
     }
+    // print(decodedLeaders);
+    setState(() {});
   }
 
   // 現在のタスクを参照する
   taskGet() async {
     nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
-    // print(nowRoomTaskList);
+    print('しゅとくしてください');
+    print(nowRoomTaskList);
   }
 
 // リーダーチェック
@@ -131,7 +119,11 @@ class _PageTask extends State<PageTask> {
   void initState() {
     super.initState();
     // インスタンスメンバーを初期化
-    nowRoomid = widget.roomNum;
+    nowRoomInfo = widget.nowRoomInfo;
+    nowRoomid = nowRoomInfo[0]['room_id'];
+    dbnowRoom();
+    dbroomInfo();
+    taskGet();
   }
 
   bool memberDisplay = false;
@@ -148,16 +140,16 @@ class _PageTask extends State<PageTask> {
       child: ListView(
         children: [
           // なんか画像入れる？
+          // ヘッダー
           DrawerHeader(
-            child: Text(nowRoomInfo[0]['roomName']),
+            child: Text(nowRoomInfo[0]['room_name']),
             decoration: BoxDecoration(
               color: Constant.main,
             ),
           ),
           ListTile(
-            // leading: const Icon(Icons.add),
             title: CustomText(
-              text: '${nowRoomInfo[0]['roomid']}号室',
+              text: '${nowRoomInfo[0]['room_id']}号室',
               color: Constant.blackGlay,
               fontSize: screenSizeWidth * 0.035,
             ),
@@ -167,7 +159,9 @@ class _PageTask extends State<PageTask> {
           ),
 
           ListTile(
+            // 左側に表示される
             leading: const Icon(Icons.account_box_outlined),
+            // まんなか
             title: CustomText(
               text: "メンバー",
               color: Constant.blackGlay,
@@ -181,6 +175,33 @@ class _PageTask extends State<PageTask> {
               });
             },
           ),
+          // 開かれるメンバー一覧　アイコンあったほうがいいですね、、、
+          // 現在はidの表示　名前を　出したい
+          for (int i = 0; i < decodedWorkers.length; i++)
+            memberDisplay
+                ? ListTile(
+                    leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
+                    title: Row(children: [
+                      leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
+                      CustomText(text: '\t${decodedWorkers[i]['worker']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                    ]),
+                    // リーダーはタップでDMにとべる
+                    onTap: () {
+                      if (leaderCheck()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PageMassages(
+                                    messenger: nowRoomInfo[0],
+                                  )),
+                        ).then((value) {
+                          //戻ってきたら再描画
+                          setState(() {});
+                        });
+                      }
+                    },
+                  )
+                : const SizedBox.shrink(),
           ListTile(
             leading: const Icon(Icons.check),
             title: CustomText(
@@ -201,43 +222,6 @@ class _PageTask extends State<PageTask> {
             },
           ),
 
-          // 開かれるメンバー一覧　アイコンあったほうがいいですね、、、
-          // 現在はidの表示　名前を　出したい
-          for (int i = 0; i < decodedWorkers.length; i++)
-            memberDisplay
-                ? ListTile(
-                    leading: i == 0
-                        ? const Icon(Icons.horizontal_rule)
-                        : const SizedBox.shrink(),
-                    title: Row(children: [
-                      leaderCheck()
-                          ? const Icon(Icons.military_tech)
-                          : const Icon(Icons.horizontal_rule),
-                      CustomText(
-                          text: '\t${decodedWorkers[i]['worker']}',
-                          fontSize: screenSizeWidth * 0.035,
-                          color: Constant.blackGlay)
-                    ]),
-                    // リーダーはタップでDMにとべる
-                    onTap: () {
-                      if (leaderCheck()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PageMassages(
-                                    messenger: nowRoomInfo[0],
-                                  )),
-                        ).then((value) {
-                          //戻ってきたら再描画
-                          setState(() {
-                            // Navigator.pop(context);
-                          });
-                        });
-                      }
-                    },
-                  )
-                : const SizedBox.shrink(),
-
           ListTile(
             leading: const Icon(Icons.map),
             title: CustomText(
@@ -253,22 +237,14 @@ class _PageTask extends State<PageTask> {
             },
           ),
 
+
           for (int i = 0; i < decodedSubRooms.length; i++)
             roomDisplay
                 ? ListTile(
-                    leading: i == 0
-                        ? const Icon(Icons.horizontal_rule)
-                        : const SizedBox.shrink(),
+                    leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
-                      decodedSubRooms[i]['subRoom'].contains('-')
-                          ? const Icon(Icons.key_rounded)
-                          : const Icon(Icons.sensor_door),
-                      CustomText(
-                          text: i == 0
-                              ? '\t\t${nowRoomInfo[0]['roomName']}'
-                              : '\t\t\t${subRooms[i - 1]['roomName']}',
-                          fontSize: screenSizeWidth * 0.035,
-                          color: Constant.blackGlay)
+                      decodedSubRooms[i]['sub_room'].contains('-') ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
+                      CustomText(text: i == 0 ? '\t\t${nowRoomInfo[0]['room_name']}' : '\t\t\t${subRooms[i - 1]['room_name']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // タップで該当の部屋にとべる
                     onTap: () {},
@@ -323,30 +299,27 @@ class _PageTask extends State<PageTask> {
                           String newRoomid = '${nowRoomid}-4567';
 
                           // db追加メソッド呼び出し
-                          dbAddSubRoom(newRoomid, newSubRoomName, leaders,
-                              workers, tasks, nowRoomid);
-                          Map addrecode = {'subRoom': newRoomid};
+                          dbAddSubRoom(newRoomid, newSubRoomName, leaders, workers, tasks, nowRoomid);
+                          Map addrecode = {'sub_room': newRoomid};
 
                           decodedSubRooms.add(addrecode);
 
                           // 上書き
                           Map<String, dynamic> newRoomInfo = {
                             'room_id': nowRoomid,
-                            'roomName': nowRoomInfo[0]['roomName'],
-                            'leader': jsonEncode(decodedLeaders),
+                            'room_name': nowRoomInfo[0]['room_name'],
+                            'leaders': jsonEncode(decodedLeaders),
                             'workers': jsonEncode(decodedWorkers),
                             'tasks': jsonEncode(decodedTasks),
-                            'subRooms': jsonEncode(decodedSubRooms)
+                            'sub_rooms': jsonEncode(decodedSubRooms)
                           };
 
                           // newRoomInfo['subrooms'] = jsonEncode(decodedSubRooms);
-                          DatabaseHelper.update('rooms', 'roomName',
-                              newRoomInfo, nowRoomInfo[0]['roomName']);
+                          DatabaseHelper.update('rooms', 'room_name', newRoomInfo, nowRoomInfo[0]['room_name']);
 
                           // db呼び出し
                           // nowRoomid = newRoomid;
-                          joinRoomInfo =
-                              await DatabaseHelper.queryAllRows('rooms');
+                          joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
                           dbroomInfo();
                           dbnowRoom();
                           taskGet();
@@ -357,7 +330,6 @@ class _PageTask extends State<PageTask> {
                           roomNumController.clear();
 
                           Navigator.of(context).pop(); //もどる
-
                           // items.myroom.add(newRoomid);
                         }
                       },
@@ -391,13 +363,14 @@ class _PageTask extends State<PageTask> {
 
   // タスク表示の処理
   Widget taskList() {
+    taskGet();
     return ListView.builder(
       // indexの作成 widgetが表示される数
       // 現在の部屋の情報からタスクの数を取得
       itemCount: nowRoomTaskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return nowRoomTaskList[index]['status'] == 0
+        return nowRoomTaskList[index]['status_progress'] == 0
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
@@ -407,19 +380,16 @@ class _PageTask extends State<PageTask> {
                           // 詳細ダイアログ表示
                           showDialog(
                               context: context,
-                              barrierDismissible:
-                                  false, // ユーザーがダイアログ外をタップして閉じられないようにする
+                              barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16.0),
                                     ),
                                     elevation: 0.0, // ダイアログの影を削除
-                                    backgroundColor:
-                                        Constant.white.withOpacity(0), // 背景色
+                                    backgroundColor: Constant.white.withOpacity(0), // 背景色
                                     // 中身
-                                    content:
-                                        taskDialog(nowRoomTaskList, index));
+                                    content: taskDialog(nowRoomTaskList, index));
                               });
                         },
                         // 繰り返し表示されるひな形呼び出し
@@ -436,8 +406,7 @@ class _PageTask extends State<PageTask> {
     return Container(
         width: screenSizeWidth * 0.95,
         height: screenSizeHeight * 0.1,
-        padding: EdgeInsets.only(
-            right: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
+        padding: EdgeInsets.only(right: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
         //alignment: const Alignment(0.0, 0.0), //真ん中に配置
         decoration: BoxDecoration(
           color: Constant.glay,
@@ -451,36 +420,26 @@ class _PageTask extends State<PageTask> {
             alignment: const Alignment(0.0, 0.0), //真ん中に配置
             padding: EdgeInsets.all(screenSizeWidth * 0.025),
             child: CustomText(
-                text:
-                    '${DateTime.parse(taskList[index]['limitTime']).month}\n${DateTime.parse(taskList[index]['limitTime']).day}',
-                fontSize: screenSizeWidth * 0.055,
-                color: Constant.blackGlay),
+                text: '${DateTime.parse(taskList[index]['task_limit']).month}\n${DateTime.parse(taskList[index]['task_limit']).day}', fontSize: screenSizeWidth * 0.055, color: Constant.blackGlay),
           ),
           SizedBox(
             width: screenSizeWidth * 0.01,
           ),
           Container(
               width: screenSizeWidth * 0.5,
-              margin: EdgeInsets.only(
-                  top: screenSizeWidth * 0.04, bottom: screenSizeWidth * 0.04),
+              margin: EdgeInsets.only(top: screenSizeWidth * 0.04, bottom: screenSizeWidth * 0.04),
               child: Column(children: [
                 // 時間
                 Container(
                     width: screenSizeWidth * 0.625,
                     alignment: Alignment.centerLeft,
                     child: CustomText(
-                        text:
-                            '${DateTime.parse(taskList[index]['limitTime']).hour}:${DateTime.parse(taskList[index]['limitTime']).minute}まで\n-------------------------------',
+                        text: '${DateTime.parse(taskList[index]['task_limit']).hour}:${DateTime.parse(taskList[index]['task_limit']).minute}まで\n-------------------------------',
                         fontSize: screenSizeWidth * 0.035,
                         color: Constant.blackGlay)),
                 // 中身
                 Container(
-                    width: screenSizeWidth * 0.625,
-                    alignment: Alignment.centerLeft,
-                    child: CustomText(
-                        text: taskList[index]['contents'],
-                        fontSize: screenSizeWidth * 0.035,
-                        color: Constant.blackGlay))
+                    width: screenSizeWidth * 0.625, alignment: Alignment.centerLeft, child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay))
               ]))
         ]));
   }
@@ -492,8 +451,7 @@ class _PageTask extends State<PageTask> {
     return Container(
       width: screenSizeWidth * 0.8,
       height: screenSizeHeight * 0.465,
-      decoration: BoxDecoration(
-          color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
           // タスク内容表示
@@ -504,13 +462,8 @@ class _PageTask extends State<PageTask> {
                     width: screenSizeWidth * 0.4,
                     height: screenSizeHeight * 0.05,
                     alignment: const Alignment(0.0, 0.0),
-                    margin: EdgeInsets.only(
-                        top: screenSizeWidth * 0.03,
-                        bottom: screenSizeWidth * 0.02),
-                    child: CustomText(
-                        text: "詳細",
-                        fontSize: screenSizeWidth * 0.05,
-                        color: Constant.blackGlay)),
+                    margin: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.02),
+                    child: CustomText(text: "詳細", fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay)),
 
                 // 箱の中身
                 Container(
@@ -518,41 +471,28 @@ class _PageTask extends State<PageTask> {
                     height: screenSizeHeight * 0.2,
                     padding: EdgeInsets.all(screenSizeWidth * 0.05),
                     alignment: const Alignment(0.0, 0.0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: Constant.white),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Constant.white),
                     child: Column(children: [
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(
-                                text:
-                                    '依頼者：${taskList[index]['leader']}\n期限：${dateformat(taskList[index]['limitTime'], 3)}\n-------------------------------',
-                                fontSize: screenSizeWidth * 0.035,
-                                color: Constant.blackGlay),
-                          ]),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        CustomText(
+                            text: '依頼者：${taskList[index]['leaders']}\n期限：${dateformat(taskList[index]['task_limit'], 3)}\n-------------------------------',
+                            fontSize: screenSizeWidth * 0.035,
+                            color: Constant.blackGlay),
+                      ]),
                       SizedBox(
                         height: screenSizeHeight * 0.01,
                       ),
 
                       // タスク内容の表示
-                      CustomText(
-                          text: taskList[index]['contents'],
-                          fontSize: screenSizeWidth * 0.035,
-                          color: Constant.blackGlay),
+                      CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
                     ])),
 
                 Container(
                     alignment: const Alignment(0.0, 0.0),
-                    margin: EdgeInsets.only(
-                        top: screenSizeHeight * 0.02,
-                        left: screenSizeWidth * 0.03,
-                        bottom: screenSizeHeight * 0.0225
+                    margin: EdgeInsets.only(top: screenSizeHeight * 0.02, left: screenSizeWidth * 0.03, bottom: screenSizeHeight * 0.0225
                         //right: screenSizeWidth * 0.05,
                         ),
-                    padding: EdgeInsets.only(
-                        left: screenSizeWidth * 0.02,
-                        right: screenSizeWidth * 0.02),
+                    padding: EdgeInsets.only(left: screenSizeWidth * 0.02, right: screenSizeWidth * 0.02),
                     child: Row(children: [
                       // できました！！ボタン
                       msgbutton(0, taskList, index),
@@ -575,13 +515,8 @@ class _PageTask extends State<PageTask> {
               height: screenSizeHeight * 0.05,
               alignment: const Alignment(0.0, 0.0),
               margin: EdgeInsets.all(screenSizeWidth * 0.01),
-              decoration: BoxDecoration(
-                  color: Constant.white,
-                  borderRadius: BorderRadius.circular(10)),
-              child: CustomText(
-                  text: "もどる",
-                  fontSize: screenSizeWidth * 0.04,
-                  color: Constant.blackGlay),
+              decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+              child: CustomText(text: "もどる", fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
             ),
           )
         ],
@@ -628,33 +563,27 @@ class _PageTask extends State<PageTask> {
         // dbにメッセージ追加
         switch (type) {
           case 0:
-            addMessage(karioki2, 'できました！！！！！！！', 3, index, 0,
-                taskList[index]['roomid']);
+            addMessage(karioki2, 'できました！！！！！！！', 3, index, 0, taskList[index]['room_id']);
             break;
 
           case 1:
-            addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5,
-                taskList[index]['roomid']);
+            addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5, taskList[index]['room_id']);
             break;
           case 2:
             // 建設予定
             // データの取り出し、決定ボタンを押したら遷移の処理
-            DatePicker.showDateTimePicker(context,
-                showTitleActions: true,
-                minTime: DateTime.now(), onConfirm: (date) {
+            DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
               setState(() {
                 items.limitTime = date;
-                please =
-                    '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
+                please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
 
-            addMessage(karioki2, 'リスケお願いします', 3, index, 2,
-                nowRoomTaskList[index]['roomid']);
+            addMessage(karioki2, 'リスケお願いします', 3, index, 2, nowRoomTaskList[index]['room_id']);
         }
 
         // dbから取り出し
-        items.message = await DatabaseHelper.queryAllRows('msgchats');
+        items.message = await DatabaseHelper.queryAllRows('msg_chats');
         // ページ遷移
         Navigator.push(
           context,
@@ -674,12 +603,8 @@ class _PageTask extends State<PageTask> {
         height: screenSizeWidth * 0.15,
         padding: EdgeInsets.all(screenSizeWidth * 0.01),
         alignment: const Alignment(0.0, 0.0),
-        decoration: BoxDecoration(
-            color: buttunType[1], borderRadius: BorderRadius.circular(10)),
-        child: CustomText(
-            text: buttunType[0],
-            fontSize: screenSizeWidth * 0.04,
-            color: buttunType[2]),
+        decoration: BoxDecoration(color: buttunType[1], borderRadius: BorderRadius.circular(10)),
+        child: CustomText(text: buttunType[0], fontSize: screenSizeWidth * 0.04, color: buttunType[2]),
       ),
     );
   }
@@ -710,22 +635,13 @@ class _PageTask extends State<PageTask> {
                   content: Container(
                       width: screenSizeWidth * 0.9,
                       height: screenSizeHeight * 0.25,
-                      padding: EdgeInsets.only(
-                          left: screenSizeWidth * 0.03,
-                          right: screenSizeWidth * 0.03,
-                          top: screenSizeWidth * 0.05,
-                          bottom: screenSizeWidth * 0.05),
-                      decoration: BoxDecoration(
-                          color: Constant.glay,
-                          borderRadius: BorderRadius.circular(16)),
+                      padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.05, bottom: screenSizeWidth * 0.05),
+                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                       child: Column(children: [
                         Container(
                           margin: EdgeInsets.all(screenSizeWidth * 0.02),
                           alignment: Alignment(0, 0),
-                          child: CustomText(
-                              text: '新規作成',
-                              fontSize: screenSizeWidth * 0.05,
-                              color: Constant.blackGlay),
+                          child: CustomText(text: '新規作成', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                         ),
 
                         Container(
@@ -770,15 +686,13 @@ class _PageTask extends State<PageTask> {
                               var tasks = [{}];
 
                               // db追加メソッド呼び出し
-                              dbAddRoom(newRoomid, newRoomName, leaders,
-                                  workers, tasks);
+                              dbAddRoom(newRoomid, newRoomName, leaders, workers, tasks);
                               items.myroom.add(newRoomid);
                             }
 
                             // 現在の部屋の切り替えと変数の上書き
                             nowRoomid = newRoomid;
-                            joinRoomInfo =
-                                await DatabaseHelper.queryAllRows('rooms');
+                            joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
                             dbnowRoom();
                             taskGet();
                             setState(() {});
@@ -792,20 +706,10 @@ class _PageTask extends State<PageTask> {
                           child: Container(
                             width: screenSizeWidth * 0.25,
                             alignment: Alignment(0, 0),
-                            padding: EdgeInsets.only(
-                                left: screenSizeWidth * 0.03,
-                                right: screenSizeWidth * 0.03,
-                                top: screenSizeWidth * 0.02,
-                                bottom: screenSizeWidth * 0.02),
-                            margin:
-                                EdgeInsets.only(top: screenSizeWidth * 0.02),
-                            decoration: BoxDecoration(
-                                color: Constant.main,
-                                borderRadius: BorderRadius.circular(16)),
-                            child: CustomText(
-                                text: '作成',
-                                fontSize: screenSizeWidth * 0.05,
-                                color: Constant.glay),
+                            padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
+                            margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
+                            decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
+                            child: CustomText(text: '作成', fontSize: screenSizeWidth * 0.05, color: Constant.glay),
                           ),
                         )
                       ])));
@@ -838,13 +742,11 @@ class _PageTask extends State<PageTask> {
                   ? InkWell(
                       onTap: () async {
                         // 表示する部屋の切り替え
-                        nowRoomid = joinRoomInfo[index]["roomid"];
-                        // await taskGet();
+                        nowRoomid = joinRoomInfo[index]["room_id"];
                         await dbnowRoom();
                         print('タスクリスト更新');
-                        nowRoomTaskList =
-                            await DatabaseHelper.queryRowtask(nowRoomid);
-                        print(nowRoomTaskList);
+                        taskGet();
+                        // print(nowRoomTaskList);
                         setState(() {});
 
                         Navigator.pop(context); // 前のページに戻る
@@ -859,7 +761,7 @@ class _PageTask extends State<PageTask> {
                         alignment: const Alignment(0, 0),
                         child: CustomText(
                           // db
-                          text: joinRoomInfo[index]["roomName"],
+                          text: joinRoomInfo[index]["room_name"],
                           color: Constant.white,
                           fontSize: screenSizeWidth * 0.04,
                         ),
@@ -893,27 +795,19 @@ class _PageTask extends State<PageTask> {
                       Container(
                         margin: EdgeInsets.all(screenSizeWidth * 0.02),
                         alignment: Alignment(0, 0),
-                        child: CustomText(
-                            text: 'タスク追加',
-                            fontSize: screenSizeWidth * 0.05,
-                            color: Constant.blackGlay),
+                        child: CustomText(text: 'タスク追加', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                       ),
 
                       // 期日入力
                       // データピッカー
                       InkWell(
                           onTap: () {
-                            DatePicker.showDateTimePicker(context,
-                                showTitleActions: true,
-                                minTime: DateTime.now(), onConfirm: (date) {
+                            DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
                               setState(() {
                                 items.limitTime = date;
-                                dateText =
-                                    '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
+                                dateText = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
                               });
-                            },
-                                currentTime: DateTime.now(),
-                                locale: LocaleType.jp);
+                            }, currentTime: DateTime.now(), locale: LocaleType.jp);
                           },
                           child: Container(
                               width: screenSizeWidth * 0.5,
@@ -954,11 +848,7 @@ class _PageTask extends State<PageTask> {
                             textInputAction: TextInputAction.done,
                           )),
 
-                      Container(
-                          child: CustomText(
-                              text: '誰に頼む？',
-                              fontSize: screenSizeWidth * 0.04,
-                              color: Constant.blackGlay)),
+                      Container(child: CustomText(text: '誰に頼む？', fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay)),
 
                       Container(
                         height: screenSizeHeight * 0.1,
@@ -976,20 +866,12 @@ class _PageTask extends State<PageTask> {
                                     //  items.friend[workerId]['bool'] = true;
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.only(
-                                        top: screenSizeWidth * 0.02,
-                                        bottom: screenSizeWidth * 0.02),
+                                    padding: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                                     alignment: Alignment(0, 0),
-                                    decoration: BoxDecoration(
-                                        color: Constant.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    child: CustomText(
-                                        text: decodedWorkers[index]['worker'],
-                                        fontSize: screenSizeWidth * 0.04,
-                                        color: Constant.blackGlay),
+                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
                           },
@@ -1005,14 +887,7 @@ class _PageTask extends State<PageTask> {
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
                             // worker を改築
-                            addTask(
-                                karioki2,
-                                items.userInfo['userid'],
-                                items.userInfo['userid'],
-                                items.newtask,
-                                items.limitTime,
-                                nowRoomid,
-                                0);
+                            addTask(karioki2, items.userInfo['userid'], items.userInfo['userid'], items.newtask, items.limitTime, nowRoomid, 0);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -1023,11 +898,12 @@ class _PageTask extends State<PageTask> {
                             FocusScope.of(context).unfocus(); // キーボードを閉じる
                             Navigator.of(context).pop(); // 戻る
                             // 値の更新
-                            items.taskList =
-                                await DatabaseHelper.queryAllRows('tasks');
-                            nowRoomTaskList =
-                                await DatabaseHelper.queryRowtask(nowRoomid);
-                            print(nowRoomTaskList);
+                            items.taskList = await DatabaseHelper.queryAllRows('tasks');
+                            nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+
+                            // dbに追加
+                            // print(nowRoomTaskList);
+                            taskGet();
                             // 画面の更新
                             setState(() {});
                           }
@@ -1035,19 +911,10 @@ class _PageTask extends State<PageTask> {
                         child: Container(
                           width: screenSizeWidth * 0.25,
                           alignment: Alignment(0, 0),
-                          padding: EdgeInsets.only(
-                              left: screenSizeWidth * 0.03,
-                              right: screenSizeWidth * 0.03,
-                              top: screenSizeWidth * 0.02,
-                              bottom: screenSizeWidth * 0.02),
+                          padding: EdgeInsets.only(left: screenSizeWidth * 0.03, right: screenSizeWidth * 0.03, top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                           margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
-                          decoration: BoxDecoration(
-                              color: Constant.main,
-                              borderRadius: BorderRadius.circular(16)),
-                          child: CustomText(
-                              text: '作成',
-                              fontSize: screenSizeWidth * 0.05,
-                              color: Constant.white),
+                          decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
+                          child: CustomText(text: '作成', fontSize: screenSizeWidth * 0.05, color: Constant.white),
                         ),
                       )
                     ]));
@@ -1082,18 +949,14 @@ class _PageTask extends State<PageTask> {
                       Container(
                           width: screenSizeWidth * 0.7,
                           //height: screenSizeHeight * 0.067,
-                          decoration: BoxDecoration(
-                              color: Constant.glay,
-                              borderRadius: BorderRadius.circular(50)),
+                          decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(50)),
                           margin: EdgeInsets.all(screenSizeWidth * 0.02),
                           child: Column(children: [
                             Row(
                               children: [
                                 // 検索アイコン
                                 Container(
-                                    margin: EdgeInsets.only(
-                                        right: screenSizeWidth * 0.02,
-                                        left: screenSizeWidth * 0.02),
+                                    margin: EdgeInsets.only(right: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
                                     child: const Icon(
                                       Icons.search,
                                       size: 30,
@@ -1133,17 +996,13 @@ class _PageTask extends State<PageTask> {
           width: screenSizeWidth * 0.625,
           alignment: Alignment(0, 0),
           padding: EdgeInsets.all(screenSizeWidth * 0.04),
-          decoration: BoxDecoration(
-              color: Constant.glay, borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.only(bottom: screenSizeWidth * 0.03),
 
           // ここかわるぞ
           // 改築予定
           // おわらんすぎる
-          child: CustomText(
-              text: nowRoomInfo[0]['roomName'],
-              fontSize: screenSizeWidth * 0.045,
-              color: Constant.blackGlay),
+          child: CustomText(text: nowRoomInfo[0]['room_name'], fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
         ));
   }
 
@@ -1186,9 +1045,7 @@ class _PageTask extends State<PageTask> {
                       height: screenSizeHeight * 0.215,
                       alignment: const Alignment(0.0, 0.0),
                       padding: EdgeInsets.all(screenSizeWidth * 0.05),
-                      decoration: BoxDecoration(
-                          color: Constant.glay,
-                          borderRadius: BorderRadius.circular(16)),
+                      decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                       child: Column(
                         children: [
                           // 検索結果の表示
@@ -1200,12 +1057,7 @@ class _PageTask extends State<PageTask> {
                               top: screenSizeWidth * 0.0475,
                               bottom: screenSizeWidth * 0.02,
                             ),
-                            child: CustomText(
-                                text: searchBool
-                                    ? '${searchRoomName}\nに参加しますか？'
-                                    : falseResult,
-                                fontSize: screenSizeWidth * 0.045,
-                                color: Constant.blackGlay),
+                            child: CustomText(text: searchBool ? '${searchRoomName}\nに参加しますか？' : falseResult, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                           ),
 
                           // 参加しますか？
@@ -1213,8 +1065,7 @@ class _PageTask extends State<PageTask> {
                               ? Container(
                                   width: screenSizeWidth * 0.9,
                                   alignment: const Alignment(0.0, 0.0),
-                                  margin: EdgeInsets.only(
-                                      left: screenSizeWidth * 0.05),
+                                  margin: EdgeInsets.only(left: screenSizeWidth * 0.05),
                                   child: Row(
                                     children: [
                                       // 「はい」
@@ -1227,46 +1078,19 @@ class _PageTask extends State<PageTask> {
                                             bool joinBool = true;
                                             showDialog(
                                                 context: context,
-                                                builder:
-                                                    (BuildContext context) {
+                                                builder: (BuildContext context) {
                                                   return AlertDialog(
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16.0),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(16.0),
                                                       ),
-                                                      elevation:
-                                                          0.0, // ダイアログの影を削除
-                                                      backgroundColor: Constant
-                                                          .white
-                                                          .withOpacity(
-                                                              0), // 背景色
+                                                      elevation: 0.0, // ダイアログの影を削除
+                                                      backgroundColor: Constant.white.withOpacity(0), // 背景色
                                                       content: Container(
-                                                        width: screenSizeWidth *
-                                                            0.8,
-                                                        height:
-                                                            screenSizeHeight *
-                                                                0.215,
-                                                        alignment:
-                                                            const Alignment(
-                                                                0, 0),
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                Constant.glay,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        16)),
-                                                        child: CustomText(
-                                                            text: joinBool
-                                                                ? '既に参加しています'
-                                                                : '参加申請を送りました',
-                                                            fontSize:
-                                                                screenSizeWidth *
-                                                                    0.05,
-                                                            color: Constant
-                                                                .blackGlay),
+                                                        width: screenSizeWidth * 0.8,
+                                                        height: screenSizeHeight * 0.215,
+                                                        alignment: const Alignment(0, 0),
+                                                        decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
+                                                        child: CustomText(text: joinBool ? '既に参加しています' : '参加申請を送りました', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                                                       ));
                                                 });
 
@@ -1318,12 +1142,8 @@ class _PageTask extends State<PageTask> {
       margin: EdgeInsets.all(screenSizeWidth * 0.02),
       padding: EdgeInsets.all(screenSizeWidth * 0.02),
       alignment: const Alignment(0.0, 0.0),
-      decoration: BoxDecoration(
-          color: Constant.main, borderRadius: BorderRadius.circular(16)),
-      child: CustomText(
-          text: type ? 'はい' : 'いいえ',
-          fontSize: screenSizeWidth * 0.035,
-          color: Constant.white),
+      decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(16)),
+      child: CustomText(text: type ? 'はい' : 'いいえ', fontSize: screenSizeWidth * 0.035, color: Constant.white),
     );
   }
 
@@ -1333,11 +1153,11 @@ class _PageTask extends State<PageTask> {
     // items.Nums();
 
     // dbroomFirstAdd();
-    dbnowRoom();
-    dbroomInfo();
-    taskGet();
+    // dbnowRoom();
+    // dbroomInfo();
+    // taskGet();
 
-    print(nowRoomInfo);
+    // print(nowRoomInfo);
 
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
@@ -1384,10 +1204,7 @@ class _PageTask extends State<PageTask> {
                 roomBottun(),
 
                 // タスク表示
-                SizedBox(
-                    width: screenSizeWidth * 0.95,
-                    height: screenSizeHeight * 0.7,
-                    child: taskList())
+                SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList())
               ],
             ),
           ])),

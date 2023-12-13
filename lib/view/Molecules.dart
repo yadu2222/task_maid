@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import './items.dart';
 import 'constant.dart';
+import 'pages/page_home.dart';
 
 class molecules {
   // 画面上部バー
@@ -142,6 +143,7 @@ class pageName extends StatefulWidget {
   @override
   _pageName createState() => _pageName();
 }
+
 class _pageName extends State<pageName> {
   // 初期化メソッド
   @override

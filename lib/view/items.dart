@@ -15,35 +15,6 @@ class items {
     '1111',
   ];
 
-  // ルーム
-  // でーたべーすから自分が参加してるルームをもらってくる
-  // static Map room = {
-  //   '1111': {
-  //     'roomName': 'てすとるーむ',
-  //     'leader': '12345',
-  //     'workers': ['12345'],
-  //     'tasks': [],
-  //   },
-  //   '3456': {
-  //     'roomName': '参加できない; ;',
-  //     'leader': '12345',
-  //     'workers': ['12345'],
-  //     'tasks': [],
-  //   },
-  //   '1234': {
-  //     'roomName': 'てくてくてっく',
-  //     'leader': '12345',
-  //     'workers': ['12345', '67890'],
-  //     'tasks': [],
-  //   },
-  //   '2345': {
-  //     'roomName': 'ニャリオットのお世話',
-  //     'leader': '67890',
-  //     'workers': ['67890'],
-  //     'tasks': [],
-  //   }
-  // };
-
   // タスクを追加するときに値を保存する変数
   static String worker = '';
   static String newtask = '0000';
@@ -64,11 +35,11 @@ class items {
   static Nums() async {
     taskList = await DatabaseHelper.queryAllRows('tasks');
     // print(taskList);
-    message = await DatabaseHelper.queryAllRows('msgchats');
+    message = await DatabaseHelper.queryAllRows('msg_chats');
     // print(msgchats);
     rooms = await DatabaseHelper.queryAllRows('rooms');
     // print(rooms);
-    subRooms = await DatabaseHelper.queryAllRows('subRooms');
+    subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
   }
 
   // 画像リスト
@@ -86,7 +57,7 @@ class items {
       'assets/images/stamp/taskMaid_stamp05.png',
       'assets/images/stamp/taskMaid_stamp06.png',
       'assets/images/stamp/taskMaid_stamp07.png',
-      'assets/images/stamp/taskMaid_stamp01.png',
+      'assets/images/stamp/taskMaid_stamp08.png',
     ],
   };
 }

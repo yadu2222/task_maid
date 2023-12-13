@@ -42,26 +42,40 @@ class CustomText extends StatelessWidget {
 void addMessage(int msgid, String message, int status, int index, int level, String chatRoom) async {
   // 辞書に追加
   // indexじゃなくてtaskidを追加すべきと思ったけどstampとかのこと考えたらそうとも言えないな困ったな
+  // var newmsg = {
+  //   'msg_id': msgid,
+  //   'roomid': chatRoom,
+  //   'time': DateTime.now().toString(),
+  //   'sender': items.userInfo['userid'],
+  //   'level': level,
+  //   'status': status,
+  //   'message': message,
+  //   'quote': index,
+  // };
+
   var newmsg = {
-    'msgid': msgid,
-    'roomid': chatRoom,
-    'time': DateTime.now().toString(),
+    'msg_id': msgid,
+    'msg_datetime': DateTime.now().toString(),
     'sender': items.userInfo['userid'],
+    'room_id': chatRoom,
     'level': level,
-    'status': status,
-    'message': message,
-    'quote': index,
+    'status_addition': status,
+    'stamp_id':index,
+    'quote_id': index,
+    'msg': message,
+    
   };
+
   // dbに追加
-  DatabaseHelper.insert('msgchats', newmsg);
-  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('msgchats');
+  DatabaseHelper.insert('msg_chats', newmsg);
+  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('msg_chats');
   print(await result);
 }
 
 // タスクをdbに追加するメソッド
 void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
-  var newtask = {'taskid': taskid, 'limitTime': limitTime.toString(), 'leaders': user, 'worker': worker, 'contents': contents, 'roomid': roomid, 'status': status};
+  var newtask = {'task_id': taskid, 'task_limit': limitTime.toString(), 'status_progress': status,'leaders': user, 'worker': worker, 'contents': contents, 'room_id': roomid};
 
   // 事故発生中
   // items.room[roomid]['tasks'].add(taskid);
@@ -78,20 +92,24 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
 void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) async {
   // Roomをデータベースに追加する際の例
   // リストを直でぶち込むことはできないらしい　不便じゃない？
-  List subRooms = [{"subRoom":roomid}];
-  var newRoom = {"roomid": roomid, "roomName": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "subRooms": jsonEncode(subRooms)};
+  List subRooms = [
+    {"sub_room": roomid}
+  ];
+
+  // room_idがuuid numberは検索の際に使用する値
+  var newRoom = {"room_id": roomid, "room_name": roomName, "leaders": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks),'room_number':roomid, "sub_rooms": jsonEncode(subRooms)};
   DatabaseHelper.insert('rooms', newRoom);
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);
 }
 
 // 新しいサブルームをdbに追加するメソッド
-void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks,String mainRoomid) async {
+void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks, String mainRoomid) async {
   // Roomをデータベースに追加する際の例
   // リストを直でぶち込むことはできないらしい　不便じゃない？
- 
-  var newRoom = {"roomid": roomid, "roomName": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "mainRoomid": mainRoomid};
-  DatabaseHelper.insert('subRooms', newRoom);
+
+  var newRoom = {"room_id": roomid, "room_name": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "main_room_id": mainRoomid};
+  DatabaseHelper.insert('sub_rooms', newRoom);
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);
 }

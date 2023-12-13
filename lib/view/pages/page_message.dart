@@ -63,7 +63,7 @@ class _PageMail extends State<PageMail> {
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
-                      child: CustomText(text: items.rooms[index]['roomName'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                      child: CustomText(text: items.rooms[index]['room_name'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                     ),
                     Container(
                         width: _screenSizeWidth * 0.7,

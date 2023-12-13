@@ -20,12 +20,7 @@ class DatabaseHelper {
   static String account = 'account';
 
   // table名まとめ
-  static List<String> tableNames = [
-    "userAccount",
-    "rooms",
-    "tasks",
-    "messages"
-  ];
+  static List<String> tableNames = ["userAccount", "rooms", "tasks", "messages"];
 
   // DatabaseHelper クラスを定義
   DatabaseHelper._privateConstructor();
@@ -72,7 +67,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE users (
       user_id TEXT PRIMARY KEY,
-      mail TEXT PRIMARY KEY,
+      mail TEXT,
       name TEXT,
       tasks  text,
       rooms text
@@ -95,8 +90,8 @@ class DatabaseHelper {
     // サブルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE sub_rooms (
-      room_id TEXT PRIMARY KEY ,
-      room_name TEXT PRIMARY KEY,
+      room_id TEXT,
+      room_name TEXT PRIMARY KEY ,
       leader TEXT,
       workers TEXT,
       tasks TEXT,
@@ -113,7 +108,7 @@ class DatabaseHelper {
       leaders TEXT,
       worker TEXT,
       room_id text,
-      contents TEXT,
+      contents TEXT
     )
   ''');
 
@@ -127,10 +122,12 @@ class DatabaseHelper {
       level integer,
       status_addition integer,
       stamp_id integer,
-      quote_id TEXT,
+      quote_id integer,
       msg TEXT
   )
 ''');
+
+// quote textに変更
   }
 
   // 登録処理
@@ -142,41 +139,39 @@ class DatabaseHelper {
 
   // 照会処理
   // 引数：table名
-  static Future<List<Map<String, dynamic>>> queryAllRows(
-      String tableName) async {
+  static Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
     Database? db = await instance.database;
-    print(await db!.rawQuery("select * from ${tableName}"));
-    return await db.rawQuery("select * from ${tableName}");
+    // print(await db!.rawQuery("select * from $tableName"));
+    return await db!.rawQuery("select * from $tableName");
   }
 
   // その2
   // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
   static Future<List<Map<String, dynamic>>> queryRow(String key) async {
     Database? db = await instance.database;
-    return await db!
-        .rawQuery("select * from msgchats where '${key}' == 'message'");
+    return await db!.rawQuery("select * from msg_chats where '${key}' == 'message'");
   }
 
   // その3
   // idでの検索に返してくれるやつ
   static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
     Database? db = await instance.database;
-    return await db!
-        .rawQuery("select * from msgchats where '${key}' == 'time'");
+    return await db!.rawQuery("select * from msg_chats where '${key}' == 'msg_datetime'");
   }
 
   // その3
   // idでの検索に返してくれるやつ
   static Future<List<Map<String, dynamic>>> queryRowtask(String key) async {
     Database? db = await instance.database;
-    return await db!.query('tasks', where: 'roomid = ?', whereArgs: ['${key}']);
+    // print(await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']));
+    return await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']);
   }
 
   static Future<bool> firstdb() async {
     Database? db = await instance.database;
     List result = await db!.rawQuery("select * from rooms");
     // 取得した結果が空でないかを確認し、存在する場合はtrueを、存在しない場合はfalseを返す
-    print(result.isNotEmpty);
+    // print(result.isNotEmpty);
     return result.isNotEmpty;
   }
 
@@ -185,8 +180,8 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> selectRoom(String key) async {
     Database? db = await instance.database;
     print(key);
-    print(await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']));
-    return await db!.query('rooms', where: 'roomid = ?', whereArgs: ['${key}']);
+    // print(await db!.query('rooms', where: 'room_id = ?', whereArgs: ['$key']));
+    return await db!.query('rooms', where: 'room_id = ?', whereArgs: ['$key']);
   }
 
   // その5
@@ -194,27 +189,22 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> selectSubRoom(String key) async {
     Database? db = await instance.database;
     print(key);
-    print(await db!
-        .query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']));
-    return await db!
-        .query('subRooms', where: 'mainRoomid = ?', whereArgs: ['${key}']);
+    // print(await db!.query('sub_rooms', where: 'main_room_id = ?', whereArgs: ['${key}']));
+    return await db!.query('sub_rooms', where: 'main_room_id = ?', whereArgs: ['${key}']);
   }
 
   // レコード数を確認
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {
     Database? db = await instance.database;
-    return Sqflite.firstIntValue(
-        await db!.rawQuery('SELECT COUNT(*) FROM $tableName'));
+    return Sqflite.firstIntValue(await db!.rawQuery('SELECT COUNT(*) FROM $tableName'));
   }
 
   // 更新処理
   // 引数：table名、更新後のmap、検索キー
-  static Future<int> update(String tableName, String colum,
-      Map<String, dynamic> row, String key) async {
+  static Future<int> update(String tableName, String colum, Map<String, dynamic> row, String key) async {
     Database? db = await instance.database;
-    return await db!
-        .update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
+    return await db!.update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
   }
 
   // 削除処理

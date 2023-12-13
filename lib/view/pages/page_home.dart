@@ -15,11 +15,11 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  
   // dbにテストルームがあるかないかを判別、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
       // 追加する部屋の変数
-      // roomidはサーバー側で決められるようにしたい
       var leaders = [
         {'leader': items.userInfo['userid']}
       ];
@@ -27,15 +27,21 @@ class _PageHomeState extends State<PageHome> {
         {'worker': items.userInfo['userid']}
       ];
       var tasks = [{}];
-
       dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks);
-      // dbnowRoom();
+      setState(() {
+        defaultRoomSet();
+      });
     }
-    // DatabaseHelper.queryAllRows('rooms');
+  }
+
+  List defaultRoom = [];
+  defaultRoomSet() async {
+    defaultRoom = await DatabaseHelper.selectRoom('1111');
+    // ここで更新することでページ遷移時に渡す変数が書き換えられる
+    setState(() {});
   }
 
   // task_listの繰り返し処理
-  // これで全部かきなおします、、、、
   Widget _taskList(List taskList) {
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
@@ -46,19 +52,19 @@ class _PageHomeState extends State<PageHome> {
       itemCount: taskList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return taskList[index]['status'] == 0
+        return taskList[index]['status_progress'] == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
                 child: InkWell(
-                    onTap: () {
+                    onTap: () async {
                       // ページ遷移
-                      // 建設予定 選択したタスクのルームに自動遷移
+                      List selectRoom = await DatabaseHelper.selectRoom(taskList[index]['room_id']);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => PageTask(
-                                  roomNum: taskList[index]['roomid'],
+                                  nowRoomInfo: selectRoom,
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
@@ -88,23 +94,22 @@ class _PageHomeState extends State<PageHome> {
     // TODO: implement initState
     super.initState();
     items.Nums();
-   
+    dbroomFirstAdd();
+    defaultRoomSet();
   }
 
   @override
   Widget build(BuildContext context) {
-     dbroomFirstAdd();
-     
     // 画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         body: Center(
       // ページの中身
       child: Container(
         width: double.infinity,
-        height: _screenSizeHeight,
+        height: screenSizeHeight,
         decoration: const BoxDecoration(color: Constant.main),
         child: SafeArea(
             bottom: false,
@@ -114,15 +119,15 @@ class _PageHomeState extends State<PageHome> {
                   // header
                   // アイコンバー
                   Container(
-                      width: _screenSizeWidth,
-                      height: _screenSizeHeight * 0.075,
-                      child: const Align(
+                      width: screenSizeWidth,
+                      height: screenSizeHeight * 0.075,
+                      child: Align(
                           alignment: Alignment.topRight,
                           child: Row(
                             children: [
                               //メール
                               // Componentsless.PageShiftIcon(functionIcon: Icons.mail_outline, widget:const PageMail()),
-                              PageShiftIcon(
+                              const PageShiftIcon(
                                 functionIcon: Icons.mail_outline,
                                 widget: PageMail(),
                               ),
@@ -130,11 +135,11 @@ class _PageHomeState extends State<PageHome> {
                               //タスク
                               PageShiftIcon(
                                 functionIcon: Icons.check_box,
-                                widget: PageTask(roomNum: '1111'),
+                                widget: PageTask(nowRoomInfo: defaultRoom),
                               ),
 
                               //設定
-                              PageShiftIcon(
+                              const PageShiftIcon(
                                 functionIcon: Icons.settings,
                                 widget: PageSetting(),
                               )
@@ -143,8 +148,8 @@ class _PageHomeState extends State<PageHome> {
 
                   // body
                   Container(
-                      width: _screenSizeWidth,
-                      height: _screenSizeHeight * 0.8675, // エラー発生中
+                      width: screenSizeWidth,
+                      height: screenSizeHeight * 0.8675, // エラー発生中
                       child: Stack(children: <Widget>[
                         // Row(
                         //   children: [
@@ -152,10 +157,10 @@ class _PageHomeState extends State<PageHome> {
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Container(
-                              width: _screenSizeWidth,
-                              height: _screenSizeHeight * 0.9,
+                              width: screenSizeWidth,
+                              height: screenSizeHeight * 0.9,
                               //alignment: Alignment.bottomCenter,
-                              //padding: EdgeInsets.only(top: _screenSizeHeight*0.05),
+                              //padding: EdgeInsets.only(top: screenSizeHeight*0.05),
 
                               //右寄せ
                               child: Align(
@@ -168,17 +173,17 @@ class _PageHomeState extends State<PageHome> {
 
                         // 左半分
                         Container(
-                            width: _screenSizeWidth * 0.45,
-                            height: _screenSizeHeight * 0.866,
-                            margin: EdgeInsets.only(top: _screenSizeWidth * 0.02, left: _screenSizeWidth * 0.02),
+                            width: screenSizeWidth * 0.45,
+                            height: screenSizeHeight * 0.866,
+                            margin: EdgeInsets.only(top: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
                             child: Column(children: [
                               // ふきだし設置予定
                               Container(
-                                width: _screenSizeWidth * 0.38,
-                                //height: _screenSizeHeight * 0.2,
+                                width: screenSizeWidth * 0.38,
+                                //height: screenSizeHeight * 0.2,
                                 alignment: const Alignment(0.0, 0.0), //中身の配置真ん中
-                                margin: EdgeInsets.only(top: _screenSizeHeight * 0.05, bottom: _screenSizeHeight * 0.05),
-                                padding: EdgeInsets.all(_screenSizeWidth * 0.03),
+                                margin: EdgeInsets.only(top: screenSizeHeight * 0.05, bottom: screenSizeHeight * 0.05),
+                                padding: EdgeInsets.all(screenSizeWidth * 0.03),
                                 decoration: BoxDecoration(
                                   color: Constant.glay,
                                   borderRadius: BorderRadius.circular(10), // 角丸
@@ -188,15 +193,15 @@ class _PageHomeState extends State<PageHome> {
                                     text: //'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
                                         // 処理建設予定地
                                         'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！',
-                                    fontSize: _screenSizeWidth * 0.035,
+                                    fontSize: screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),
 
                               // タスクリスト
                               Container(
-                                  width: _screenSizeWidth * 0.38,
-                                  height: _screenSizeHeight * 0.565, // エラー発生中
-                                  padding: EdgeInsets.only(top: _screenSizeWidth * 0.03, bottom: _screenSizeWidth * 0.03),
+                                  width: screenSizeWidth * 0.38,
+                                  height: screenSizeHeight * 0.565, // エラー発生中
+                                  padding: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.03),
                                   decoration: BoxDecoration(
                                     color: Constant.glay,
                                     borderRadius: BorderRadius.circular(10), // 角丸
