@@ -67,8 +67,9 @@ class _PageTask extends State<PageTask> {
 
   void dbroomInfo() async {
     // db取り出し
-    joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
-    subRooms = await DatabaseHelper.selectSubRoom(nowRoomid);
+    // joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
+    joinRoomInfo = await DatabaseHelper.serachRows('rooms', 0, [], []);
+    subRooms = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid]);
   }
 
   // JSON文字列をデコードしてListを取得する関数
@@ -78,7 +79,7 @@ class _PageTask extends State<PageTask> {
 
   // 今の部屋
   dbnowRoom() async {
-    Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(nowRoomid);
+    Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms',1,['room_id'],[nowRoomid]);
     nowRoomInfo = await result;
     // データベースから取得したデータをデコードして使用
     if (nowRoomInfo.isNotEmpty) {
@@ -94,7 +95,12 @@ class _PageTask extends State<PageTask> {
   // 現在のタスクを参照する
   taskGet() async {
     // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
-    nowRoomTaskList = await DatabaseHelper.queryRowtaskss(nowRoomid, items.userInfo['userid']);
+    // nowRoomTaskList = await DatabaseHelper.queryRowtaskss(nowRoomid, items.userInfo['userid']);
+
+    nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [nowRoomid, items.userInfo['userid']]);
+    setState(() {
+      
+    });
     // print('しゅとくしてください');
     // print(nowRoomTaskList);
   }

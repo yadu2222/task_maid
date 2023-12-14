@@ -145,6 +145,36 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from $tableName");
   }
 
+  // テーブル名、検索タイプ、検索行、検索ワード
+  static Future<List<Map<String, dynamic>>> serachRows(String tableName, int serachType, List serachColum, List serachWords) async {
+    Database? db = await instance.database;
+    switch (serachType) {
+      // table名のみで検索
+      case 0:
+        return await db!.rawQuery("select * from $tableName");
+      // 検索あり 1語
+      case 1:
+        return await db!.query(
+          '$tableName',
+          where: '${serachColum[0]} = ?',
+          whereArgs: ['${serachWords[0]}'],
+        );
+      // 検索あり 2語
+      case 2:
+        print(await db!.query(
+          '$tableName',
+          where: '${serachColum[0]} = ? AND ${serachColum[1]} = ?',
+          whereArgs: ['${serachWords[0]}', '${serachWords[1]}'],
+        ));
+        return await db!.query(
+          '$tableName',
+          where: '${serachColum[0]} = ? AND ${serachColum[1]} = ?',
+          whereArgs: ['${serachWords[0]}', '${serachWords[1]}'],
+        );
+    }
+    return await db!.rawQuery("select * from $tableName");
+  }
+
   // その2
   // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
   static Future<List<Map<String, dynamic>>> queryRow(String key) async {
@@ -152,57 +182,12 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from msg_chats where '${key}' == 'message'");
   }
 
-  // その3
-  // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> queryRowRoom(String key) async {
-    Database? db = await instance.database;
-    return await db!.rawQuery("select * from msg_chats where '${key}' == 'msg_datetime'");
-  }
-
-  // その3
-  // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> queryRowtask(String key) async {
-    Database? db = await instance.database;
-    // print(await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']));
-    return await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']);
-  }
-
-  // その3
-  // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> queryRowtaskss(String key,String key_2) async {
-    Database? db = await instance.database;
-    // print(await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']));
-    return await db!.query('tasks', where: 'room_id = ? AND worker = ?',
-      whereArgs: ['$key', '$key_2'],
-    );
-  }
-
   static Future<bool> firstdb() async {
     Database? db = await instance.database;
     List result = await db!.rawQuery("select * from rooms");
     // 取得した結果が空でないかを確認し、存在する場合はtrueを、存在しない場合はfalseを返す
-    // print(result.isNotEmpty);
     return result.isNotEmpty;
   }
-
-  // その4
-  // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> selectRoom(String key) async {
-    Database? db = await instance.database;
-    print(key);
-    // print(await db!.query('rooms', where: 'room_id = ?', whereArgs: ['$key']));
-    return await db!.query('rooms', where: 'room_id = ?', whereArgs: ['$key']);
-  }
-
-  // その5
-  // idでの検索に返してくれるやつ
-  static Future<List<Map<String, dynamic>>> selectSubRoom(String key) async {
-    Database? db = await instance.database;
-    print(key);
-    // print(await db!.query('sub_rooms', where: 'main_room_id = ?', whereArgs: ['${key}']));
-    return await db!.query('sub_rooms', where: 'main_room_id = ?', whereArgs: ['${key}']);
-  }
-
   // レコード数を確認
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {

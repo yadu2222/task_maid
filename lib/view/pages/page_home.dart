@@ -15,7 +15,6 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  
   // dbにテストルームがあるかないかを判別、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
@@ -36,7 +35,7 @@ class _PageHomeState extends State<PageHome> {
 
   List defaultRoom = [];
   defaultRoomSet() async {
-    defaultRoom = await DatabaseHelper.selectRoom('1111');
+    defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111']);
     // ここで更新することでページ遷移時に渡す変数が書き換えられる
     setState(() {});
   }
@@ -59,7 +58,8 @@ class _PageHomeState extends State<PageHome> {
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
-                      List selectRoom = await DatabaseHelper.selectRoom(taskList[index]['room_id']);
+                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']]);
+                      
                       Navigator.push(
                         context,
                         MaterialPageRoute(

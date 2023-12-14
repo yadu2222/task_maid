@@ -52,7 +52,7 @@ class _PageMassages extends State<PageMassages> {
   List decodedSubRooms = [];
 
   taskGet() async {
-    getTaskList = await DatabaseHelper.queryRowtask(messenger['room_id']);
+    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']]);
   }
 
   // dbnowRoom() async {

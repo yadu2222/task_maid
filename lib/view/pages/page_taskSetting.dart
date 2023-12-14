@@ -27,7 +27,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   List selectButton = [true];
   // 引数を元に必要な情報を参照する
   infoGet() async {
-    nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomInfo[0]['room_id']);
+    nowRoomTaskList = await DatabaseHelper.serachRows('tasks',1,['room_id'],[nowRoomInfo[0]['room_id']]);
     decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
     decodedRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
 
@@ -87,7 +87,8 @@ class _page_taskSetting extends State<page_taskSetting> {
           } else {
             selectRoomid = roomList[index - 1]['sub_room'];
           }
-          nowRoomTaskList = await DatabaseHelper.queryRowtask(selectRoomid);
+          nowRoomTaskList = await DatabaseHelper.serachRows
+          ('tasks',1,['room_id'],[selectRoomid]);
           setState(() {});
         },
         child: Container(
