@@ -37,6 +37,7 @@ class _PageMassages extends State<PageMassages> {
   bool quote = false;
   bool stamp = false;
   int taskIndex = 0;
+  String quoteTaskid = '';
 
   // JSON文字列をデコードしてListを取得する関数
   List<dynamic> decodeJsonList(String jsonString) {
@@ -49,23 +50,31 @@ class _PageMassages extends State<PageMassages> {
   List decodedLeaders = [];
   List decodedWorkers = [];
   List decodedTasks = [];
-  List decodedSubRooms = [];
+  // List decodedSubRooms = [];
 
+  // 開いた部屋の自分のタスクを棕取得
   taskGet() async {
     getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']]);
+    setState(() {});
   }
 
-  // dbnowRoom() async {
-  //   Future<List<Map<String, dynamic>>> result = DatabaseHelper.selectRoom(messenger);
-  //   nowRoomInfo = await result;
-  //   // データベースから取得したデータをデコードして使用
-  //   if (nowRoomInfo.isNotEmpty) {
-  //     decodedLeaders = decodeJsonList(nowRoomInfo[0]['leader']);
-  //     decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
-  //     decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
-  //     decodedSubRooms = decodeJsonList(nowRoomInfo[0]['subRooms']);
-  //   }
-  // }
+  // 無限ループ対策
+  int dbCount = 1;
+  int dbCountFuture = 0;
+
+  // getTaskListから部屋番号に応じた値を返す
+  String quoteTaskGet(String key, String value) {
+    int resultid = 0;
+    String result = '';
+    for (int i = 0; i < getTaskList.length; i++) {
+      if (getTaskList[i]['task_id'] == value) {
+        resultid = i;
+        result = getTaskList[i][key];
+        break;
+      }
+    }
+    return result;
+  }
 
   // listvewを自動スクロールするためのメソッド
   var _scrollController = ScrollController();
@@ -79,6 +88,7 @@ class _PageMassages extends State<PageMassages> {
     _messageController = TextEditingController();
     _scrollController = ScrollController();
     nowRoomInfo = widget.messenger;
+    taskGet();
 
     // ウィジェットがビルドされた後にスクロール位置を設定
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -143,10 +153,9 @@ class _PageMassages extends State<PageMassages> {
                         child: Column(children: [
                           Container(
                             alignment: Alignment.centerLeft,
+                            // ${dateformat(quoteTask[0]['task_limit']',0)}
                             child: CustomText(
-                                text: '期限：${dateformat(items.taskList[messages[index]['quote_id']]['task_limit'], 0)}\n------------------------------',
-                                fontSize: screenSizeWidth * 0.0325,
-                                color: Constant.blackGlay),
+                                text: '${quoteTaskGet('task_limit', messages[index]['quote_id'])}\n------------------------------', fontSize: screenSizeWidth * 0.0325, color: Constant.blackGlay),
                           ),
 
                           SizedBox(
@@ -154,7 +163,7 @@ class _PageMassages extends State<PageMassages> {
                           ),
 
                           // タスク内容の表示
-                          CustomText(text: items.taskList[messages[index]['quote_id']]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+                          CustomText(text: quoteTaskGet('contents', messages[index]['quote_id']), fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
                         ])),
 
                     // 自分以外の人からのメッセージであればボタンを表示
@@ -290,7 +299,8 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
       onTap: () {
         // メッセージ追加
-        addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, messages[index]['quote_id'], 0, nowRoomInfo['room_id']);
+        addMessage(karioki, status ? '順調です！！！！！！' : 'リスケお願いします', 1, 0, messages[index]['quote_id'], 0, nowRoomInfo['room_id']);
+        dbCount++;
 
         // 再読み込みとスクロール
         setState(() {
@@ -340,7 +350,7 @@ class _PageMassages extends State<PageMassages> {
         onTap: () async {
           status = 2;
           karioki++;
-          addMessage(karioki, '', status, picture, 0, nowRoomInfo['room_id']);
+          addMessage(karioki, '', status, picture, '', 0, nowRoomInfo['room_id']);
           setState(() {
             // ステータス書き換え
             stamp = false;
@@ -490,7 +500,10 @@ class _PageMassages extends State<PageMassages> {
                       status = 1;
                       quote = true;
                       // この変数がどこの子なのかわからない、、
+                      // ダミーーーー
+                      // task_idを指定したい
                       taskIndex = index;
+                      quoteTaskid = taskList[index]['task_id'];
                       Navigator.of(context).pop();
                     });
                   },
@@ -599,7 +612,8 @@ class _PageMassages extends State<PageMassages> {
           // db追加メソッド呼び出し
           // 怒りレベル建設予定地
           karioki++;
-          addMessage(karioki, message, status, taskIndex, 0, nowRoomInfo['room_id']);
+          addMessage(karioki, message, status, 0, quoteTaskid, 0, nowRoomInfo['room_id']);
+          dbCount++;
           print(nowRoomInfo);
           print(nowRoomInfo['room_id']);
           // 入力フォームの初期化
@@ -633,7 +647,6 @@ class _PageMassages extends State<PageMassages> {
     // dbnowRoom();
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
-    taskGet();
 
     return Scaffold(
       key: _scaffoldKey,

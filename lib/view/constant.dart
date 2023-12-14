@@ -39,20 +39,8 @@ class CustomText extends StatelessWidget {
 }
 
 // メッセージをdbに追加するメソッド
-void addMessage(int msgid, String message, int status, int index, int level, String chatRoom) async {
+void addMessage(int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom) async {
   // 辞書に追加
-  // indexじゃなくてtaskidを追加すべきと思ったけどstampとかのこと考えたらそうとも言えないな困ったな
-  // var newmsg = {
-  //   'msg_id': msgid,
-  //   'roomid': chatRoom,
-  //   'time': DateTime.now().toString(),
-  //   'sender': items.userInfo['userid'],
-  //   'level': level,
-  //   'status': status,
-  //   'message': message,
-  //   'quote': index,
-  // };
-
   var newmsg = {
     'msg_id': msgid,
     'msg_datetime': DateTime.now().toString(),
@@ -60,10 +48,9 @@ void addMessage(int msgid, String message, int status, int index, int level, Str
     'room_id': chatRoom,
     'level': level,
     'status_addition': status,
-    'stamp_id':index,
-    'quote_id': index,
+    'stamp_id': stamp_id,
+    'quote_id': quote_id,
     'msg': message,
-    
   };
 
   // dbに追加
@@ -75,7 +62,7 @@ void addMessage(int msgid, String message, int status, int index, int level, Str
 // タスクをdbに追加するメソッド
 void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
-  var newtask = {'task_id': taskid, 'task_limit': limitTime.toString(), 'status_progress': status,'leaders': user, 'worker': worker, 'contents': contents, 'room_id': roomid};
+  var newtask = {'task_id': taskid, 'task_limit': limitTime.toString(), 'status_progress': status, 'leaders': user, 'worker': worker, 'contents': contents, 'room_id': roomid};
 
   // 事故発生中
   // items.room[roomid]['tasks'].add(taskid);
@@ -97,7 +84,15 @@ void dbAddRoom(String roomid, String roomName, List leaders, List workers, List 
   ];
 
   // room_idがuuid numberは検索の際に使用する値
-  var newRoom = {"room_id": roomid, "room_name": roomName, "leaders": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks),'room_number':roomid, "sub_rooms": jsonEncode(subRooms)};
+  var newRoom = {
+    "room_id": roomid,
+    "room_name": roomName,
+    "leaders": jsonEncode(leaders),
+    "workers": jsonEncode(workers),
+    "tasks": jsonEncode(tasks),
+    'room_number': roomid,
+    "sub_rooms": jsonEncode(subRooms)
+  };
   DatabaseHelper.insert('rooms', newRoom);
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);
@@ -120,17 +115,9 @@ String dateformat(String dateTime, int type) {
   final formatType_2 = DateFormat('yyyy/MM/dd');
   final formatType_3 = DateFormat('HH:mm');
   final formatType_4 = DateFormat('MM月dd日HH時mm分');
+  print(dateTime);
 
   List formatType = [formatType_1, formatType_2, formatType_3, formatType_4];
-  return formatType[type].format(DateTime.parse(dateTime));
+  DateTime nn = DateTime.parse(dateTime);
+  return formatType[type].format(nn);
 }
-
-// ルームIDチェッカー
-// bool roomIDcheck(String roomID) {
-//   for (int i = 0; i < items.room[roomID]['workers'].length; i++) {
-//     if (items.room[roomID]['workers'][i] == items.userInfo['userid']) {
-//       return true;
-//     }
-//   }
-//   return false;
-// }

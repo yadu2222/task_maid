@@ -53,17 +53,20 @@ class _PageTask extends State<PageTask> {
   static String nowRoomid = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
   static String dateText = '期日を入力してね';
   static String please = 'リスケしてほしい日付を入力してね';
-  static int karioki2 = 4587679;
+  static int karioki2 = 44487879;
 
   // 変数まとめ
   List joinRoomInfo = items.rooms;
-
   List subRooms = [];
   List<dynamic> decodedLeaders = [];
   List<dynamic> decodedWorkers = [];
   List<dynamic> decodedTasks = [];
   List<dynamic> decodedSubRooms = [];
   List nowRoomTaskList = [];
+
+  // 無限ループ対策
+  int dbCount = 1;
+  int dbCountFuture = 0;
 
   void dbroomInfo() async {
     // db取り出し
@@ -79,7 +82,7 @@ class _PageTask extends State<PageTask> {
 
   // 今の部屋
   dbnowRoom() async {
-    Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms',1,['room_id'],[nowRoomid]);
+    Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid]);
     nowRoomInfo = await result;
     // データベースから取得したデータをデコードして使用
     if (nowRoomInfo.isNotEmpty) {
@@ -97,10 +100,12 @@ class _PageTask extends State<PageTask> {
     // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
     // nowRoomTaskList = await DatabaseHelper.queryRowtaskss(nowRoomid, items.userInfo['userid']);
 
-    nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [nowRoomid, items.userInfo['userid']]);
-    setState(() {
-      
-    });
+    if (!(dbCount == dbCountFuture)) {
+      nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [nowRoomid, items.userInfo['userid']]);
+      setState(() {
+        dbCountFuture = dbCount;
+      });
+    }
     // print('しゅとくしてください');
     // print(nowRoomTaskList);
   }
@@ -587,10 +592,10 @@ class _PageTask extends State<PageTask> {
         // dbにメッセージ追加
         switch (type) {
           case 0:
-            addMessage(karioki2, 'できました！！！！！！！', 3, index, 0, taskList[index]['room_id']);
+            addMessage(karioki2, 'できました！！！！！！！', 3, 0, taskList[index]['task_id'], 0, taskList[index]['room_id']);
             break;
           case 1:
-            addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5, taskList[index]['room_id']);
+            addMessage(karioki2, '進捗どうですか？？？？？？？', 1, 0, taskList[index]['task_id'], 5, taskList[index]['room_id']);
             break;
           case 2:
             // 建設予定
@@ -602,7 +607,7 @@ class _PageTask extends State<PageTask> {
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
 
-            addMessage(karioki2, 'リスケお願いします', 3, index, 2, nowRoomTaskList[index]['room_id']);
+            addMessage(karioki2, 'リスケお願いします', 3, 0, taskList[index]['task_id'], 2, nowRoomTaskList[index]['room_id']);
         }
 
         // dbから取り出し
@@ -911,6 +916,7 @@ class _PageTask extends State<PageTask> {
                             // タスクを追加
                             // worker を改築
                             addTask(karioki2, items.userInfo['userid'], items.userInfo['userid'], items.newtask, items.limitTime, nowRoomid, 0);
+                            dbCount++;
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';

@@ -122,7 +122,7 @@ class DatabaseHelper {
       level integer,
       status_addition integer,
       stamp_id integer,
-      quote_id integer,
+      quote_id text,
       msg TEXT
   )
 ''');

@@ -34,8 +34,10 @@ class _PageHomeState extends State<PageHome> {
   }
 
   List defaultRoom = [];
+  List taskList = [];
   defaultRoomSet() async {
     defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111']);
+    taskList = await DatabaseHelper.serachRows('tasks', 1, ['worker'], [items.userInfo['userid']]);
     // ここで更新することでページ遷移時に渡す変数が書き換えられる
     setState(() {});
   }
@@ -59,7 +61,7 @@ class _PageHomeState extends State<PageHome> {
                     onTap: () async {
                       // ページ遷移
                       List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']]);
-                      
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -207,7 +209,7 @@ class _PageHomeState extends State<PageHome> {
                                     borderRadius: BorderRadius.circular(10), // 角丸
                                   ),
                                   // ループ
-                                  child: _taskList(items.taskList))
+                                  child: _taskList(taskList))
                             ])),
                       ]))
                 ],
