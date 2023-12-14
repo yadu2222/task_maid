@@ -167,6 +167,16 @@ class DatabaseHelper {
     return await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']);
   }
 
+  // その3
+  // idでの検索に返してくれるやつ
+  static Future<List<Map<String, dynamic>>> queryRowtaskss(String key,String key_2) async {
+    Database? db = await instance.database;
+    // print(await db!.query('tasks', where: 'room_id = ?', whereArgs: ['$key']));
+    return await db!.query('tasks', where: 'room_id = ? AND worker = ?',
+      whereArgs: ['$key', '$key_2'],
+    );
+  }
+
   static Future<bool> firstdb() async {
     Database? db = await instance.database;
     List result = await db!.rawQuery("select * from rooms");
@@ -204,6 +214,7 @@ class DatabaseHelper {
   // 引数：table名、更新後のmap、検索キー
   static Future<int> update(String tableName, String colum, Map<String, dynamic> row, String key) async {
     Database? db = await instance.database;
+    print(await db!.rawQuery("select * from $tableName"));
     return await db!.update(tableName, row, where: '$colum = ?', whereArgs: ['$key']);
   }
 

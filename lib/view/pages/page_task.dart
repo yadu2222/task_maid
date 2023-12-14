@@ -45,7 +45,7 @@ class _PageTask extends State<PageTask> {
     _scaffoldKey.currentState?.reassemble();
   }
 
-  // どこの部屋のタスクを参照したいのか引数でもらう
+  // 参照したい部屋の情報を引数にもらう
   List nowRoomInfo;
   _PageTask({required this.nowRoomInfo});
 
@@ -67,7 +67,6 @@ class _PageTask extends State<PageTask> {
 
   void dbroomInfo() async {
     // db取り出し
-
     joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
     subRooms = await DatabaseHelper.selectSubRoom(nowRoomid);
   }
@@ -94,9 +93,10 @@ class _PageTask extends State<PageTask> {
 
   // 現在のタスクを参照する
   taskGet() async {
-    nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
-    print('しゅとくしてください');
-    print(nowRoomTaskList);
+    // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+    nowRoomTaskList = await DatabaseHelper.queryRowtaskss(nowRoomid, items.userInfo['userid']);
+    // print('しゅとくしてください');
+    // print(nowRoomTaskList);
   }
 
 // リーダーチェック
@@ -202,25 +202,6 @@ class _PageTask extends State<PageTask> {
                     },
                   )
                 : const SizedBox.shrink(),
-          ListTile(
-            leading: const Icon(Icons.check),
-            title: CustomText(
-              text: "タスク一覧",
-              color: Constant.blackGlay,
-              fontSize: screenSizeWidth * 0.035,
-            ),
-            onTap: () {
-              // ページ遷移
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => page_taskSetting()),
-              ).then((value) {
-                setState(() {
-                  items.Nums();
-                });
-              });
-            },
-          ),
 
           ListTile(
             leading: const Icon(Icons.map),
@@ -237,7 +218,6 @@ class _PageTask extends State<PageTask> {
             },
           ),
 
-
           for (int i = 0; i < decodedSubRooms.length; i++)
             roomDisplay
                 ? ListTile(
@@ -250,6 +230,29 @@ class _PageTask extends State<PageTask> {
                     onTap: () {},
                   )
                 : const SizedBox.shrink(),
+
+          ListTile(
+            leading: const Icon(Icons.check),
+            title: CustomText(
+              text: "タスク一覧",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
+            onTap: () {
+              // ページ遷移
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => page_taskSetting(
+                          nowRoomInfo: nowRoomInfo,
+                        )),
+              ).then((value) {
+                setState(() {
+                  items.Nums();
+                });
+              });
+            },
+          ),
 
           ListTile(
             leading: const Icon(Icons.login),
@@ -560,12 +563,26 @@ class _PageTask extends State<PageTask> {
     List buttunType = buttuntypeSelect(type);
     return InkWell(
       onTap: () async {
+        if (type == 0 || type == 2) {
+          // できました！！またはリスケ申請であればdb書き換え
+          Map<String, dynamic> updateTask = {
+            'task_id': taskList[index]['task_id'],
+            'task_limit': taskList[index]['task_limit'],
+            'status_progress': type,
+            'leaders': taskList[index]['leaders'],
+            'worker': taskList[index]['worker'],
+            'room_id': taskList[index]['room_id'],
+            'contents': taskList[index]['contents']
+          };
+          DatabaseHelper.update('tasks', 'contents', updateTask, taskList[index]['contents']);
+          setState(() {});
+        }
+
         // dbにメッセージ追加
         switch (type) {
           case 0:
             addMessage(karioki2, 'できました！！！！！！！', 3, index, 0, taskList[index]['room_id']);
             break;
-
           case 1:
             addMessage(karioki2, '進捗どうですか？？？？？？？', 1, index, 5, taskList[index]['room_id']);
             break;
@@ -899,7 +916,7 @@ class _PageTask extends State<PageTask> {
                             Navigator.of(context).pop(); // 戻る
                             // 値の更新
                             items.taskList = await DatabaseHelper.queryAllRows('tasks');
-                            nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+                            // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
 
                             // dbに追加
                             // print(nowRoomTaskList);

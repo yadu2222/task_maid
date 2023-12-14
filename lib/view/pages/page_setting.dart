@@ -14,14 +14,14 @@ class _PageSetting extends State<PageSetting> {
   @override
   Widget build(BuildContext context) {
     //画面サイズ
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         body: Center(
             child: Container(
-      width: _screenSizeWidth,
-      height: _screenSizeHeight,
+      width: screenSizeWidth,
+      height: screenSizeHeight,
       decoration: BoxDecoration(color: Constant.main),
       child: SafeArea(
         bottom: false,
@@ -32,25 +32,25 @@ class _PageSetting extends State<PageSetting> {
 
             // 設定
             Container(
-              margin: EdgeInsets.all(_screenSizeWidth * 0.05),
+              margin: EdgeInsets.all(screenSizeWidth * 0.05),
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
-                    padding: EdgeInsets.all(_screenSizeWidth * 0.03),
+                    margin: EdgeInsets.only(left: screenSizeWidth * 0.03),
+                    padding: EdgeInsets.all(screenSizeWidth * 0.03),
                     alignment: Alignment.bottomLeft,
-                    child: CustomText(text: 'ID：${items.userInfo['userid']}', fontSize: _screenSizeWidth * 0.045, color: Constant.glay),
+                    child: CustomText(text: 'ID：${items.userInfo['userid']}', fontSize: screenSizeWidth * 0.045, color: Constant.glay),
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: _screenSizeWidth * 0.03),
-                    padding: EdgeInsets.all(_screenSizeWidth * 0.03),
+                    margin: EdgeInsets.only(left: screenSizeWidth * 0.03),
+                    padding: EdgeInsets.all(screenSizeWidth * 0.03),
                     alignment: Alignment.bottomLeft,
-                    child: CustomText(text: 'ユーザーネーム', fontSize: _screenSizeWidth * 0.045, color: Constant.glay),
+                    child: CustomText(text: 'ユーザーネーム', fontSize: screenSizeWidth * 0.045, color: Constant.glay),
                   ),
                   Container(
-                    width: _screenSizeWidth * 0.8,
-                    height: _screenSizeHeight * 0.065,
-                    padding: EdgeInsets.only(left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.05, top: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.025),
+                    width: screenSizeWidth * 0.8,
+                    height: screenSizeHeight * 0.065,
+                    padding: EdgeInsets.only(left: screenSizeWidth * 0.05, right: screenSizeWidth * 0.05, top: screenSizeWidth * 0.025, bottom: screenSizeWidth * 0.025),
                     decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                     child: TextField(
                       decoration: InputDecoration(
