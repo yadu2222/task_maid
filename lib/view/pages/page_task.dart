@@ -73,29 +73,34 @@ class _PageTask extends State<PageTask> {
   // 今の部屋の詳細を取得
   // 部屋切り替え時に使用
   dbnowRoom() async {
-    Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid]);
-    nowRoomInfo = await result;
-    // データベースから取得したデータをデコードして使用
-    if (nowRoomInfo.isNotEmpty) {
-      decodedLeaders = decodeJsonList(nowRoomInfo[0]['leaders']);
-      decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
-      decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
-      decodedSubRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
-    }
+    if (dbCount != dbCountFuture) {
+      Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid],'room_id');
+      nowRoomInfo = await result;
+      // データベースから取得したデータをデコードして使用
+      
 
-    // 切り替え時に元がmainRoomだった場合そのidを保存
-    saveMainRoom();
-    // サブルームのデータを取得
-    subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [main_room_id]);
-    taskGet();
-    // print(decodedLeaders);
-    setState(() {});
+      // 切り替え時に元がmainRoomだった場合そのidを保存
+      saveMainRoom();
+      // サブルームのデータを取得
+      subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [main_room_id],'room_id');
+      taskGet();
+      print(decodedWorkers);
+      setState(() {
+        if (nowRoomInfo.isNotEmpty) {
+          decodedLeaders = decodeJsonList(nowRoomInfo[0]['leaders']);
+          decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
+          decodedTasks = decodeJsonList(nowRoomInfo[0]['tasks']);
+          decodedSubRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
+        }
+        dbCountFuture = dbCount;
+      });
+    }
   }
 
   // 現在参加中のmainRoomを取得
   // 部屋を新しく作った場合に使用
   dbJoinMainRoomInfo() async {
-    joinRoomInfo = await DatabaseHelper.serachRows('rooms', 1, ['bool_sub_room'], [0]);
+    joinRoomInfo = await DatabaseHelper.serachRows('rooms', 1, ['bool_sub_room'], [0],'room_id');
     setState(() {});
   }
 
@@ -108,7 +113,7 @@ class _PageTask extends State<PageTask> {
   // タスク追加時に使用
   taskGet() async {
     if (!(dbCount == dbCountFuture)) {
-      nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 3, ['room_id', 'worker', 'status_progress'], [nowRoomid, items.userInfo['userid'], 0]);
+      nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 3, ['room_id', 'worker', 'status_progress'], [nowRoomid, items.userInfo['userid'], 0],'task_limit');
       setState(() {
         dbCountFuture = dbCount;
       });
@@ -155,6 +160,7 @@ class _PageTask extends State<PageTask> {
     nowRoomInfo = widget.nowRoomInfo;
     nowRoomid = nowRoomInfo[0]['room_id'];
     dbJoinMainRoomInfo();
+    dbCount++;
     dbnowRoom();
     workerSelectButton();
   }
@@ -364,6 +370,7 @@ class _PageTask extends State<PageTask> {
                           // db呼び出し
                           // nowRoomid = newRoomid;
                           joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
+                          dbCount++;
                           dbnowRoom();
                           saveMainRoom();
                           dbJoinMainRoomInfo();
@@ -757,6 +764,7 @@ class _PageTask extends State<PageTask> {
 
                             // 現在の部屋の切り替えと変数の上書き
                             nowRoomid = newRoomid;
+                            dbCount++;
                             joinRoomInfo = await DatabaseHelper.queryAllRows('rooms');
                             dbnowRoom();
                             taskGet();
@@ -808,7 +816,9 @@ class _PageTask extends State<PageTask> {
                       onTap: () async {
                         // 表示する部屋の切り替え
                         nowRoomid = joinRoomInfo[index]["room_id"];
+                        dbCount++;
                         await dbnowRoom();
+                        dbCount++;
                         await dbJoinMainRoomInfo();
                         print('タスクリスト更新');
                         taskGet();
@@ -929,21 +939,21 @@ class _PageTask extends State<PageTask> {
                                   onTap: () {
                                     // falseに上書き
                                     // workerSelectButton();
-                                    workerBottun[index] = !workerBottun[index];
+                                   // workerBottun[index] = !workerBottun[index];
 
                                     // うまく更新されないね；～～～～～～～；
                                     // タスク追加用変数に代入を行っている
                                     items.worker = decodedWorkers[index]['worker'];
                                     //  items.friend[workerId]['bool'] = true;
-                                    setState(() {});
+                                    // setState(() {});
                                   },
                                   child: Container(
                                     padding: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                                     alignment: Alignment(0, 0),
-                                    decoration: BoxDecoration(color: workerBottun[index] ? Constant.main : Constant.white, borderRadius: BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: workerBottun[index] ? Constant.white : Constant.blackGlay),
+                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color:Constant.white),
                                   ),
                                 ));
                           },
@@ -959,7 +969,7 @@ class _PageTask extends State<PageTask> {
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
                             // worker を改築
-                            addTask(karioki2, items.userInfo['userid'], items.userInfo['userid'], items.newtask, items.limitTime, nowRoomid, 0);
+                            addTask(karioki2, items.userInfo['userid'], items.worker, items.newtask, items.limitTime, nowRoomid, 0);
                             dbCount++;
 
                             // 入力フォームの初期化

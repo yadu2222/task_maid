@@ -23,10 +23,11 @@ class _PageHomeState extends State<PageHome> {
         {'leader': items.userInfo['userid']}
       ];
       var workers = [
-        {'worker': items.userInfo['userid']}
+        {'worker': items.userInfo['userid']},
+        {'worker': '23456'}
       ];
       var tasks = [{}];
-      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks,0,'1111');
+      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks, 0, '1111');
       setState(() {
         defaultRoomSet();
       });
@@ -35,16 +36,23 @@ class _PageHomeState extends State<PageHome> {
 
   List defaultRoom = [];
   List taskList = [];
+  int dbCount = 0;
+  int futureCount = 0;
   defaultRoomSet() async {
-    defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111']);
-    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0]);
-    // ここで更新することでページ遷移時に渡す変数が書き換えられる
-    print(taskList);
-    setState(() {});
+    if (dbCount != futureCount) {
+      defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'],'room_id');
+
+      taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0],'task_limit');
+      // ここで更新することでページ遷移時に渡す変数が書き換えられる
+      print(taskList);
+      setState(() {
+        futureCount = dbCount;
+      });
+    }
   }
 
   taskGet() async {
-    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0]);
+    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0],'task_limit');
     print(taskList);
     // setState(() {});
   }
@@ -67,7 +75,7 @@ class _PageHomeState extends State<PageHome> {
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
-                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']]);
+                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']],'room_id');
 
                       Navigator.push(
                         context,
@@ -77,7 +85,10 @@ class _PageHomeState extends State<PageHome> {
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
-                        setState(() {});
+                        setState(() {
+                          dbCount++;
+                          taskGet();
+                        });
                       });
                     },
                     child: ConstrainedBox(
@@ -101,6 +112,7 @@ class _PageHomeState extends State<PageHome> {
   @override
   void initState() {
     // TODO: implement initState
+    dbCount++;
     super.initState();
     items.Nums();
     dbroomFirstAdd();
@@ -177,7 +189,7 @@ class _PageHomeState extends State<PageHome> {
                               child: Align(
                                   alignment: Alignment.bottomRight,
                                   child: Image.asset(
-                                    items.taskMaid['standing'][2],
+                                    items.taskMaid['standing'][0],
                                     fit: BoxFit.contain, // containで画像の比率を保ったままの最大サイズ
                                   ))),
                         ),
@@ -188,9 +200,15 @@ class _PageHomeState extends State<PageHome> {
                             height: screenSizeHeight * 0.866,
                             margin: EdgeInsets.only(top: screenSizeWidth * 0.02, left: screenSizeWidth * 0.02),
                             child: Column(children: [
+                              // taskList.isNotEmpty
+                              //     ? SizedBox.shrink()
+                              //     : SizedBox(
+                              //         height: screenSizeHeight * 0.5,
+                              //       ),
+
                               // ふきだし設置予定
                               Container(
-                                width: screenSizeWidth * 0.38,
+                                width: screenSizeWidth * 0.38, // : screenSizeWidth * 0.7,
                                 //height: screenSizeHeight * 0.2,
                                 alignment: const Alignment(0.0, 0.0), //中身の配置真ん中
                                 margin: EdgeInsets.only(top: screenSizeHeight * 0.05, bottom: screenSizeHeight * 0.05),
@@ -203,7 +221,7 @@ class _PageHomeState extends State<PageHome> {
                                 child: CustomText(
                                     text: //'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
                                         // 処理建設予定地
-                                        'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！',
+                                        taskList.isNotEmpty ? 'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！' : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
                                     fontSize: screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),

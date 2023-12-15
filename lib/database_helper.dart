@@ -89,18 +89,6 @@ class DatabaseHelper {
     )
   ''');
 
-    // サブルームを管理するためのテーブル
-  //   await db.execute('''
-  //   CREATE TABLE sub_rooms (
-  //     room_id TEXT,
-  //     room_name TEXT PRIMARY KEY ,
-  //     leader TEXT,
-  //     workers TEXT,
-  //     tasks TEXT,
-  //     main_room_id TEXT
-  //   )
-  // ''');
-
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
@@ -147,8 +135,8 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from $tableName");
   }
 
-  // テーブル名、検索タイプ、検索行、検索ワード
-  static Future<List<Map<String, dynamic>>> serachRows(String tableName, int serachType, List serachColum, List serachWords) async {
+  // テーブル名、検索タイプ、検索行、検索ワード、ソート列
+  static Future<List<Map<String, dynamic>>> serachRows(String tableName, int serachType, List serachColum, List serachWords,String sort) async {
     Database? db = await instance.database;
     switch (serachType) {
       // table名のみで検索
@@ -160,24 +148,22 @@ class DatabaseHelper {
           '$tableName',
           where: '${serachColum[0]} = ?',
           whereArgs: ['${serachWords[0]}'],
+          orderBy: '${sort} ASC',
         );
       // 検索あり 2語
       case 2:
-        print(await db!.query(
-          '$tableName',
-          where: '${serachColum[0]} = ? AND ${serachColum[1]} = ?',
-          whereArgs: ['${serachWords[0]}', '${serachWords[1]}'],
-        ));
         return await db!.query(
           '$tableName',
           where: '${serachColum[0]} = ? AND ${serachColum[1]} = ?',
           whereArgs: ['${serachWords[0]}', '${serachWords[1]}'],
+          orderBy: '${sort} ASC',
         );
       case 3:
       return  await db!.query(
           '$tableName',
           where: '${serachColum[0]} = ? AND ${serachColum[1]} = ? AND ${serachColum[2]} = ?',
           whereArgs: ['${serachWords[0]}', '${serachWords[1]}', '${serachWords[2]}'],
+          orderBy: '${sort} ASC',
         );
     }
     return await db!.rawQuery("select * from $tableName");

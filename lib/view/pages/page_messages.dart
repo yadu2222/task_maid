@@ -54,7 +54,7 @@ class _PageMassages extends State<PageMassages> {
 
   // 開いた部屋の自分のタスクを棕取得
   taskGet() async {
-    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']]);
+    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']],'task_limit');
     setState(() {});
   }
 
