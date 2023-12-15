@@ -40,9 +40,9 @@ class _PageHomeState extends State<PageHome> {
   int futureCount = 0;
   defaultRoomSet() async {
     if (dbCount != futureCount) {
-      defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'],'room_id');
+      defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
 
-      taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0],'task_limit');
+      taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
       // ここで更新することでページ遷移時に渡す変数が書き換えられる
       print(taskList);
       setState(() {
@@ -52,7 +52,7 @@ class _PageHomeState extends State<PageHome> {
   }
 
   taskGet() async {
-    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0],'task_limit');
+    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
     print(taskList);
     // setState(() {});
   }
@@ -75,7 +75,7 @@ class _PageHomeState extends State<PageHome> {
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
-                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']],'room_id');
+                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']], 'room_id');
 
                       Navigator.push(
                         context,
@@ -219,9 +219,11 @@ class _PageHomeState extends State<PageHome> {
                                 ),
                                 // ふきだしの中身
                                 child: CustomText(
-                                    text: //'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                    text: 
                                         // 処理建設予定地
-                                        taskList.isNotEmpty ? 'せろり様が「遊んでないで仕事してください！！」と大変お怒りです！' : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                        items.message.isNotEmpty
+                                            ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'
+                                            : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
                                     fontSize: screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),

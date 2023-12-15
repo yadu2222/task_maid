@@ -10,18 +10,6 @@ class DatabaseHelper {
   static const _databaseName = "MyDatabase.db"; // DB名
   static const _databaseVersion = 1; // スキーマのバージョン指定
 
-  // static String table = 'my_table'; // テーブル名
-  static String columnId = '_id'; // カラム名：ID
-  static String columnName = 'name'; // カラム名:Name
-  static String columnAge = 'age'; // カラム名：age
-
-  static String userid = 'userid';
-  static String userName = 'userName';
-  static String account = 'account';
-
-  // table名まとめ
-  static List<String> tableNames = ["userAccount", "rooms", "tasks", "messages"];
-
   // DatabaseHelper クラスを定義
   DatabaseHelper._privateConstructor();
   // DatabaseHelper._privateConstructor() コンストラクタを使用して生成されたインスタンスを返すように定義
@@ -200,9 +188,9 @@ class DatabaseHelper {
 
   // 削除処理
   // 引数：table名、更新後のmap、検索キー
-  static Future<int> delete(String tableName, String colum, String id) async {
+  static Future<int> delete(String tableName, String colum, String key) async {
     Database? db = await instance.database;
-    return await db!.delete(tableName, where: '$colum = ?', whereArgs: [id]);
+    return await db!.delete(tableName, where: '$colum = ?', whereArgs: [key]);
   }
   
 }

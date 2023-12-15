@@ -25,7 +25,6 @@ class molecules {
             ),
             onPressed: () {
               Navigator.pop(context);
-              
             },
           ),
           CustomText(text: text, fontSize: screenSizeWidth * 0.06, color: Constant.glay),

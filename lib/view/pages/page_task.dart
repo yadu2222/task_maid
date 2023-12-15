@@ -1039,10 +1039,10 @@ class _PageTask extends State<PageTask> {
                                   child: Container(
                                     padding: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                                     alignment: Alignment(0, 0),
-                                    decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.white),
+                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
                           },
@@ -1079,6 +1079,8 @@ class _PageTask extends State<PageTask> {
                             // 画面の更新
                             // msg
                             addMessage(karioki2, 'がんばってください', 1, 0, karioki2.toString(), 0, nowRoomid);
+                            // msg更新
+                            items.message = await DatabaseHelper.queryAllRows('msg_chats');
                             setState(() {
                               Navigator.push(
                                 context,
@@ -1197,10 +1199,6 @@ class _PageTask extends State<PageTask> {
           padding: EdgeInsets.all(screenSizeWidth * 0.04),
           decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.only(bottom: screenSizeWidth * 0.03),
-
-          // ここかわるぞ
-          // 改築予定
-          // おわらんすぎる
           child: CustomText(text: nowRoomInfo[0]['room_name'], fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
         ));
   }

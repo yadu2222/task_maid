@@ -54,7 +54,7 @@ class _PageMassages extends State<PageMassages> {
 
   // 開いた部屋の自分のタスクを棕取得
   taskGet() async {
-    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']],'task_limit');
+    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']], 'task_limit');
     setState(() {});
   }
 
@@ -155,7 +155,9 @@ class _PageMassages extends State<PageMassages> {
                             alignment: Alignment.centerLeft,
                             // ${dateformat(quoteTask[0]['task_limit']',0)}
                             child: CustomText(
-                                text: '${quoteTaskGet('task_limit', messages[index]['quote_id'])}\n------------------------------', fontSize: screenSizeWidth * 0.0325, color: Constant.blackGlay),
+                                text: '期限：${dateformat(quoteTaskGet('task_limit', messages[index]['quote_id']), 1)}\n------------------------------',
+                                fontSize: screenSizeWidth * 0.0325,
+                                color: Constant.blackGlay),
                           ),
 
                           SizedBox(
