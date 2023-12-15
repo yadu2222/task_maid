@@ -89,11 +89,11 @@ class _PageSetting extends State<PageSetting> {
                       print(response.body);
                     },
                     child: Container(
-                        width: _screenSizeWidth * 0.8,
-                        height: _screenSizeHeight * 0.065,
-                        padding: EdgeInsets.only(left: _screenSizeWidth * 0.05, right: _screenSizeWidth * 0.05, top: _screenSizeWidth * 0.025, bottom: _screenSizeWidth * 0.025),
+                        width: screenSizeWidth * 0.8,
+                        height: screenSizeHeight * 0.065,
+                        padding: EdgeInsets.only(left: screenSizeWidth * 0.05, right: screenSizeWidth * 0.05, top: screenSizeWidth * 0.025, bottom: screenSizeWidth * 0.025),
                         decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                        child: CustomText(text: ';~~~;', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)),
+                        child: CustomText(text: ';~~~;', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay)),
                   ),
                   //WSState.testContainer('うける', context)
                 ],
