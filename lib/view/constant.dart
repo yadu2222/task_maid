@@ -76,7 +76,7 @@ void addTask(int taskid, String user, String worker, String contents, DateTime l
 }
 
 // 新しい部屋をdbに追加するメソッド
-void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks) async {
+void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks,int boolSubRoom,String mainRoomid) async {
   // Roomをデータベースに追加する際の例
   // リストを直でぶち込むことはできないらしい　不便じゃない？
   List subRooms = [
@@ -91,23 +91,25 @@ void dbAddRoom(String roomid, String roomName, List leaders, List workers, List 
     "workers": jsonEncode(workers),
     "tasks": jsonEncode(tasks),
     'room_number': roomid,
-    "sub_rooms": jsonEncode(subRooms)
+    "sub_rooms": jsonEncode(subRooms),
+    "bool_sub_room":boolSubRoom,
+    "main_room_id":mainRoomid
   };
   DatabaseHelper.insert('rooms', newRoom);
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);
 }
 
-// 新しいサブルームをdbに追加するメソッド
-void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks, String mainRoomid) async {
-  // Roomをデータベースに追加する際の例
-  // リストを直でぶち込むことはできないらしい　不便じゃない？
+// // 新しいサブルームをdbに追加するメソッド
+// void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks, String mainRoomid) async {
+//   // Roomをデータベースに追加する際の例
+//   // リストを直でぶち込むことはできないらしい　不便じゃない？
 
-  var newRoom = {"room_id": roomid, "room_name": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "main_room_id": mainRoomid};
-  DatabaseHelper.insert('sub_rooms', newRoom);
-  // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
-  // print(await result);
-}
+//   var newRoom = {"room_id": roomid, "room_name": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "main_room_id": mainRoomid};
+//   DatabaseHelper.insert('sub_rooms', newRoom);
+//   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
+//   // print(await result);
+// }
 
 // 日付を変換して返す
 String dateformat(String dateTime, int type) {

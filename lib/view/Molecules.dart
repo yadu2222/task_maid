@@ -25,6 +25,7 @@ class molecules {
             ),
             onPressed: () {
               Navigator.pop(context);
+              
             },
           ),
           CustomText(text: text, fontSize: screenSizeWidth * 0.06, color: Constant.glay),
@@ -100,7 +101,6 @@ class molecules {
 class PageShiftIcon extends StatefulWidget {
   final IconData functionIcon;
   final Widget widget;
-
   const PageShiftIcon({Key? key, required this.functionIcon, required this.widget}) : super(key: key);
 
   @override

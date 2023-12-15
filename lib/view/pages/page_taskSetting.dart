@@ -25,15 +25,17 @@ class _page_taskSetting extends State<page_taskSetting> {
   List decodedWorkers = [];
   List decodedRooms = [];
   List selectButton = [true];
+  List subRooms = [];
   // 引数を元に必要な情報を参照する
   infoGet() async {
-    nowRoomTaskList = await DatabaseHelper.serachRows('tasks',1,['room_id'],[nowRoomInfo[0]['room_id']]);
+    nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [nowRoomInfo[0]['room_id']]);
     decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
     decodedRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
+    subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [nowRoomInfo[0]['main_room_id']]);
 
     // 初期化
     selectButton = [];
-    for (int i = 0; i < decodedRooms.length + 1; i++) {
+    for (int i = 0; i < subRooms.length + 1; i++) {
       if (i == 0) {
         selectButton.add(true);
       } else {
@@ -62,10 +64,10 @@ class _page_taskSetting extends State<page_taskSetting> {
         // リストの向きを横向きにする
         scrollDirection: Axis.horizontal,
         // indexの作成 widgetが表示される数
-        itemCount: decodedRooms.length + 1,
+        itemCount: subRooms.length + 1,
         itemBuilder: (context, index) {
           // 繰り返し描画されるwidget
-          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(decodedRooms, index));
+          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(subRooms, index));
         },
       ),
     );
@@ -85,10 +87,9 @@ class _page_taskSetting extends State<page_taskSetting> {
           if (index == 0) {
             selectRoomid = nowRoomInfo[0]['room_id'];
           } else {
-            selectRoomid = roomList[index - 1]['sub_room'];
+            selectRoomid = roomList[index - 1]['room_id'];
           }
-          nowRoomTaskList = await DatabaseHelper.serachRows
-          ('tasks',1,['room_id'],[selectRoomid]);
+          nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid]);
           setState(() {});
         },
         child: Container(
@@ -99,7 +100,7 @@ class _page_taskSetting extends State<page_taskSetting> {
           decoration: BoxDecoration(color: selectButton[index] ? Constant.white : Constant.glay, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
           child: index == 0
               ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
-              : CustomText(text: roomList[index - 1]['sub_room'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+              : CustomText(text: roomList[index - 1]['room_name'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
         ));
   }
 
@@ -162,10 +163,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                 Container(
                     width: screenSizeWidth * 0.625,
                     alignment: Alignment.centerLeft,
-                    child: CustomText(
-                        text: '${DateTime.parse(taskList[index]['task_limit']).hour}:${DateTime.parse(taskList[index]['task_limit']).minute}まで\n-------------------------------',
-                        fontSize: screenSizeWidth * 0.035,
-                        color: Constant.blackGlay)),
+                    child: CustomText(text: '${taskList[index]['worker']}さん\n-------------------------------', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                 // 中身
                 Container(
                     width: screenSizeWidth * 0.625, alignment: Alignment.centerLeft, child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay))
@@ -173,12 +171,12 @@ class _page_taskSetting extends State<page_taskSetting> {
         ]));
   }
 
+  // プルダウン
   int status_progress = 0;
   Widget statusButton() {
     List status_name = ['消化中', '消化済', 'リスケ申請中'];
     return DropdownButton(
       items: const [
-       
         DropdownMenuItem(
           value: 0,
           child: Text('消化中'),
@@ -191,7 +189,7 @@ class _page_taskSetting extends State<page_taskSetting> {
           value: 2,
           child: Text('リスケ中'),
         ),
-         DropdownMenuItem(
+        DropdownMenuItem(
           value: 3,
           child: Text('すべて'),
         ),

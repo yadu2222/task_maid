@@ -83,21 +83,23 @@ class DatabaseHelper {
       workers TEXT,
       tasks TEXT,
       room_number TEXT,
-      sub_rooms TEXT
+      sub_rooms TEXT,
+      bool_sub_room integer,
+      main_room_id text
     )
   ''');
 
     // サブルームを管理するためのテーブル
-    await db.execute('''
-    CREATE TABLE sub_rooms (
-      room_id TEXT,
-      room_name TEXT PRIMARY KEY ,
-      leader TEXT,
-      workers TEXT,
-      tasks TEXT,
-      main_room_id TEXT
-    )
-  ''');
+  //   await db.execute('''
+  //   CREATE TABLE sub_rooms (
+  //     room_id TEXT,
+  //     room_name TEXT PRIMARY KEY ,
+  //     leader TEXT,
+  //     workers TEXT,
+  //     tasks TEXT,
+  //     main_room_id TEXT
+  //   )
+  // ''');
 
     // タスクを管理するためのテーブル
     await db.execute('''
@@ -171,6 +173,12 @@ class DatabaseHelper {
           where: '${serachColum[0]} = ? AND ${serachColum[1]} = ?',
           whereArgs: ['${serachWords[0]}', '${serachWords[1]}'],
         );
+      case 3:
+      return  await db!.query(
+          '$tableName',
+          where: '${serachColum[0]} = ? AND ${serachColum[1]} = ? AND ${serachColum[2]} = ?',
+          whereArgs: ['${serachWords[0]}', '${serachWords[1]}', '${serachWords[2]}'],
+        );
     }
     return await db!.rawQuery("select * from $tableName");
   }
@@ -188,6 +196,7 @@ class DatabaseHelper {
     // 取得した結果が空でないかを確認し、存在する場合はtrueを、存在しない場合はfalseを返す
     return result.isNotEmpty;
   }
+
   // レコード数を確認
   // 引数：table名
   static Future<int?> queryRowCount(String tableName) async {
@@ -209,4 +218,5 @@ class DatabaseHelper {
     Database? db = await instance.database;
     return await db!.delete(tableName, where: '$colum = ?', whereArgs: [id]);
   }
+  
 }

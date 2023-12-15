@@ -26,7 +26,7 @@ class _PageHomeState extends State<PageHome> {
         {'worker': items.userInfo['userid']}
       ];
       var tasks = [{}];
-      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks);
+      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks,0,'1111');
       setState(() {
         defaultRoomSet();
       });
@@ -37,9 +37,16 @@ class _PageHomeState extends State<PageHome> {
   List taskList = [];
   defaultRoomSet() async {
     defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111']);
-    taskList = await DatabaseHelper.serachRows('tasks', 1, ['worker'], [items.userInfo['userid']]);
+    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0]);
     // ここで更新することでページ遷移時に渡す変数が書き換えられる
+    print(taskList);
     setState(() {});
+  }
+
+  taskGet() async {
+    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0]);
+    print(taskList);
+    // setState(() {});
   }
 
   // task_listの繰り返し処理
@@ -98,10 +105,12 @@ class _PageHomeState extends State<PageHome> {
     items.Nums();
     dbroomFirstAdd();
     defaultRoomSet();
+    taskGet();
   }
 
   @override
   Widget build(BuildContext context) {
+    taskGet();
     // 画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
@@ -200,16 +209,20 @@ class _PageHomeState extends State<PageHome> {
                               ),
 
                               // タスクリスト
-                              Container(
-                                  width: screenSizeWidth * 0.38,
-                                  height: screenSizeHeight * 0.565, // エラー発生中
-                                  padding: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.03),
-                                  decoration: BoxDecoration(
-                                    color: Constant.glay,
-                                    borderRadius: BorderRadius.circular(10), // 角丸
-                                  ),
-                                  // ループ
-                                  child: _taskList(taskList))
+                              // リストが空であれば表示しない
+                              // 更新のタイミングが謎
+                              taskList.isNotEmpty
+                                  ? Container(
+                                      width: screenSizeWidth * 0.38,
+                                      height: screenSizeHeight * 0.565, // エラー発生中
+                                      padding: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.03),
+                                      decoration: BoxDecoration(
+                                        color: Constant.glay,
+                                        borderRadius: BorderRadius.circular(10), // 角丸
+                                      ),
+                                      // ループ
+                                      child: _taskList(taskList))
+                                  : SizedBox.shrink()
                             ])),
                       ]))
                 ],

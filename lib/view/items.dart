@@ -30,7 +30,7 @@ class items {
   static List rooms = [];
   static List message = [];
   static List newTask = [];
-  static List subRooms = [];
+  // static List subRooms = [];
 
   static Nums() async {
     taskList = await DatabaseHelper.queryAllRows('tasks');
@@ -39,7 +39,7 @@ class items {
     // print(msgchats);
     rooms = await DatabaseHelper.queryAllRows('rooms');
     // print(rooms);
-    subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
+    // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
   }
 
   // 画像リスト
