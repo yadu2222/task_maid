@@ -37,7 +37,7 @@ class HttpToServer {
 
   // "URLパラメータ", "HTTPメソッド", "body"  例えば (/send_userInfo", "POST", items.userInfo)
   // HTTP リクエストを送信する関数
-  static Future httpReq(String method, String path_para, Map<String, dynamic> body) async {
+  static Future<http.Response> httpReq(String method, String path_para, Map<String, dynamic> body) async {
     //header
     var headersList = {
       'Accept': '*/*',
@@ -45,34 +45,39 @@ class HttpToServer {
       'Content-Type': 'application/json', // ここいる
     };
 
-    // リクエスト作成
-    var req = http.Request(method, Uri.parse(Url.baseUrl() + path_para)); // debugPrint(req.toString());  // HTTPリクエストメソッドの種類とuriから
-    req.headers.addAll(headersList); // debugPrint(req.toString());  // header情報を追加
-    req.body = json.encode(body); // debugPrint(req.toString());  // bodyをjson形式に変換
+    // uri
+    Uri uri = Uri.parse(Url.baseUrl() + path_para);
 
-    try {
-      // HTTPリクエストを送信。 seconds: 5 で指定した秒数応答がなかったらタイムアウトで例外を発生させる
-      var res = await req.send(); //.timeout(const Duration(seconds: 5));
-      debugPrint(res.toString()); // debug
-      // レスポンスをストリームから文字列に変換して保存
-      final resBody = await res.stream.bytesToString();
-      print(res.statusCode);
-      print(resBody);
-      return res;
-      // // ステータスコードが正常ならtrueと内容を返す
-      // if (res.statusCode >= 200 && res.statusCode < 300) {
-      //   //debugPrint([true, resBody].toString()); // debug
-      //   return [res.statusCode.toString(), true, resBody];
-      // } else {
-      //   //debugPrint([false, res.statusCode.toString(), resBody].toString()); // debug
-      //   return [res.statusCode.toString(), false, resBody];
-      // }
-    } catch (e) {
-      // タイムアウトしたとき。
-      debugPrint("Exception_error: " + e.toString());
-      // debugPrint([false, "おうとうないよ；；"].toString());
-      return ["0", "おうとうないよ；；"];
+    // 返り血を遅延初期化 レスポンスがくるまで値を入れない
+    late http.Response response;
+
+    // methodによってリクエスト作成が異なる
+    switch (method.toUpperCase()) {
+      // 大文字にそろえてから。
+      case 'GET':
+        try {
+          // リクエストの失敗をcatchする
+          response = await http.get(
+            uri,
+            headers: headersList,
+          );
+        } catch (e) {
+          throw Exception('GET request failed: $e');
+        }
+        break;
+
+      case 'POST':
+        try {
+          response = await http.post(uri, headers: headersList, body: json.encode(body));
+        } catch (e) {
+          throw Exception('POST request failed: $e');
+        }
+        break;
+
+      default:
+        throw Exception('Invalid HTTP method: $method');
     }
+    return response;
   }
 }
 

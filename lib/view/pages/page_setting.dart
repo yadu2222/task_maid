@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../Molecules.dart';
-//import '../component_communication.dart';
-import '../test.dart';
+import '../component_communication.dart';
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
 
@@ -68,7 +67,6 @@ class _PageSetting extends State<PageSetting> {
                   InkWell(
                     onTap: () async {
                       // ここに処理を書いてね
-                      print("aaaaaaaa");
 
                       http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
                         "tableName": "rooms",
@@ -88,6 +86,7 @@ class _PageSetting extends State<PageSetting> {
                         }
                       });
                       print(response.statusCode);
+                      print(response.body);
                     },
                     child: Container(
                         width: _screenSizeWidth * 0.8,
@@ -96,7 +95,7 @@ class _PageSetting extends State<PageSetting> {
                         decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
                         child: CustomText(text: ';~~~;', fontSize: _screenSizeWidth * 0.03, color: Constant.blackGlay)),
                   ),
-                  WSState.testContainer('うける', context)
+                  //WSState.testContainer('うける', context)
                 ],
               ),
             ),
