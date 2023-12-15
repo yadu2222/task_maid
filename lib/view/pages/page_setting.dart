@@ -70,7 +70,7 @@ class _PageSetting extends State<PageSetting> {
                       // ここに処理を書いてね
                       print("aaaaaaaa");
 
-                      http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
+                      http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
                         "tableName": "rooms",
                         "pKey": "room_id",
                         "pKeyValue": "uuid-1",
