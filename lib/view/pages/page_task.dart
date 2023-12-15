@@ -74,15 +74,14 @@ class _PageTask extends State<PageTask> {
   // 部屋切り替え時に使用
   dbnowRoom() async {
     if (dbCount != dbCountFuture) {
-      Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid],'room_id');
+      Future<List<Map<String, dynamic>>> result = DatabaseHelper.serachRows('rooms', 1, ['room_id'], [nowRoomid], 'room_id');
       nowRoomInfo = await result;
       // データベースから取得したデータをデコードして使用
-      
 
       // 切り替え時に元がmainRoomだった場合そのidを保存
       saveMainRoom();
       // サブルームのデータを取得
-      subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [main_room_id],'room_id');
+      subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [main_room_id], 'room_id');
       taskGet();
       print(decodedWorkers);
       setState(() {
@@ -100,7 +99,8 @@ class _PageTask extends State<PageTask> {
   // 現在参加中のmainRoomを取得
   // 部屋を新しく作った場合に使用
   dbJoinMainRoomInfo() async {
-    joinRoomInfo = await DatabaseHelper.serachRows('rooms', 1, ['bool_sub_room'], [0],'room_id');
+    joinRoomInfo = await DatabaseHelper.serachRows('rooms', 1, ['bool_sub_room'], [0], 'room_id');
+    
     setState(() {});
   }
 
@@ -113,7 +113,7 @@ class _PageTask extends State<PageTask> {
   // タスク追加時に使用
   taskGet() async {
     if (!(dbCount == dbCountFuture)) {
-      nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 3, ['room_id', 'worker', 'status_progress'], [nowRoomid, items.userInfo['userid'], 0],'task_limit');
+      nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 3, ['room_id', 'worker', 'status_progress'], [nowRoomid, items.userInfo['userid'], 0], 'task_limit');
       setState(() {
         dbCountFuture = dbCount;
       });
@@ -169,6 +169,8 @@ class _PageTask extends State<PageTask> {
   bool roomDisplay = false;
   bool subRoomAddDisplay = false;
   String newSubRoomName = '';
+  bool exit = false;
+  bool exitConfirmation = false;
   // サイドバー
   Widget sideBar() {
     // 画面サイズ
@@ -194,8 +196,79 @@ class _PageTask extends State<PageTask> {
             ),
             onTap: () {
               // ここにメニュータップ時の処理を記述
+              setState(() {
+                exit = !exit;
+                exitConfirmation = false;
+              });
             },
           ),
+
+          exit
+              ? ListTile(
+                  title: CustomText(text: '退出しますか？', fontSize: screenSizeWidth * 0.035, color: Constant.red),
+                  onTap: () {
+                    setState(() {
+                      exitConfirmation = !exitConfirmation;
+                    });
+                  },
+                )
+              : const SizedBox.shrink(),
+
+          exitConfirmation
+              ? ListTile(
+                  title: CustomText(text: 'いいえ', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+                  onTap: () {
+                    exit = false;
+                    exitConfirmation = false;
+                  },
+                )
+              : const SizedBox.shrink(),
+
+          exitConfirmation
+              ? ListTile(
+                  title: CustomText(text: 'はい', fontSize: screenSizeWidth * 0.035, color: Constant.red),
+                  onTap: () {
+                    // indexの調査
+                    int index = 0;
+                    for (int i = 0; i < decodedLeaders.length; i++) {
+                      if (decodedLeaders[i]['leader'] == items.userInfo) {
+                        index = i;
+                        break;
+                      }
+                    }
+                    // ユーザーのidを削除
+                    decodedLeaders.removeAt(index);
+                    decodedWorkers.removeAt(index);
+                    items.myroom.remove(items.userInfo['userid']);
+
+                    // db更新
+                    // サーバーに送信
+                    Map<String, dynamic> updRoom = {
+                      'room_id': nowRoomid,
+                      'room_name': nowRoomInfo[0]['room_name'],
+                      'leaders': jsonEncode(decodedLeaders),
+                      'workers': jsonEncode(decodedWorkers),
+                      'tasks': jsonEncode(decodedTasks),
+                      'sub_rooms': jsonEncode(decodedSubRooms),
+                      'bool_sub_room': nowRoomInfo[0]['bool_sub_room'],
+                      'main_room_id': nowRoomInfo[0]['main_room_id']
+                    };
+                    // DatabaseHelper.update('rooms', 'main_room_id', updRoom, updRoom['main_room_id']);
+                    DatabaseHelper.delete('rooms', 'main_room_id', nowRoomInfo[0]['main_room_id']);
+
+                    nowRoomid = items.myroom[0];
+                    dbCount++;
+                    dbnowRoom();
+                    dbCount++;
+                    dbJoinMainRoomInfo();
+                    taskGet();
+
+                    setState(() {
+                     
+                    });
+                  },
+                )
+              : const SizedBox.shrink(),
 
           ListTile(
             // 左側に表示される
@@ -340,9 +413,7 @@ class _PageTask extends State<PageTask> {
                           var leaders = [
                             {'leader': items.userInfo['userid']}
                           ];
-                          var workers = [
-                            {'worker': items.userInfo['userid']}
-                          ];
+                          var workers = [decodedWorkers];
                           var tasks = [{}];
 
                           String newRoomid = '${nowRoomid}-4567';
@@ -353,7 +424,7 @@ class _PageTask extends State<PageTask> {
 
                           decodedSubRooms.add(addrecode);
 
-                          // 上書き
+                          // メインルームの上書き
                           Map<String, dynamic> newRoomInfo = {
                             'room_id': nowRoomid,
                             'room_name': nowRoomInfo[0]['room_name'],
@@ -361,7 +432,8 @@ class _PageTask extends State<PageTask> {
                             'workers': jsonEncode(decodedWorkers),
                             'tasks': jsonEncode(decodedTasks),
                             'sub_rooms': jsonEncode(decodedSubRooms),
-                            'bool_sub_room': nowRoomInfo[0]['bool_sub_room']
+                            'bool_sub_room': nowRoomInfo[0]['bool_sub_room'],
+                            'main_room_id': nowRoomInfo[0]['main_room_id']
                           };
 
                           // newRoomInfo['subrooms'] = jsonEncode(decodedSubRooms);
@@ -939,7 +1011,7 @@ class _PageTask extends State<PageTask> {
                                   onTap: () {
                                     // falseに上書き
                                     // workerSelectButton();
-                                   // workerBottun[index] = !workerBottun[index];
+                                    // workerBottun[index] = !workerBottun[index];
 
                                     // うまく更新されないね；～～～～～～～；
                                     // タスク追加用変数に代入を行っている
@@ -953,7 +1025,7 @@ class _PageTask extends State<PageTask> {
                                     decoration: BoxDecoration(color: Constant.main, borderRadius: BorderRadius.circular(10)),
 
                                     // ここでサーバーから名前をもらってくる
-                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color:Constant.white),
+                                    child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.white),
                                   ),
                                 ));
                           },

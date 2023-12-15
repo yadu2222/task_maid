@@ -200,7 +200,7 @@ class DatabaseHelper {
 
   // 削除処理
   // 引数：table名、更新後のmap、検索キー
-  static Future<int> delete(String tableName, String colum, int id) async {
+  static Future<int> delete(String tableName, String colum, String id) async {
     Database? db = await instance.database;
     return await db!.delete(tableName, where: '$colum = ?', whereArgs: [id]);
   }
