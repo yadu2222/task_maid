@@ -15,11 +15,6 @@ class items {
     '1111',
   ];
 
-  // タスクを追加するときに値を保存する変数
-  static String worker = '';
-  static String newtask = '0000';
-  static DateTime limitTime = DateTime.now();
-
   // db用テーブル名まとめ
   static List table = ['userAccount', 'rooms', 'tasks', 'msgchats'];
 

@@ -159,7 +159,7 @@ class DatabaseHelper {
           orderBy: '${sort} ASC',
         );
       case 3:
-      return  await db!.query(
+        return  await db!.query(
           '$tableName',
           where: '${serachColum[0]} = ? AND ${serachColum[1]} = ? AND ${serachColum[2]} = ?',
           whereArgs: ['${serachWords[0]}', '${serachWords[1]}', '${serachWords[2]}'],

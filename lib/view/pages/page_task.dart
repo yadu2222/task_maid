@@ -50,9 +50,13 @@ class _PageTask extends State<PageTask> {
   _PageTask({required this.nowRoomInfo});
 
   // static String roomNames = roomName();
-  static String nowRoomid = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
-  static String dateText = '期日を入力してね';
-  static String please = 'リスケしてほしい日付を入力してね';
+  // タスク作成時などに使う保存用変数
+  String nowRoomid = ''; // どのmyroomidを選ぶかのために使う 現在のデフォはてすとるーむ
+  String dateText = '期日を入力してね';
+  String please = 'リスケしてほしい日付を入力してね';
+  String worker = '';
+  String newTask = '0000';
+  DateTime limitTime = DateTime.now();
   static int karioki2 = 44487879;
 
   // 変数まとめ
@@ -64,7 +68,6 @@ class _PageTask extends State<PageTask> {
   List<dynamic> decodedSubRooms = [];
   List nowRoomTaskList = [];
   String main_room_id = '';
-  // bool dispSubRoom = false;
 
   // 無限ループ対策
   int dbCount = 1;
@@ -100,7 +103,7 @@ class _PageTask extends State<PageTask> {
   // 部屋を新しく作った場合に使用
   dbJoinMainRoomInfo() async {
     joinRoomInfo = await DatabaseHelper.serachRows('rooms', 1, ['bool_sub_room'], [0], 'room_id');
-    
+
     setState(() {});
   }
 
@@ -148,7 +151,9 @@ class _PageTask extends State<PageTask> {
   // メインルームか判別してidを保存するメソッド
   void saveMainRoom() {
     if (nowRoomInfo[0]['bool_sub_room'] == 0) {
-      main_room_id = nowRoomInfo[0]['room_id'];
+      setState(() {
+        main_room_id = nowRoomInfo[0]['room_id'];
+      });
     }
   }
 
@@ -253,9 +258,15 @@ class _PageTask extends State<PageTask> {
                       'bool_sub_room': nowRoomInfo[0]['bool_sub_room'],
                       'main_room_id': nowRoomInfo[0]['main_room_id']
                     };
-                    // DatabaseHelper.update('rooms', 'main_room_id', updRoom, updRoom['main_room_id']);
-                    DatabaseHelper.delete('rooms', 'main_room_id', nowRoomInfo[0]['main_room_id']);
 
+                    // アプリ側のdbから削除
+                    DatabaseHelper.delete('rooms', 'main_room_id', nowRoomInfo[0]['main_room_id']);
+                    DatabaseHelper.delete('tasks', 'room_id', nowRoomInfo[0]['main_room_id']);
+                    for (int i = 0; i < decodedSubRooms.length; i++) {
+                      DatabaseHelper.delete('tasks', 'room_id', decodedSubRooms[i]['sub_room']);
+                    }
+
+                    // 手持ちのデータを更新
                     nowRoomid = items.myroom[0];
                     dbCount++;
                     dbnowRoom();
@@ -263,9 +274,7 @@ class _PageTask extends State<PageTask> {
                     dbJoinMainRoomInfo();
                     taskGet();
 
-                    setState(() {
-                     
-                    });
+                    setState(() {});
                   },
                 )
               : const SizedBox.shrink(),
@@ -295,6 +304,8 @@ class _PageTask extends State<PageTask> {
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
                       leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
+
+                      // 改築予定
                       CustomText(text: '\t${decodedWorkers[i]['worker']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // リーダーはタップでDMにとべる
@@ -344,34 +355,10 @@ class _PageTask extends State<PageTask> {
                       saveMainRoom();
                       nowRoomid = subRooms[i]['room_id'];
                       dbCount++;
-                      taskGet();
+                      dbnowRoom();
                     },
                   )
                 : const SizedBox.shrink(),
-
-          ListTile(
-            leading: const Icon(Icons.check),
-            title: CustomText(
-              text: "タスク一覧",
-              color: Constant.blackGlay,
-              fontSize: screenSizeWidth * 0.035,
-            ),
-            onTap: () {
-              // ページ遷移
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => page_taskSetting(
-                          nowRoomInfo: nowRoomInfo,
-                        )),
-              ).then((value) {
-                setState(() {
-                  items.Nums();
-                  taskGet();
-                });
-              });
-            },
-          ),
 
           ListTile(
             leading: const Icon(Icons.login),
@@ -413,10 +400,10 @@ class _PageTask extends State<PageTask> {
                           var leaders = [
                             {'leader': items.userInfo['userid']}
                           ];
-                          var workers = [decodedWorkers];
+                          var workers = decodedWorkers;
                           var tasks = [{}];
 
-                          String newRoomid = '${nowRoomid}-4567';
+                          String newRoomid = '${main_room_id}-4567';
 
                           // db追加メソッド呼び出し
                           dbAddRoom(newRoomid, newSubRoomName, leaders, workers, tasks, 1, main_room_id);
@@ -445,6 +432,7 @@ class _PageTask extends State<PageTask> {
                           dbCount++;
                           dbnowRoom();
                           saveMainRoom();
+                          dbCount++;
                           dbJoinMainRoomInfo();
 
                           taskGet();
@@ -462,6 +450,30 @@ class _PageTask extends State<PageTask> {
                       icon: Icon(Icons.key)),
                 )
               : const SizedBox.shrink(),
+
+          ListTile(
+            leading: const Icon(Icons.check),
+            title: CustomText(
+              text: "タスク一覧",
+              color: Constant.blackGlay,
+              fontSize: screenSizeWidth * 0.035,
+            ),
+            onTap: () {
+              // ページ遷移
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => page_taskSetting(
+                          nowRoomInfo: nowRoomInfo,
+                        )),
+              ).then((value) {
+                setState(() {
+                  items.Nums();
+                  taskGet();
+                });
+              });
+            },
+          ),
 
           ListTile(
             leading: const Icon(Icons.lock_outlined),
@@ -716,7 +728,7 @@ class _PageTask extends State<PageTask> {
             // データの取り出し、決定ボタンを押したら遷移の処理
             DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
               setState(() {
-                items.limitTime = date;
+                limitTime = date;
                 please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
@@ -952,7 +964,7 @@ class _PageTask extends State<PageTask> {
                           onTap: () {
                             DatePicker.showDateTimePicker(context, showTitleActions: true, minTime: DateTime.now(), onConfirm: (date) {
                               setState(() {
-                                items.limitTime = date;
+                                limitTime = date;
                                 dateText = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
                               });
                             }, currentTime: DateTime.now(), locale: LocaleType.jp);
@@ -991,7 +1003,9 @@ class _PageTask extends State<PageTask> {
                               hintText: 'タスク内容を入力してね',
                             ),
                             onChanged: (task) {
-                              items.newtask = task;
+                              setState(() {
+                                newTask = task;
+                              });
                             },
                             textInputAction: TextInputAction.done,
                           )),
@@ -1015,7 +1029,10 @@ class _PageTask extends State<PageTask> {
 
                                     // うまく更新されないね；～～～～～～～；
                                     // タスク追加用変数に代入を行っている
-                                    items.worker = decodedWorkers[index]['worker'];
+                                    setState(() {
+                                      worker = decodedWorkers[index]['worker'];
+                                    });
+
                                     //  items.friend[workerId]['bool'] = true;
                                     // setState(() {});
                                   },
@@ -1041,7 +1058,7 @@ class _PageTask extends State<PageTask> {
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
                             // worker を改築
-                            addTask(karioki2, items.userInfo['userid'], items.worker, items.newtask, items.limitTime, nowRoomid, 0);
+                            addTask(karioki2.toString(), items.userInfo['userid'], worker, newTask, limitTime, nowRoomid, 0);
                             dbCount++;
 
                             // 入力フォームの初期化
@@ -1060,7 +1077,20 @@ class _PageTask extends State<PageTask> {
                             // print(nowRoomTaskList);
                             taskGet();
                             // 画面の更新
-                            setState(() {});
+                            // msg
+                            addMessage(karioki2, 'がんばってください', 1, 0, karioki2.toString(), 0, nowRoomid);
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PageMassages(
+                                          messenger: nowRoomInfo[0],
+                                        )),
+                              ).then((value) {
+                                //戻ってきたら再描画
+                                setState(() {});
+                              });
+                            });
                           }
                         },
                         child: Container(

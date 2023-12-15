@@ -60,7 +60,7 @@ void addMessage(int msgid, String message, int status, int stamp_id, String quot
 }
 
 // タスクをdbに追加するメソッド
-void addTask(int taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
+void addTask(String taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
   // 辞書に追加
   var newtask = {'task_id': taskid, 'task_limit': limitTime.toString(), 'status_progress': status, 'leaders': user, 'worker': worker, 'contents': contents, 'room_id': roomid};
 
@@ -99,17 +99,6 @@ void dbAddRoom(String roomid, String roomName, List leaders, List workers, List 
   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
   // print(await result);
 }
-
-// // 新しいサブルームをdbに追加するメソッド
-// void dbAddSubRoom(String roomid, String roomName, List leaders, List workers, List tasks, String mainRoomid) async {
-//   // Roomをデータベースに追加する際の例
-//   // リストを直でぶち込むことはできないらしい　不便じゃない？
-
-//   var newRoom = {"room_id": roomid, "room_name": roomName, "leader": jsonEncode(leaders), "workers": jsonEncode(workers), "tasks": jsonEncode(tasks), "main_room_id": mainRoomid};
-//   DatabaseHelper.insert('sub_rooms', newRoom);
-//   // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
-//   // print(await result);
-// }
 
 // 日付を変換して返す
 String dateformat(String dateTime, int type) {
