@@ -66,7 +66,7 @@ class _page_taskSetting extends State<page_taskSetting> {
         // リストの向きを横向きにする
         scrollDirection: Axis.horizontal,
         // indexの作成 widgetが表示される数
-        itemCount: subRooms.length + 1,
+        itemCount: subRooms.length,
         itemBuilder: (context, index) {
           // 繰り返し描画されるwidget
           return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(subRooms, index));
@@ -100,9 +100,8 @@ class _page_taskSetting extends State<page_taskSetting> {
           // padding: EdgeInsets.all(screenSizeWidth * 0.03),
           alignment: const Alignment(0.0, 0.0), //真ん中に配置
           decoration: BoxDecoration(color: selectButton[index] ? Constant.white : Constant.glay, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          child: index == 0
-              ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
-              : CustomText(text: roomList[index - 1]['room_name'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+          child: // index == 0 ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay):
+           CustomText(text: roomList[index]['room_name'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
         ));
   }
 

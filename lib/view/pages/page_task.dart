@@ -983,7 +983,6 @@ class _PageTask extends State<PageTask> {
                               )),
                               child: Text(
                                 dateText,
-
                                 textAlign: TextAlign.left,
                                 style: TextStyle(color: Constant.blackGlay),
 
@@ -1060,6 +1059,8 @@ class _PageTask extends State<PageTask> {
                             // worker を改築
                             addTask(karioki2.toString(), items.userInfo['userid'], worker, newTask, limitTime, nowRoomid, 0);
                             dbCount++;
+
+                            
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';

@@ -64,11 +64,9 @@ class _PageMassages extends State<PageMassages> {
 
   // getTaskListから部屋番号に応じた値を返す
   String quoteTaskGet(String key, String value) {
-    int resultid = 0;
     String result = '';
     for (int i = 0; i < getTaskList.length; i++) {
       if (getTaskList[i]['task_id'] == value) {
-        resultid = i;
         result = getTaskList[i][key];
         break;
       }
@@ -155,9 +153,7 @@ class _PageMassages extends State<PageMassages> {
                             alignment: Alignment.centerLeft,
                             // ${dateformat(quoteTask[0]['task_limit']',0)}
                             child: CustomText(
-                                text: '期限：${dateformat(quoteTaskGet('task_limit', messages[index]['quote_id']), 1)}\n------------------------------',
-                                fontSize: screenSizeWidth * 0.0325,
-                                color: Constant.blackGlay),
+                                text: '期限：${quoteTaskGet('task_limit', messages[index]['quote_id'])}\n------------------------------', fontSize: screenSizeWidth * 0.0325, color: Constant.blackGlay),
                           ),
 
                           SizedBox(
