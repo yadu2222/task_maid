@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +10,7 @@ import 'pages/page_home.dart';
 class molecules {
   // 画面上部バー
   // 戻るボタンとタイトル
-  static Widget PageTitle(BuildContext context, String text) {
+  static Widget PageTitle(BuildContext context, String text,int popType, Widget widget) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     return Container(
       alignment: const Alignment(0.0, 0.0),
@@ -24,7 +25,13 @@ class molecules {
               size: 35,
             ),
             onPressed: () {
-              Navigator.pop(context);
+
+              popType == 0 ? 
+               Navigator.pop(context)
+              : Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => widget),
+              );
             },
           ),
           CustomText(text: text, fontSize: screenSizeWidth * 0.06, color: Constant.glay),
@@ -121,7 +128,7 @@ class _PageShiftIconState extends State<PageShiftIcon> {
             MaterialPageRoute(builder: (context) => widget.widget),
           ).then((value) {
             setState(() {
-              items.Nums();
+              items.itemsGet();
             });
           });
         },
@@ -149,7 +156,7 @@ class _pageName extends State<pageName> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.Nums();
+    items.itemsGet();
   }
 
   @override

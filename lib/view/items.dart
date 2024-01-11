@@ -27,14 +27,16 @@ class items {
   static List newTask = [];
   // static List subRooms = [];
 
-  static Nums() async {
+  static itemsGet() async {
     taskList = await DatabaseHelper.queryAllRows('tasks');
     // print(taskList);
     message = await DatabaseHelper.queryAllRows('msg_chats');
     // print(msgchats);
     rooms = await DatabaseHelper.queryAllRows('rooms');
-    // print(rooms);
-    // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
+  }
+
+  static List getTaskList(){
+    return taskList;
   }
 
   // 画像リスト

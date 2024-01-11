@@ -106,6 +106,8 @@ String dateformat(String dateTime, int type) {
   final formatType_2 = DateFormat('yyyy/MM/dd');
   final formatType_3 = DateFormat('HH:mm');
   final formatType_4 = DateFormat('MM月dd日HH時mm分');
+  final formatType_5 = DateFormat('MM.dd.HH時mm分');
+
   print(dateTime);
 
   List formatType = [formatType_1, formatType_2, formatType_3, formatType_4];

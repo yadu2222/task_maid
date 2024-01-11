@@ -83,9 +83,9 @@ class DatabaseHelper {
       task_id TEXT,
       task_limit TEXT NOT NULL,
       status_progress integer,
-      leaders TEXT,
       worker TEXT,
       room_id text,
+      title text,
       contents TEXT
     )
   ''');

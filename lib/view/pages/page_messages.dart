@@ -231,7 +231,7 @@ class _PageMassages extends State<PageMassages> {
 
   // メッセージ表示処理
   Widget messageList(List messages) {
-    items.Nums();
+    items.itemsGet();
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
@@ -664,7 +664,7 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    molecules.PageTitle(context, nowRoomInfo['room_name']),
+                    molecules.PageTitle(context, nowRoomInfo['room_name'],0,SizedBox.shrink()),
                     // メッセージ部分
                     Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList(items.message)),
                   ]),

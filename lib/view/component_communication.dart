@@ -6,7 +6,7 @@ import 'constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "MSI.local"; // "127.0.0.1""10.200.0.82""tidalhip.local""10.200.0.115"10.25.10.10710.200.0.16310.0.2.2
+  static const String serverIP = "unSerori.local"; // "127.0.0.1""10.200.0.82""tidalhip.local""10.200.0.115"10.25.10.10710.200.0.16310.0.2.2
   static const String server_port = "8282";
   static const String protocol = "http";
 

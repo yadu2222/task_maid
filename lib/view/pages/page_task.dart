@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/view/pages/page_home.dart';
 import 'package:task_maid/view/pages/page_roomSetting.dart';
 import 'package:task_maid/view/pages/page_taskSetting.dart';
 import '../constant.dart';
@@ -9,6 +10,8 @@ import '../items.dart';
 import 'page_messages.dart';
 import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
+import '../component_communication.dart';
+import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
@@ -468,7 +471,7 @@ class _PageTask extends State<PageTask> {
                         )),
               ).then((value) {
                 setState(() {
-                  items.Nums();
+                  items.itemsGet();
                   taskGet();
                 });
               });
@@ -489,7 +492,7 @@ class _PageTask extends State<PageTask> {
                 MaterialPageRoute(builder: (context) => page_roomSetting()),
               ).then((value) {
                 setState(() {
-                  items.Nums();
+                  items.itemsGet();
                 });
               });
             },
@@ -1060,8 +1063,6 @@ class _PageTask extends State<PageTask> {
                             addTask(karioki2.toString(), items.userInfo['userid'], worker, newTask, limitTime, nowRoomid, 0);
                             dbCount++;
 
-                            
-
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
                             dayController.clear();
@@ -1073,6 +1074,32 @@ class _PageTask extends State<PageTask> {
                             // 値の更新
                             items.taskList = await DatabaseHelper.queryAllRows('tasks');
                             // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
+
+                            // サーバーと通信
+                            // -------ここから----------
+                            // http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
+                            //   "tableName": "tasks",
+                            //   "pKey": "task_id",
+                            //   "pKeyValue": "",
+                            //   "recordData": {
+                            //     "task_id": "",
+                            //     "task_limit": limitTime.toString(),
+                            //     "leaders": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
+                            //     "worker": "46956da2-7b0a-49e6-b980-f5ef4e7e3f12",
+                            //     "contents": newTask,
+                            //     "room_id": nowRoomid
+                            //   }
+                            // });
+                            // print(response.body);
+                            // Map<String, dynamic> parsedData = jsonDecode(response.body);
+                            // String task_uuid = parsedData["server_response_data"];
+                            // print(task_uuid);
+
+                            // // 失敗
+                            // http.Response getRes = await HttpToServer.httpReq("GET", "/get_record", {"tableName": "tasks", "pKey": "task_id", "pKeyValue": task_uuid});
+
+                            // print(getRes.body);
+                            // ---------ここまで---------------
 
                             // dbに追加
                             // print(nowRoomTaskList);
@@ -1371,7 +1398,7 @@ class _PageTask extends State<PageTask> {
                     width: screenSizeWidth,
                     // バー部分
                     child: Row(children: [
-                      molecules.PageTitle(context, 'タスク'),
+                      molecules.PageTitle(context, 'タスク',1,PageHome()),
                       SizedBox(
                         width: screenSizeWidth * 0.3,
                       ),

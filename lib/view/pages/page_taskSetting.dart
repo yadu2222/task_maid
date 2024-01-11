@@ -364,7 +364,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.Nums();
+    items.itemsGet();
     nowRoomInfo = widget.nowRoomInfo;
     infoGet();
   }
@@ -390,7 +390,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-                molecules.PageTitle(context, 'スタッフルーム'),
+                molecules.PageTitle(context, 'スタッフルーム',0,PageTask(nowRoomInfo: [])),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_maid/view/pages/page_home.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_messages.dart';
@@ -100,7 +101,7 @@ class _PageMail extends State<PageMail> {
         child: Column(
           children: [
             // バー部分
-            molecules.PageTitle(context, 'メッセージ'),
+            molecules.PageTitle(context, 'メッセージ',1,PageHome()),
             Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),
@@ -220,6 +221,9 @@ class _PageMails extends State<PageMails> {
     );
   }
 
+
+
+  // これなに？？
   @override
   Widget build(BuildContext context) {
     dbroomGet();
@@ -238,7 +242,7 @@ class _PageMails extends State<PageMails> {
         child: Column(
           children: [
             // バー部分
-            molecules.PageTitle(context, mainRoomName),
+            molecules.PageTitle(context, mainRoomName,0,PageHome()),
             Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),

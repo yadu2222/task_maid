@@ -26,7 +26,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   
   @override
   Widget build(BuildContext context) {
-    items.Nums();
+    items.itemsGet();
     return Scaffold(
       body: PageHome(),
     );

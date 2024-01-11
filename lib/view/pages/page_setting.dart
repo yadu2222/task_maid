@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_maid/view/pages/page_home.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../molecules.dart';
@@ -31,7 +32,7 @@ class _PageSetting extends State<PageSetting> {
         child: Column(
           children: [
             // 上部バー部分
-            molecules.PageTitle(context, '設定'),
+            molecules.PageTitle(context, '設定',1,PageHome()),
 
             // 設定
             Container(

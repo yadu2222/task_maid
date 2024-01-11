@@ -15,7 +15,15 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  List defaultRoom = []; // タスクリストに遷移する際のデフォルトの部屋
+  List taskList = []; // ユーザーが所持するすべてのタスク
+  int dbCount = 0; // 繰り返しを避けるためのカウント
+  int futureCount = 0; // dbCountと比較する
+
   // dbにテストルームがあるかないかを判別、なければ追加
+  // テストルームは消せない、、ってこと！？
+  // それでええんか
+  // よくはないなあ
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
       // 追加する部屋の変数
@@ -33,11 +41,7 @@ class _PageHomeState extends State<PageHome> {
       });
     }
   }
-
-  List defaultRoom = [];
-  List taskList = [];
-  int dbCount = 0;
-  int futureCount = 0;
+  
   defaultRoomSet() async {
     if (dbCount != futureCount) {
       defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
@@ -75,6 +79,7 @@ class _PageHomeState extends State<PageHome> {
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
+                      // tapしたタスクの情報を取得
                       List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']], 'room_id');
 
                       Navigator.push(
@@ -114,7 +119,7 @@ class _PageHomeState extends State<PageHome> {
     // TODO: implement initState
     dbCount++;
     super.initState();
-    items.Nums();
+    items.itemsGet();
     dbroomFirstAdd();
     defaultRoomSet();
     taskGet();
@@ -219,7 +224,7 @@ class _PageHomeState extends State<PageHome> {
                                 ),
                                 // ふきだしの中身
                                 child: CustomText(
-                                    text: 
+                                    text:
                                         // 処理建設予定地
                                         items.message.isNotEmpty
                                             ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'

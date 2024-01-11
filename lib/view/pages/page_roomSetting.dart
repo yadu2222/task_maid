@@ -3,6 +3,7 @@ import '../constant.dart';
 import '../items.dart';
 import '../Molecules.dart';
 import 'package:task_maid/database_helper.dart';
+import 'page_task.dart';
 
 // ページのひな型
 class page_roomSetting extends StatefulWidget {
@@ -18,7 +19,7 @@ class _page_roomSetting extends State<page_roomSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.Nums();
+    items.itemsGet();
   }
 
   @override
@@ -39,7 +40,7 @@ class _page_roomSetting extends State<page_roomSetting> {
           bottom: false,
           child: Column(
             children: [
-              molecules.PageTitle(context, 'スタッフルーム'),
+              molecules.PageTitle(context, 'スタッフルーム',0,PageTask(nowRoomInfo: [])),
             ],
           ),
         ),
