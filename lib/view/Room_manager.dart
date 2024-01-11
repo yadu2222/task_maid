@@ -7,7 +7,9 @@ import 'package:task_maid/database_helper.dart';
 
 class RoomManager {
   // ルームリスト
-  List<Room> _roomList = [Room('0000', 'てすとるーむ',  ['12345'], ['12345'], [], '12345', 0, '0000', ['0000'])];
+  List<Room> _roomList = [
+    Room('0', 'てすとるーむ', ['12345'], ['12345'], [], '12345', 0, '0', ['0'])
+  ];
 
   // roomManagerのインスタンス
   static final RoomManager _instance = RoomManager._internal();
@@ -68,8 +70,9 @@ class RoomManager {
   List<Room> getSameData(Room serchRooms) {
     List<Room> result = [];
     for (Room room in _roomList) {
-      for (String serchRoom in serchRooms.sameGroup) {
-        if (room.roomid == serchRoom) {
+      print(serchRooms.sameGroup);
+      for (int serchRoomid in serchRooms.sameGroup) {
+        if (room.roomid == serchRoomid) {
           result.add(room);
         }
       }
@@ -128,7 +131,7 @@ class RoomManager {
       String mainRoomid = room['main_room_id'];
 
       // リストに追加
-      _roomList.add(Room(roomid, roomName, leaders, workers, tasks,roomNumber, subRoom, mainRoomid,sameGroup));
+      _roomList.add(Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup));
     }
   }
 }

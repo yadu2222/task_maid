@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/page_home.dart';
 import 'items.dart';
+import 'Room_manager.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -23,7 +24,15 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  
+  final RoomManager _roomManager = RoomManager();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _roomManager.load();
+  }
+
   @override
   Widget build(BuildContext context) {
     items.itemsGet();

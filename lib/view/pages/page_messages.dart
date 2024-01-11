@@ -666,7 +666,7 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    molecules.PageTitle(context, nowRoomInfo['room_name'],0,SizedBox.shrink()),
+                    molecules.PageTitle(context, messageRoom.roomName,0,SizedBox.shrink()),
                     // メッセージ部分
                     Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList(items.message)),
                   ]),

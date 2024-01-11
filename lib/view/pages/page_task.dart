@@ -257,7 +257,7 @@ class _PageTask extends State<PageTask> {
                       leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
 
                       // 改築予定
-                      CustomText(text: '\t${nowRoomInfo.workers[i]['worker']}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                      CustomText(text: '\t${nowRoomInfo.workers[i]}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // リーダーはタップでDMにとべる
                     onTap: () {
@@ -1285,7 +1285,7 @@ class _PageTask extends State<PageTask> {
                       // タスク追加ボタン　リーダーのみ表示
                       //leaderCheck()
                       // メインタスクはリーダーのみ追加可能
-                      leaderCheck() || nowRoomInfo.subRoom == 1 ? addTaskBottun() : const SizedBox.shrink(),
+                      addTaskBottun(),
 
                       // サイドバーを開く
                       IconButton(

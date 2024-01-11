@@ -65,8 +65,8 @@ class DatabaseHelper {
     // ルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE rooms (
-      room_id TEXT ,
-      room_name TEXT PRIMARY KEY,
+      room_id TEXT PRIMARY KEY,
+      room_name TEXT ,
       leaders TEXT,
       workers TEXT,
       tasks TEXT,
@@ -80,7 +80,7 @@ class DatabaseHelper {
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
-      task_id TEXT,
+      task_id TEXT primary key,
       task_limit TEXT NOT NULL,
       status_progress integer,
       worker TEXT,
