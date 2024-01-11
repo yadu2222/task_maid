@@ -7,11 +7,13 @@ import '../Molecules.dart';
 import 'package:task_maid/database_helper.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
+import '../Room.dart';
+import '../Room_manager.dart';
 
 // ページのひな型
 class page_taskSetting extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
-  final List nowRoomInfo;
+  final Room nowRoomInfo;
   const page_taskSetting({required this.nowRoomInfo, Key? key}) : super(key: key);
 
   @override
@@ -20,24 +22,26 @@ class page_taskSetting extends StatefulWidget {
 
 class _page_taskSetting extends State<page_taskSetting> {
   // 参照したい部屋の情報を引数でもらう
-  List nowRoomInfo;
+  Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
+  
+  RoomManager _roomManager = RoomManager();
 
-  List nowRoomTaskList = [];
-  List decodedWorkers = [];
-  List decodedRooms = [];
+  // List nowRoomTaskList = [];
+  // List decodedWorkers = [];
+  // List decodedRooms = [];
   List selectButton = [true];
-  List subRooms = [];
+  // List subRooms = [];
   // 引数を元に必要な情報を参照する
   infoGet() async {
-    nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [nowRoomInfo[0]['room_id']], 'task_limit');
-    decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
-    decodedRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
-    subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [nowRoomInfo[0]['main_room_id']], 'room_id');
+    // nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [nowRoomInfo[0]['room_id']], 'task_limit');
+    // decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
+    // decodedRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
+    // subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [nowRoomInfo[0]['main_room_id']], 'room_id');
 
     // 初期化
     selectButton = [];
-    for (int i = 0; i < subRooms.length + 1; i++) {
+    for (int i = 0; i < nowRoomInfo.sameGroup.length + 1; i++) {
       if (i == 0) {
         selectButton.add(true);
       } else {
@@ -66,10 +70,10 @@ class _page_taskSetting extends State<page_taskSetting> {
         // リストの向きを横向きにする
         scrollDirection: Axis.horizontal,
         // indexの作成 widgetが表示される数
-        itemCount: subRooms.length,
+        itemCount: nowRoomInfo.sameGroup.length,
         itemBuilder: (context, index) {
           // 繰り返し描画されるwidget
-          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(subRooms, index));
+          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(nowRoomInfo.sameGroup, index));
         },
       ),
     );
@@ -87,11 +91,11 @@ class _page_taskSetting extends State<page_taskSetting> {
 
           selectButton[index] = !selectButton[index];
           if (index == 0) {
-            selectRoomid = nowRoomInfo[0]['room_id'];
+            selectRoomid = nowRoomInfo.roomid;
           } else {
             selectRoomid = roomList[index - 1]['room_id'];
           }
-          nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
+          // nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
           setState(() {});
         },
         child: Container(
@@ -190,7 +194,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                   Container(
                                     height: screenSizeHeight * 0.15,
                                     child: ListView.builder(
-                                      itemCount: decodedWorkers.length,
+                                      itemCount: nowRoomInfo.workers.length,
                                       itemBuilder: (context, index) {
                                         return Card(
                                             color: Constant.glay,
@@ -205,7 +209,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                                 // うまく更新されないね；～～～～～～～；
                                                 // タスク追加用変数に代入を行っている
                                                 setState(() {
-                                                  worker = decodedWorkers[index]['worker'];
+                                                  worker = nowRoomInfo.workers[index];
                                                 });
 
                                                 //  items.friend[workerId]['bool'] = true;
@@ -217,7 +221,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                                 decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                                 // ここでサーバーから名前をもらってくる
-                                                child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                                child: CustomText(text: nowRoomInfo.workers[index], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                               ),
                                             ));
                                       },
@@ -243,13 +247,13 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       DatabaseHelper.update('tasks', 'contents', updTask, list[index]['contents']);
 
                                       // 値の更新
-                                      items.taskList = await DatabaseHelper.queryAllRows('tasks');
+                                      // items.taskList = await DatabaseHelper.queryAllRows('tasks');
                                       // msgのdbに追加
-                                      infoGet();
+                                      // infoGet();
                                       // 画面の更新
                                       // msg
                                       int karioki2 = 67890;
-                                      addMessage(karioki2, '変更しました', 1, 0, list[index]['task_id'], 0, nowRoomInfo[0]['room_id']);
+                                      addMessage(karioki2, 'かえたよ～～～～', 1, 0, list[index]['task_id'], 0, nowRoomInfo.roomid);
                                       // msg更新
                                       items.message = await DatabaseHelper.queryAllRows('msg_chats');
 
@@ -258,7 +262,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => PageMassages(
-                                                    messenger: nowRoomInfo[0],
+                                                    messageRoom: nowRoomInfo,
                                                   )),
                                         ).then((value) {
                                           //戻ってきたら再描画
@@ -390,7 +394,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-                molecules.PageTitle(context, 'スタッフルーム',0,PageTask(nowRoomInfo: [])),
+                molecules.PageTitle(context, 'スタッフルーム',0,PageTask(nowRoomInfo:nowRoomInfo)),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),
@@ -401,7 +405,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                   width: screenSizeWidth * 0.9,
                   height: screenSizeHeight * 0.85,
                   child: Column(
-                    children: [selectRoomList(), Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(nowRoomTaskList))],
+                    children: [selectRoomList(), Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(nowRoomInfo.tasks))],
                   )),
             ],
           ),

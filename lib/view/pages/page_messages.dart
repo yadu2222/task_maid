@@ -4,21 +4,23 @@ import 'package:task_maid/view/molecules.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../../database_helper.dart';
+import '../Room.dart';
+import '../Room_manager.dart';
 
 // import 'package:intl/intl.dart';
 
 class PageMassages extends StatefulWidget {
   // 誰とのメッセージなのかを引数でもらう
-  final Map messenger;
+  final Room messageRoom;
 
-  PageMassages({required this.messenger, Key? key}) : super(key: key);
+  PageMassages({required this.messageRoom, Key? key}) : super(key: key);
   @override
-  _PageMassages createState() => _PageMassages(messenger: messenger);
+  _PageMassages createState() => _PageMassages(messageRoom: messageRoom);
 }
 
 class _PageMassages extends State<PageMassages> {
-  Map messenger;
-  _PageMassages({required this.messenger});
+  Room messageRoom;
+  _PageMassages({required this.messageRoom});
 
   // 画面の再構築メソッド
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -53,10 +55,10 @@ class _PageMassages extends State<PageMassages> {
   // List decodedSubRooms = [];
 
   // 開いた部屋の自分のタスクを棕取得
-  taskGet() async {
-    getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']], 'task_limit');
-    setState(() {});
-  }
+  // taskGet() async {
+  //   getTaskList = await DatabaseHelper.serachRows('tasks', 2, ['room_id', 'worker'], [messenger['room_id'], items.userInfo['userid']], 'task_limit');
+  //   setState(() {});
+  // }
 
   // 無限ループ対策
   int dbCount = 1;
@@ -85,8 +87,8 @@ class _PageMassages extends State<PageMassages> {
     super.initState();
     _messageController = TextEditingController();
     _scrollController = ScrollController();
-    nowRoomInfo = widget.messenger;
-    taskGet();
+    // nowRoomInfo = widget.messenger;
+    // taskGet();
 
     // ウィジェットがビルドされた後にスクロール位置を設定
     WidgetsBinding.instance.addPostFrameCallback((_) {

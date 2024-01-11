@@ -59,22 +59,6 @@ void addMessage(int msgid, String message, int status, int stamp_id, String quot
   print(await result);
 }
 
-// タスクをdbに追加するメソッド
-void addTask(String taskid, String user, String worker, String contents, DateTime limitTime, String roomid, int status) async {
-  // 辞書に追加
-  var newtask = {'task_id': taskid, 'task_limit': limitTime.toString(), 'status_progress': status, 'leaders': user, 'worker': worker, 'contents': contents, 'room_id': roomid};
-
-  // 事故発生中
-  // items.room[roomid]['tasks'].add(taskid);
-
-  // dbに追加
-  DatabaseHelper.insert('tasks', newtask);
-
-  // 例えば tasks テーブルから全ての行を取得
-  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('tasks');
-  print(await result);
-}
-
 // 新しい部屋をdbに追加するメソッド
 void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks,int boolSubRoom,String mainRoomid) async {
   // Roomをデータベースに追加する際の例

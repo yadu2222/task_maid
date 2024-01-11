@@ -6,6 +6,10 @@ import 'page_setting.dart';
 import 'page_message.dart';
 import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
+import '../TaskManager.dart';
+import '../Room_manager.dart';
+import '../Room.dart';
+import '../task.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -15,10 +19,13 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  List defaultRoom = []; // タスクリストに遷移する際のデフォルトの部屋
-  List taskList = []; // ユーザーが所持するすべてのタスク
+  // List defaultRoom = []; // タスクリストに遷移する際のデフォルトの部屋
+  // List taskList = []; // ユーザーが所持するすべてのタスク
   int dbCount = 0; // 繰り返しを避けるためのカウント
   int futureCount = 0; // dbCountと比較する
+
+  TaskManager _taskManager = TaskManager();
+  RoomManager _roomManager = RoomManager();
 
   // dbにテストルームがあるかないかを判別、なければ追加
   // テストルームは消せない、、ってこと！？
@@ -26,67 +33,62 @@ class _PageHomeState extends State<PageHome> {
   // よくはないなあ
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
-      // 追加する部屋の変数
-      var leaders = [
-        {'leader': items.userInfo['userid']}
-      ];
-      var workers = [
-        {'worker': items.userInfo['userid']},
-        {'worker': '23456'}
-      ];
-      var tasks = [{}];
-      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks, 0, '1111');
-      setState(() {
-        defaultRoomSet();
-      });
+      // デフォルトの部屋の追加
+      _roomManager.add(
+        _roomManager.findByindex(0),
+        'てすとるーむ',
+        [items.userInfo['userid']],
+        [items.userInfo['userid']],
+        [],
+        0,
+      );
+      // _roomManager.deleat(_roomManager.findByindex(0));
     }
   }
-  
-  defaultRoomSet() async {
-    if (dbCount != futureCount) {
-      defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
 
-      taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-      // ここで更新することでページ遷移時に渡す変数が書き換えられる
-      print(taskList);
-      setState(() {
-        futureCount = dbCount;
-      });
-    }
-  }
+  // defaultRoomSet() async {
+  //   if (dbCount != futureCount) {
+  //     defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
+
+  //     // taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
+  //     // ここで更新することでページ遷移時に渡す変数が書き換えられる
+  //     // print(taskList);
+  //     setState(() {
+  //       futureCount = dbCount;
+  //     });
+  //   }
+  // }
 
   taskGet() async {
-    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-    print(taskList);
+    // taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
+    // print(taskList);
     // setState(() {});
   }
 
   // task_listの繰り返し処理
-  Widget _taskList(List taskList) {
+  Widget taskList() {
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: taskList.length,
+      itemCount: _taskManager.count(),
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return taskList[index]['status_progress'] == 0
+        return _taskManager.findByIndex(index).status == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
-                      // tapしたタスクの情報を取得
-                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']], 'room_id');
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => PageTask(
-                                  nowRoomInfo: selectRoom,
+                                  nowRoomInfo: _roomManager.findByindex(index),
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
@@ -107,7 +109,7 @@ class _PageHomeState extends State<PageHome> {
                             color: Constant.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                          child: CustomText(text: _taskManager.findByIndex(index).contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                     )))
             : SizedBox.shrink();
       },
@@ -121,7 +123,7 @@ class _PageHomeState extends State<PageHome> {
     super.initState();
     items.itemsGet();
     dbroomFirstAdd();
-    defaultRoomSet();
+
     taskGet();
   }
 
@@ -163,7 +165,7 @@ class _PageHomeState extends State<PageHome> {
                               //タスク
                               PageShiftIcon(
                                 functionIcon: Icons.check_box,
-                                widget: PageTask(nowRoomInfo: defaultRoom),
+                                widget: PageTask(nowRoomInfo: _roomManager.findByindex(0)),
                               ),
 
                               //設定
@@ -236,7 +238,7 @@ class _PageHomeState extends State<PageHome> {
                               // タスクリスト
                               // リストが空であれば表示しない
                               // 更新のタイミングが謎
-                              taskList.isNotEmpty
+                              _taskManager.count() != 0
                                   ? Container(
                                       width: screenSizeWidth * 0.38,
                                       height: screenSizeHeight * 0.565, // エラー発生中
@@ -246,7 +248,7 @@ class _PageHomeState extends State<PageHome> {
                                         borderRadius: BorderRadius.circular(10), // 角丸
                                       ),
                                       // ループ
-                                      child: _taskList(taskList))
+                                      child: taskList())
                                   : SizedBox.shrink()
                             ])),
                       ]))
