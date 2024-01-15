@@ -59,30 +59,6 @@ void addMessage(int msgid, String message, int status, int stamp_id, String quot
   print(await result);
 }
 
-// 新しい部屋をdbに追加するメソッド
-void dbAddRoom(String roomid, String roomName, List leaders, List workers, List tasks,int boolSubRoom,String mainRoomid) async {
-  // Roomをデータベースに追加する際の例
-  // リストを直でぶち込むことはできないらしい　不便じゃない？
-  List subRooms = [
-    {"sub_room": roomid}
-  ];
-
-  // room_idがuuid numberは検索の際に使用する値
-  var newRoom = {
-    "room_id": roomid,
-    "room_name": roomName,
-    "leaders": jsonEncode(leaders),
-    "workers": jsonEncode(workers),
-    "tasks": jsonEncode(tasks),
-    'room_number': roomid,
-    "sub_rooms": jsonEncode(subRooms),
-    "bool_sub_room":boolSubRoom,
-    "main_room_id":mainRoomid
-  };
-  DatabaseHelper.insert('rooms', newRoom);
-  // Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('rooms');
-  // print(await result);
-}
 
 // 日付を変換して返す
 String dateformat(String dateTime, int type) {

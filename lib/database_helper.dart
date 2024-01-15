@@ -81,7 +81,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE tasks (
       task_id TEXT primary key,
-      task_limit TEXT NOT NULL,
+      task_limit ,
       status_progress integer,
       worker TEXT,
       room_id text,

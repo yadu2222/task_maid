@@ -27,7 +27,14 @@ class Task {
   // Mapに変換する
   // 保存で使う
   Map<String,dynamic> toJson() {
-    return {'task_id': taskid, 'task_limit': taskLimit, 'status_progress': status, 'worker': worker, 'room_id': roomid, 'title': title, 'contents': contents};
+    return {
+      'task_id': taskid, 
+      'task_limit': taskLimit,
+      'status_progress': status, 
+      'worker': worker, 
+      'room_id': roomid, 
+      'title': title, 
+      'contents': contents};
   }
 
   // // Mapをフィールド変数に変換する

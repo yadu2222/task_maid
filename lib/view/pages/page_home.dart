@@ -19,51 +19,9 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  // List defaultRoom = []; // タスクリストに遷移する際のデフォルトの部屋
-  // List taskList = []; // ユーザーが所持するすべてのタスク
-  int dbCount = 0; // 繰り返しを避けるためのカウント
-  int futureCount = 0; // dbCountと比較する
 
-  TaskManager _taskManager = TaskManager();
-  RoomManager _roomManager = RoomManager();
-
-  // dbにテストルームがあるかないかを判別、なければ追加
-  // テストルームは消せない、、ってこと！？
-  // それでええんか
-  // よくはないなあ
-  dbroomFirstAdd() async {
-    if (!await DatabaseHelper.firstdb()) {
-      // デフォルトの部屋の追加
-      _roomManager.add(
-        _roomManager.findByindex(0),
-        'てすとるーむ',
-        [items.userInfo['userid']],
-        [items.userInfo['userid']],
-        [],
-        0,
-      );
-      // _roomManager.deleat(_roomManager.findByindex(0));
-    }
-  }
-
-  // defaultRoomSet() async {
-  //   if (dbCount != futureCount) {
-  //     defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
-
-  //     // taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-  //     // ここで更新することでページ遷移時に渡す変数が書き換えられる
-  //     // print(taskList);
-  //     setState(() {
-  //       futureCount = dbCount;
-  //     });
-  //   }
-  // }
-
-  taskGet() async {
-    // taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-    // print(taskList);
-    // setState(() {});
-  }
+  final TaskManager _taskManager = TaskManager();
+  final RoomManager _roomManager = RoomManager();
 
   // task_listの繰り返し処理
   Widget taskList() {
@@ -93,8 +51,7 @@ class _PageHomeState extends State<PageHome> {
                       ).then((value) {
                         // 戻ってきたら再描画
                         setState(() {
-                          dbCount++;
-                          taskGet();
+                          
                         });
                       });
                     },
@@ -118,18 +75,12 @@ class _PageHomeState extends State<PageHome> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    dbCount++;
     super.initState();
-    items.itemsGet();
-    dbroomFirstAdd();
-
-    taskGet();
   }
 
   @override
   Widget build(BuildContext context) {
-    taskGet();
+    
     // 画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;

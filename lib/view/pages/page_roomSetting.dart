@@ -40,7 +40,7 @@ class _page_roomSetting extends State<page_roomSetting> {
           bottom: false,
           child: Column(
             children: [
-              molecules.PageTitle(context, 'スタッフルーム',0,SizedBox.shrink()),
+              molecules.PageTitle(context, 'スタッフルーム', 0, SizedBox.shrink()),
             ],
           ),
         ),

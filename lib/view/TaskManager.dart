@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:task_maid/view/Room_manager.dart';
 import 'task.dart';
 import 'package:task_maid/database_helper.dart';
 import 'Room.dart';
@@ -9,6 +10,7 @@ class TaskManager {
 
   // taskManagerのインスタンス
   static final TaskManager _instance = TaskManager._internal();
+  // final RoomManager _roomManager = RoomManager();
 
   // プライベートなコンストラクタ
   TaskManager._internal();
@@ -32,8 +34,8 @@ class TaskManager {
   List<Task> findByRoomid(String roomid) {
     List<Task> result = [];
     for (Task task in _taskList) {
-      if (task.roomid == roomid) {
-        result.add(task);  
+      if (roomid == task.roomid) {
+        result.add(task);
       }
     }
     return result;
@@ -59,7 +61,7 @@ class TaskManager {
     var task = Task(taskid.toString(), title, contents, 0, taskLimit, worker, roomid);
     // リストに追加
     _taskList.add(task);
-    save(task, 0);
+    save(0, null, task);
   }
 
   // タスクを更新する
@@ -68,46 +70,52 @@ class TaskManager {
     task.status = status;
     task.taskLimit = taskLimit;
     task.worker = worker;
-    save(task, 1);
+    save(1, null, task);
   }
 
   // タスクを削除
   // 退室処理
-  void deleat(List<Room> checkRooms) {
+  void deleat(List<Room> deleatRooms) {
     // 引数のリストの部屋を削除
-    for (int i = 0; i < _taskList.length; i++) {
-      for (Room room in checkRooms) {
-        if (_taskList[i].roomid == room.roomid) {
-          _taskList.removeAt(i);
-        }
-      }
-    }
-
-    // dbから削除
-    for (Room room in checkRooms) {
-      save(_taskList[0], 2, room);
+    for (Room deleatRoom in deleatRooms) {
+      _taskList.removeWhere((value) => value.roomid == deleatRoom.roomid);
+      save(2, deleatRoom);
     }
   }
 
   // タスクリストをdbに保存する
-  void save(Task task, int saveType, [Room? room]) async {
-    Map<String, dynamic> saveTask = task.toJson();
+  void save(
+    int saveType, [
+    Room? room,
+    Task? task,
+  ]) async {
+    Map<String, dynamic> saveTask = {};
+    if (task != null) {
+      saveTask = task.toJson();
+    }
+
     // 0でinsert
     // 1でupdate
     // 2でdeleate
     switch (saveType) {
       case 0:
-        DatabaseHelper.insert('tasks', saveTask);
+        if (task != null) {
+          await DatabaseHelper.insert('tasks', saveTask);
+        }
         break;
       case 1:
-        DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
+        if (task != null) {
+          await DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
+        }
         break;
       case 2:
         if (room != null) {
-          DatabaseHelper.delete('tasks', 'room_id', room.roomid);
+          await DatabaseHelper.delete('tasks', 'room_id', room.roomid);
         }
         break;
     }
+
+    // _roomManager.load();
   }
 
   // タスクを読み込む

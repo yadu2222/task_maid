@@ -8,7 +8,7 @@ import 'package:task_maid/database_helper.dart';
 class RoomManager {
   // ルームリスト
   List<Room> _roomList = [
-    Room('0', 'てすとるーむ', ['12345'], ['12345'], [], '12345', 0, '0', ['0'])
+    Room('0', 'うごかない；；', ['12345'], ['12345'], [], '0', 0, '0', ['0'])
   ];
 
   // roomManagerのインスタンス
@@ -35,9 +35,9 @@ class RoomManager {
   }
 
   // 部屋を追加する
+  // 改修
   void add(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, [List? sameGroup, String? mainRoomid]) {
     var roomid = count() == 0 ? 1 : int.parse(_roomList.last.roomid) + 1;
-    // List<Task> taskDatas = _taskManager.findByRoomid(roomid);
 
     String mainRoomiii = roomid.toString();
     if (mainRoomid != null) {
@@ -49,10 +49,29 @@ class RoomManager {
       sameGrouppp = sameGroup;
     }
 
+    if (boolSubRoom != 0) {
+      for (Room room in _roomList) {
+        if (room.mainRoomid == mainRoomid) {
+          sameGrouppp.add(room.roomid);
+        }
+      }
+    }
+
     // インスタンス生成
-    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGrouppp);
-    room.subRoomData = getSameData(room);
+    var room = Room(
+      roomid.toString(),
+      roomName,
+      leaders,
+      workers,
+      [],
+      roomid.toString(),
+      boolSubRoom,
+      mainRoomiii,
+      sameGrouppp,
+    );
+    // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
     room.taskDatas = _taskManager.findByRoomid(roomid.toString());
+    room.subRoomData = getSameData(sameGrouppp);
 
     _roomList.add(room);
 
@@ -67,16 +86,18 @@ class RoomManager {
   }
 
   // 指定した部屋のsameGroupに格納されたidをRoomオブジェクトと紐づける
-  List<Room> getSameData(Room serchRooms) {
+  List<Room> getSameData(List sameGroup) {
     List<Room> result = [];
+
     for (Room room in _roomList) {
-      print(serchRooms.sameGroup);
-      for (int serchRoomid in serchRooms.sameGroup) {
-        if (room.roomid == serchRoomid) {
+      print(sameGroup);
+      for (var serchRoomid in sameGroup) {
+        if (room.roomid != null && room.roomid == serchRoomid) {
           result.add(room);
         }
       }
     }
+    print(result);
     return result;
   }
 
@@ -100,6 +121,8 @@ class RoomManager {
         deleateRoom.add(check);
       }
     }
+
+    _roomList.removeWhere((value) => value.mainRoomid == room.mainRoomid);
     // タスクリストから削除
     _taskManager.deleat(deleateRoom);
 
@@ -118,6 +141,7 @@ class RoomManager {
   // 部屋情報の読み込み
   void load() async {
     List loadList = await DatabaseHelper.queryAllRows('rooms');
+    _roomList.clear();
     for (Map room in loadList) {
       String roomid = room['room_id'];
       String roomName = room['room_name'];
@@ -131,7 +155,10 @@ class RoomManager {
       String mainRoomid = room['main_room_id'];
 
       // リストに追加
-      _roomList.add(Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup));
+      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup);
+      loadRoom.subRoomData = getSameData(sameGroup);
+      loadRoom.taskDatas = _taskManager.findByRoomid(roomid);
+      _roomList.add(loadRoom);
     }
   }
 }
