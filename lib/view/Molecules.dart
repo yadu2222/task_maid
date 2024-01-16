@@ -128,7 +128,7 @@ class _PageShiftIconState extends State<PageShiftIcon> {
             MaterialPageRoute(builder: (context) => widget.widget),
           ).then((value) {
             setState(() {
-              items.itemsGet();
+              
             });
           });
         },
@@ -156,7 +156,7 @@ class _pageName extends State<pageName> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.itemsGet();
+    
   }
 
   @override

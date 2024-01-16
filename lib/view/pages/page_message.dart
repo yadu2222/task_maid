@@ -7,6 +7,9 @@ import '../molecules.dart';
 import '../../database_helper.dart';
 import '../Room.dart';
 import '../Room_manager.dart';
+import '../MsgManager.dart';
+import '../chatRoom.dart';
+
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -21,6 +24,8 @@ class _PageMail extends State<PageMail> {
   }
 
   RoomManager _roomManager = RoomManager();
+  
+  
 
   // トークルームの繰り返し処理
   Widget _messages() {
@@ -94,6 +99,8 @@ class _PageMail extends State<PageMail> {
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
 
+    
+
     return Scaffold(
         body: Center(
             child: Container(
@@ -128,6 +135,8 @@ class _PageMails extends State<PageMails> {
 
   Room mainRoom;
   _PageMails({required this.mainRoom});
+
+  chatRoomManager _chatRoomManager = chatRoomManager();
 
   List msgList = [];
 
@@ -176,7 +185,7 @@ class _PageMails extends State<PageMails> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messageRoom: mainRoom.subRoomData[index],
+                          messageRoom: _chatRoomManager.findindex(mainRoom.subRoomData[index].roomid)
                         )),
               ).then((value) {
                 //戻ってきたら再描画

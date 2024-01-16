@@ -19,7 +19,7 @@ class _page_roomSetting extends State<page_roomSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.itemsGet();
+    
   }
 
   @override

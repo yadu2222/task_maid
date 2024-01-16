@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'task.dart';
-import 'TaskManager.dart';
 
 class Room {
   // 固有値

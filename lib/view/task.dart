@@ -1,7 +1,4 @@
-/// Todoモデルのクラス
-///
-/// 以下の責務を持つ
-/// ・Todoのプロパティを持つ
+// Taskモデルのクラス
 class Task {
   // ID
   String taskid;
@@ -36,16 +33,4 @@ class Task {
       'title': title, 
       'contents': contents};
   }
-
-  // // Mapをフィールド変数に変換する
-  // // 読み込みで使う？
-  // fromJson(Map json) {
-  //   taskid = json['id'];
-  //   title = json['title'];
-  //   contents = json['contents'];
-  //   status = json['status_progress'];
-  //   taskLimit = json['taskLimit'];
-  //   worker = json['worker'];
-  //   roomid = json['roomid'];
-  // }
 }

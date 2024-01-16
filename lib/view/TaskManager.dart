@@ -30,6 +30,17 @@ class TaskManager {
     return _taskList[index];
   }
 
+  // タスクを検索して返却
+  Task findByid(String id) {
+    Task result = _taskList[0];
+    for (Task task in _taskList) {
+      if (id == task.taskid) {
+        result = task;
+      }
+    }
+    return result;
+  }
+
   // ルームに合わせてタスクリストを生成
   List<Task> findByRoomid(String roomid) {
     List<Task> result = [];

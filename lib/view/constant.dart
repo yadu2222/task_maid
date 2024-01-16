@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import './items.dart';
-import 'package:task_maid/database_helper.dart';
+
 
 class Constant {
   static const Color main = Color(0xFF00849C);
@@ -38,28 +36,6 @@ class CustomText extends StatelessWidget {
   }
 }
 
-// メッセージをdbに追加するメソッド
-void addMessage(int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom) async {
-  // 辞書に追加
-  var newmsg = {
-    'msg_id': msgid,
-    'msg_datetime': DateTime.now().toString(),
-    'sender': items.userInfo['userid'],
-    'room_id': chatRoom,
-    'level': level,
-    'status_addition': status,
-    'stamp_id': stamp_id,
-    'quote_id': quote_id,
-    'msg': message,
-  };
-
-  // dbに追加
-  DatabaseHelper.insert('msg_chats', newmsg);
-  Future<List<Map<String, dynamic>>> result = DatabaseHelper.queryAllRows('msg_chats');
-  print(await result);
-}
-
-
 // 日付を変換して返す
 String dateformat(String dateTime, int type) {
   final formatType_1 = DateFormat('yyyy.MM.dd HH:mm');
@@ -70,7 +46,7 @@ String dateformat(String dateTime, int type) {
 
   print(dateTime);
 
-  List formatType = [formatType_1, formatType_2, formatType_3, formatType_4];
+  List formatType = [formatType_1, formatType_2, formatType_3, formatType_4, formatType_5];
   DateTime nn = DateTime.parse(dateTime);
   return formatType[type].format(nn);
 }

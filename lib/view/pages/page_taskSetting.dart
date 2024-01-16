@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/view/chatRoom.dart';
 import '../constant.dart';
 import '../items.dart';
 import '../Molecules.dart';
@@ -10,6 +11,7 @@ import 'page_messages.dart';
 import '../Room.dart';
 import '../Room_manager.dart';
 import '../task.dart';
+import '../MsgManager.dart';
 
 // ページのひな型
 class page_taskSetting extends StatefulWidget {
@@ -25,8 +27,9 @@ class _page_taskSetting extends State<page_taskSetting> {
   // 参照したい部屋の情報を引数でもらう
   Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
-  
+
   RoomManager _roomManager = RoomManager();
+  chatRoomManager _chatRoomManager = chatRoomManager();
 
   // List nowRoomTaskList = [];
   // List decodedWorkers = [];
@@ -35,7 +38,6 @@ class _page_taskSetting extends State<page_taskSetting> {
   // List subRooms = [];
   // 引数を元に必要な情報を参照する
   infoGet() async {
-
     // 初期化
     selectButton = [];
     for (int i = 0; i < nowRoomInfo.sameGroup.length + 1; i++) {
@@ -102,7 +104,7 @@ class _page_taskSetting extends State<page_taskSetting> {
           alignment: const Alignment(0.0, 0.0), //真ん中に配置
           decoration: BoxDecoration(color: selectButton[index] ? Constant.white : Constant.glay, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
           child: // index == 0 ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay):
-           CustomText(text: roomList[index].roomName, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+              CustomText(text: roomList[index].roomName, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
         ));
   }
 
@@ -251,17 +253,16 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       // infoGet();
                                       // 画面の更新
                                       // msg
-                                      int karioki2 = 67890;
-                                      addMessage(karioki2, 'かえたよ～～～～', 1, 0, list[index].taskid, 0, nowRoomInfo.roomid);
-                                      // msg更新
-                                      items.message = await DatabaseHelper.queryAllRows('msg_chats');
 
+                                      
+                                      _chatRoomManager.findindex(nowRoomInfo.roomid).msgList.add ('かえたよ～～～～', 1, 0, list[index].taskid, 0);
+                                     
                                       setState(() {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => PageMassages(
-                                                    messageRoom: nowRoomInfo,
+                                                    messageRoom: _chatRoomManager.findindex(nowRoomInfo.roomid),
                                                   )),
                                         ).then((value) {
                                           //戻ってきたら再描画
@@ -367,7 +368,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.itemsGet();
+   
     nowRoomInfo = widget.nowRoomInfo;
     infoGet();
   }
@@ -393,7 +394,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-                molecules.PageTitle(context, 'スタッフルーム',0,PageTask(nowRoomInfo:nowRoomInfo)),
+                molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),

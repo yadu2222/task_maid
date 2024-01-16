@@ -179,9 +179,10 @@ class _PageHomeState extends State<PageHome> {
                                 child: CustomText(
                                     text:
                                         // 処理建設予定地
-                                        items.message.isNotEmpty
-                                            ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'
-                                            : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                        // items.message.isNotEmpty
+                                        //     ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'
+                                        //     : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                        'おわんないですね……',
                                     fontSize: screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),

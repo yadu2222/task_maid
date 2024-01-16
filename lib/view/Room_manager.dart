@@ -26,11 +26,16 @@ class RoomManager {
 
   // 部屋数を取得
   int count() {
-    return _roomList.length;
+    if (_roomList.isNotEmpty) {
+      return _roomList.length;
+    } else {
+      return 0;
+    }
   }
 
   // 指定したインデックスの部屋を取得
   Room findByindex(int index) {
+    
     return _roomList[index];
   }
 

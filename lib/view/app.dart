@@ -30,6 +30,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final RoomManager _roomManager = RoomManager();
 
+  // 既にdbが存在しているかを判定し、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
       // デフォルトの部屋の追加
@@ -58,7 +59,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    items.itemsGet();
+    
     return Scaffold(
       body: PageHome(),
     );
