@@ -18,6 +18,8 @@ class items {
   // db用テーブル名まとめ
   static List table = ['userAccount', 'rooms', 'tasks', 'msgchats'];
 
+  String testText = "";
+
   //タスクリスト
   // dbからデータの取得
   static List taskList = [];
