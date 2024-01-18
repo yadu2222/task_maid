@@ -22,19 +22,11 @@ class _PageSetting extends State<PageSetting> {
   late WebSocket ws;
   // テキストフィールド
   final controllerTextField = TextEditingController();
-  // wssssssssssssssssssss
-  String testText = '';
-  //late io.Socket socket;
-  // wssssssssssssssssssss
+
   @override
   void initState() {
     super.initState();
-    debugPrint("befor initState"); // ok
-    //Tryws ws = Tryws();
-    ws = WebSocket();
-    //_connectWS();
-    //ws = WebSocket(); // ウィジェットが初期化されたときに WebSocket インスタンスを生成
-    debugPrint("after initState"); // ok
+    ws = WebSocket(); // ウィジェットが初期化されたときに WebSocket インスタンスを生成
   }
 
   @override
@@ -134,7 +126,7 @@ class _PageSetting extends State<PageSetting> {
               height: screenSizeHeight * 0.075,
               alignment: Alignment(0, 0),
               decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-              child: CustomText(text: testText, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
+              child: CustomText(text: ws.testText, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
             ),
 
             CustomText(text: "Connected Response.", fontSize: screenSizeWidth * 0.05, color: Constant.black),

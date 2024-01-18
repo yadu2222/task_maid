@@ -124,7 +124,7 @@ class DatabaseHelper {
   }
 
   // テーブル名、検索タイプ、検索行、検索ワード、ソート列
-  static Future<List<Map<String, dynamic>>> serachRows(String tableName, int serachType, List serachColum, List serachWords,String sort) async {
+  static Future<List<Map<String, dynamic>>> serachRows(String tableName, int serachType, List serachColum, List serachWords, String sort) async {
     Database? db = await instance.database;
     switch (serachType) {
       // table名のみで検索
@@ -147,7 +147,7 @@ class DatabaseHelper {
           orderBy: '${sort} ASC',
         );
       case 3:
-        return  await db!.query(
+        return await db!.query(
           '$tableName',
           where: '${serachColum[0]} = ? AND ${serachColum[1]} = ? AND ${serachColum[2]} = ?',
           whereArgs: ['${serachWords[0]}', '${serachWords[1]}', '${serachWords[2]}'],
@@ -192,5 +192,4 @@ class DatabaseHelper {
     Database? db = await instance.database;
     return await db!.delete(tableName, where: '$colum = ?', whereArgs: [key]);
   }
-  
 }
