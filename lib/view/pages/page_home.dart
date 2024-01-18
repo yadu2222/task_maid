@@ -219,7 +219,7 @@ class _PageHomeState extends State<PageHome> {
                                 ),
                                 // ふきだしの中身
                                 child: CustomText(
-                                    text: 
+                                    text:
                                         // 処理建設予定地
                                         items.message.isNotEmpty
                                             ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'

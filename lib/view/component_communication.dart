@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http; // http
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
-import 'constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "unserori.local"; // "127.0.0.1""10.200.0.82""tidalhip.local""10.200.0.115"10.25.10.10710.200.0.16310.0.2.2
-  static const String server_port = "8282";
+  static const String serverIP = "10.109.0.41"; // "unserori.local"
+  static const String server_port = "5108";
   static const String protocol = "http";
 
   // 設定した値から鯖のURLを生成
@@ -78,75 +77,92 @@ class HttpToServer {
 }
 
 // WebSocket
-class WS extends StatefulWidget {
-  const WS({super.key});
-
-  @override
-  State<WS> createState() => WSState();
-}
-
-class WSState extends State<WS> {
-  //
-  // パッケージからインスタンス
+class WebSocket {
+  // fields
   late io.Socket socket;
+  String _connectMsg = "";
+  String _testText = "";
+  String _serverResMsg = "";
 
-  // wsを初期化
-  @override
-  void initState() {
-    super.initState();
-
-    var req = http.Request("POST", Uri.parse("http" + Url.baseUrlWithoutProtcol() + "/post_"));
-    try {
-      req.body = json.encode({"key": "testhoge"}); // bodyをjson形式に変換
-      var res = req.send().then((value) => debugPrint(value.statusCode.toString())); //.timeout(const Duration(seconds: 5));
-    } catch (e) {}
-
-    // 接続先Socket.IOサーバーのURLと通信方式を設定
-    socket = io.io("http" + Url.baseUrlWithoutProtcol(), <String, dynamic>{
-      'transports': ['websocket'],
-    });
-    // 接続
-    socket.connect();
-
-    // イベント
-    socket.on('response', (data) {
-      setState(() {
-        debugPrint(data);
-      });
-    });
+  // methods
+  WebSocket() {
+    // 接続を開始
+    connectWS();
   }
 
-  void _sendMessage(String msg) {
-    String message = msg;
-    if (message.isNotEmpty) {
-      // からでなければ
-      socket.emit('message', message);
+  void msgSetter(String connectMsg) {
+    this._connectMsg = "connect" + connectMsg;
+  }
+
+  /// 接続確立
+  Future<void> connectWS() async {
+    // wsの接続先を指定し、ソケットのインスタンスを生成し確立する
+    socket = io.io('http://' + Url.serverIP + ":" + Url.server_port, <String, dynamic>{
+      'transports': ['websocket'],
+    });
+
+    // event handlers  ハンドル名connectを明示的に定義すると動かなかった。
+    /// コネクト時のサーバーからのレスポンスを受け取る
+    socket.on('connected_response', (data) {
+      debugPrint("Response from server: " + data);
+      _serverResMsg = data;
+    });
+
+    /// テスト
+    socket.on('test_msg_res', (data) {
+      debugPrint("Sent back TEST from server: " + data);
+      _testText = data;
+    });
+
+    socket.on(
+      '',
+      (data) {},
+    );
+
+    /// disconnect
+    socket.on('disconnect', (data) {});
+
+    /// 接続
+    /// connect()で接続、emit(...)でconnectedに"connect?"を送信
+    socket.connect().emit('connected', "connect?"); // "time": DateTime.now().toString(),}
+  }
+
+  /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
+  void dispose() {
+    socket.disconnect();
+  }
+
+  // サーバーに送ったりするメソッドとか
+  /// テストメッセージ
+  void sendTestMsg(String msg) {
+    if (msg.isNotEmpty) {
+      socket.emit('test_msg', msg);
     }
   }
 
-  // ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
-  @override
-  void dispose() {
-    socket.disconnect();
-    super.dispose();
-  }
-
-  // 反映するとき
-  static Widget testContainer(String testText, BuildContext context) {
-    var _screenSizeWidth = MediaQuery.of(context).size.width;
-    var _screenSizeHeight = MediaQuery.of(context).size.height;
-
-    return Container(
-      margin: EdgeInsets.all(_screenSizeWidth * 0.02),
-      height: _screenSizeHeight * 0.075,
-      alignment: Alignment(0, 0),
-      decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-      child: CustomText(text: testText, fontSize: _screenSizeWidth * 0.05, color: Constant.blackGlay),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  // accessor getter setter
+  String get connectMsg => _connectMsg;
+  String get testText => _testText;
+  String get serverResMsg => _serverResMsg;
 }
+
+// class Tryws {
+//   late io.Socket sk;
+//   Tryws() {
+//     debugPrint("インスタンスコネクト");
+//     connectsk();
+//     debugPrint("インスタンスコネクトkannyrou");
+//   }
+
+//   Future<void> connectsk() async {
+//     sk = io.io('http://' + Url.serverIP + ":" + Url.server_port, <String, dynamic>{
+//       'transports': ['websocket'],
+//     });
+//     sk.on('socket_connection_response', (data) {
+//       debugPrint("socket_connection_response: " + data);
+//     });
+//     debugPrint("コネクト開始");
+//     sk.connect().emit('connect_socket', "connect_socket");
+//     debugPrint("コネクト官僚");
+//   }
+// }
