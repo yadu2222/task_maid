@@ -11,22 +11,27 @@ import '../app.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class PageSetting extends StatefulWidget {
-  const PageSetting({Key? key}) : super(key: key);
+  final WebSocket ws;
+  const PageSetting({
+    required this.ws,
+    Key? key,
+  }) : super(key: key);
 
   @override
-  _PageSetting createState() => _PageSetting();
+  _PageSetting createState() => _PageSetting(ws: ws);
 }
 
 class _PageSetting extends State<PageSetting> {
-  // インスタンス生成
-  late WebSocket ws;
+  // インスタンス宣言
+  WebSocket ws;
+  _PageSetting({required this.ws});
   // テキストフィールド
   final controllerTextField = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    ws = WebSocket(); // ウィジェットが初期化されたときに WebSocket インスタンスを生成
+    //ws = WebSocket(); // ウィジェットが初期化されたときに WebSocket インスタンスを生成
   }
 
   @override
@@ -86,7 +91,7 @@ class _PageSetting extends State<PageSetting> {
                 // テキストフィールドコントローラからテキストを取り出し、
                 String msg = controllerTextField.text;
                 // wsのテスト用送信メソッドに与え、
-                ws.sendTestMsg(msg);
+                widget.ws.sendTestMsg(msg);
                 // テキストフィールドをクリアする
                 controllerTextField.clear();
 

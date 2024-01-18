@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/config/web_config.dart';
+import 'package:task_maid/view/component_communication.dart';
 import '../constant.dart';
 import '../items.dart';
 import 'page_task.dart';
@@ -8,13 +10,18 @@ import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
 
 class PageHome extends StatefulWidget {
-  const PageHome({Key? key}) : super(key: key);
+  final WebSocket ws;
+  const PageHome({required this.ws, Key? key}) : super(key: key);
+  //const PageHome({Key? key}) : super(key: key);
 
   @override
-  _PageHomeState createState() => _PageHomeState();
+  _PageHomeState createState() => _PageHomeState(ws: ws);
 }
 
 class _PageHomeState extends State<PageHome> {
+  // インスタンス宣言
+  WebSocket ws;
+  _PageHomeState({required this.ws});
   // dbにテストルームがあるかないかを判別、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
@@ -162,9 +169,9 @@ class _PageHomeState extends State<PageHome> {
                               ),
 
                               //設定
-                              const PageShiftIcon(
+                              PageShiftIcon(
                                 functionIcon: Icons.settings,
-                                widget: PageSetting(),
+                                widget: PageSetting(ws: ws),
                               )
                             ],
                           ))),

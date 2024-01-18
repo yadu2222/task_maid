@@ -24,18 +24,21 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  // wsインスタンスの宣言
+  late WebSocket ws;
+
   @override
   void initState() {
     super.initState();
-    // ws確立
-    //WebSocket ws = WebSocket();
+    // wsインスタンス生成
+    ws = WebSocket();
   }
 
   @override
   Widget build(BuildContext context) {
     items.Nums();
     return Scaffold(
-      body: PageHome(),
+      body: PageHome(ws: ws),
     );
   }
 }
