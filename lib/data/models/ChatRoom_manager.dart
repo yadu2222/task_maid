@@ -1,24 +1,20 @@
-import 'package:task_maid/view/Room.dart';
 import 'Room_manager.dart';
-import 'MsgManager.dart';
-
-class ChatRoom {
-  Room room;
-  MsgManager msgList;
-  ChatRoom(this.room, this.msgList);
-}
+import 'Msg_manager.dart';
+import 'ChatRoom.dart';
 
 class chatRoomManager {
   List<ChatRoom> _chatRoom = [];
 
   // 自分自身を生成し、インスタンスの単一性を確保
   static final chatRoomManager _instance = chatRoomManager._internal();
-  static final RoomManager _roomManager = RoomManager();
+
   chatRoomManager._internal();
   chatRoomManager _chatRoomManager = chatRoomManager();
   factory chatRoomManager() {
     return _instance;
   }
+
+  static final RoomManager _roomManager = RoomManager();
 
   ChatRoom findindex(String roomid) {
     // えらーでちゃうよ～～～；；

@@ -1,17 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:task_maid/view/chatRoom.dart';
-import '../constant.dart';
-import '../items.dart';
-import '../Molecules.dart';
-import 'package:task_maid/database_helper.dart';
+
+import '../design_system/constant.dart';
+import '../parts/Molecules.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
-import '../Room.dart';
-import '../Room_manager.dart';
-import '../task.dart';
-import '../MsgManager.dart';
+import '../../data/models/Room.dart';
+import '../../data/models/Room_manager.dart';
+import '../../data/models/Task.dart';
+import '../../data/models/ChatRoom_manager.dart';
 
 // ページのひな型
 class page_taskSetting extends StatefulWidget {
@@ -28,14 +26,10 @@ class _page_taskSetting extends State<page_taskSetting> {
   Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
 
-  RoomManager _roomManager = RoomManager();
   chatRoomManager _chatRoomManager = chatRoomManager();
 
-  // List nowRoomTaskList = [];
-  // List decodedWorkers = [];
-  // List decodedRooms = [];
   List selectButton = [true];
-  // List subRooms = [];
+  
   // 引数を元に必要な情報を参照する
   infoGet() async {
     // 初期化

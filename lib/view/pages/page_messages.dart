@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 // widgetとか
 import 'package:task_maid/view/molecules.dart';
-import '../constant.dart';
+import '../design_system/constant.dart';
 
 // userInfoや画像のパス
-import '../items.dart';
+import '../../const/items.dart';
 
-import '../Room_manager.dart';
-import '../task.dart';
-import '../TaskManager.dart';
+import '../../data/models/Room_manager.dart';
+import '../../data/models/Task.dart';
+import '../../data/models/Task_manager.dart';
 // メッセージ
-import '../chatRoom.dart';
-import '../MsgManager.dart';
-import '../msg.dart';
+import '../../data/models/ChatRoom.dart';
+import '../../data/models/Msg_manager.dart';
+import '../../data/models/Msg.dart';
 
 // import 'package:intl/intl.dart';
 
@@ -37,15 +37,14 @@ class _PageMassages extends State<PageMassages> {
     _scaffoldKey.currentState?.reassemble();
   }
 
-  final chatRoomManager _chatRoomManager = chatRoomManager();
+  // final chatRoomManager _chatRoomManager = chatRoomManager();
   final TaskManager _taskManager = TaskManager();
-  final RoomManager _roomManager = RoomManager();
 
   // 仮置きする変数
   String message = '';
   int level = 0;
   int status = 0;
-  // int karioki = 12800;
+
 
   // MsgManager messageList = messageRoom.msgList;
   // 引用の有無

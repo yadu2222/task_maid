@@ -3,20 +3,20 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import 'package:task_maid/view/pages/page_roomSetting.dart';
 import 'package:task_maid/view/pages/page_taskSetting.dart';
-import '../constant.dart';
+import '../design_system/constant.dart';
 import 'page_messages.dart';
 
-import '../items.dart';
+import '../../const/items.dart';
 import '../molecules.dart';
-import '../task.dart';
-import '../TaskManager.dart';
-import '../Room.dart';
-import '../Room_manager.dart';
-import 'package:task_maid/database_helper.dart';
-import '../MsgManager.dart';
-import '../chatRoom.dart';
+import '../../data/models/Task.dart';
+import '../../data/models/Task_manager.dart';
+import '../../data/models/Room.dart';
+import '../../data/models/Room_manager.dart';
+import '../../data/models/Msg_manager.dart';
+import '../../data/models/ChatRoom.dart';
+import '../../data/models/ChatRoom_manager.dart';
 
-import '../component_communication.dart';
+import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {
@@ -60,7 +60,6 @@ class _PageTask extends State<PageTask> {
   final TaskManager _taskManager = TaskManager();
   final RoomManager _roomManager = RoomManager();
   final chatRoomManager _chatRoomManager = chatRoomManager();
-  // final MsgManager _msgManager = MsgManager();
 
   // タスク作成時などに使う保存用変数
   String dateText = '期日を入力してね';
@@ -68,7 +67,6 @@ class _PageTask extends State<PageTask> {
   String worker = '';
   String newTask = '0000';
   DateTime limitTime = DateTime.now();
-  static int karioki2 = 44487879;
 
   // リーダーチェック
   bool leaderCheck() {
@@ -931,7 +929,7 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            chatRoom.msgList.add('がんばってください', 1, 0, karioki2.toString(), 0);
+                            chatRoom.msgList.add('がんばってください', 1, 0,'0',0);
 
                             setState(() {
                               Navigator.push(

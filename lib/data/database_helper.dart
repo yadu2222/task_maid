@@ -157,12 +157,6 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from $tableName");
   }
 
-  // その2
-  // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
-  static Future<List<Map<String, dynamic>>> queryRow(String key) async {
-    Database? db = await instance.database;
-    return await db!.rawQuery("select * from msg_chats where '${key}' == 'message'");
-  }
 
   static Future<bool> firstdb() async {
     Database? db = await instance.database;

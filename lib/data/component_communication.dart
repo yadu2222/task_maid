@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
-import 'constant.dart';
+import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか

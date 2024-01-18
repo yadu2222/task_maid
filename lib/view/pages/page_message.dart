@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/pages/page_home.dart';
-import '../constant.dart';
-import '../items.dart';
+import '../design_system/constant.dart';
 import 'page_messages.dart';
 import '../molecules.dart';
-import '../../database_helper.dart';
-import '../Room.dart';
-import '../Room_manager.dart';
-import '../MsgManager.dart';
-import '../chatRoom.dart';
+import '../../data/database_helper.dart';
+import '../../data/models/Room.dart';
+import '../../data/models/Room_manager.dart';
+import '../../data/models/ChatRoom_manager.dart';
 
 
 class PageMail extends StatefulWidget {

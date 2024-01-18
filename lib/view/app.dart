@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:task_maid/view/Room.dart';
+import 'package:task_maid/data/models/Room.dart';
 import 'pages/page_home.dart';
-import 'items.dart';
-import 'Room_manager.dart';
-import '../database_helper.dart';
+import '../const/items.dart';
+import '../data/models/Room_manager.dart';
+import '../data/database_helper.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

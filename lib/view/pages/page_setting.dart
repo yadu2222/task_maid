@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import '../constant.dart';
-import '../items.dart';
+import '../../const/items.dart';
 import '../molecules.dart';
-import '../component_communication.dart';
+import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
 

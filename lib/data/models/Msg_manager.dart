@@ -1,7 +1,7 @@
 import 'dart:convert';
 import '../database_helper.dart';
 
-import 'msg.dart';
+import 'Msg.dart';
 
 class MsgManager {
   late String roomid;

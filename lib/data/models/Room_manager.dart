@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:task_maid/view/task.dart';
+import 'Task.dart';
 
 import 'Room.dart';
-import 'TaskManager.dart';
-import 'package:task_maid/database_helper.dart';
+import 'Task_manager.dart';
+import 'package:task_maid/data/database_helper.dart';
 
 class RoomManager {
   // ルームリスト

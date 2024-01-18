@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
-import 'package:task_maid/view/Room_manager.dart';
-import 'task.dart';
-import 'package:task_maid/database_helper.dart';
+import 'Room_manager.dart';
+import 'Task.dart';
+import 'package:task_maid/data/database_helper.dart';
 import 'Room.dart';
 
 class TaskManager {

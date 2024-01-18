@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
-import '../items.dart';
+import '../design_system/constant.dart';
+import '../../const/items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_message.dart';
 import '../molecules.dart';
-import 'package:task_maid/database_helper.dart';
-import '../TaskManager.dart';
-import '../Room_manager.dart';
-import '../Room.dart';
-import '../task.dart';
+import 'package:task_maid/data/database_helper.dart';
+import '../../data/models/Task_manager.dart';
+import '../../data/models/Room_manager.dart';
+import '../../data/models/Room.dart';
+import '../../data/models/Task.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
