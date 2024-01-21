@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:task_maid/data/models/room_manager.dart';
 import '../design_system/constant.dart';
 import '../../const/items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_message.dart';
-import '../molecules.dart';
-import 'package:task_maid/data/database_helper.dart';
-import '../../data/models/Task_manager.dart';
-import '../../data/models/Room_manager.dart';
-import '../../data/models/Room.dart';
-import '../../data/models/Task.dart';
+import '../parts/Molecules.dart';
+
+// 各情報のクラス
+import '../../data/models/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/models/room_manager.dart';
+import '../../data/models/task_manager.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -19,9 +24,10 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  final Door _door = Door();
 
-  final TaskManager _taskManager = TaskManager();
   final RoomManager _roomManager = RoomManager();
+  final TaskManager _taskManager = TaskManager();
 
   // task_listの繰り返し処理
   Widget taskList() {
@@ -31,10 +37,10 @@ class _PageHomeState extends State<PageHome> {
 
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: _taskManager.count(),
+      itemCount: _door.taskCount(),
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return _taskManager.findByIndex(index).status == 0
+        return _door.taskFindbyIndex(index).status == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
@@ -46,13 +52,11 @@ class _PageHomeState extends State<PageHome> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => PageTask(
-                                  nowRoomInfo: _roomManager.findByindex(index),
+                                  nowRoomInfo: _door.roomFindbyid(_door.taskFindbyIndex(index).roomid),
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                       });
                     },
                     child: ConstrainedBox(
@@ -66,7 +70,7 @@ class _PageHomeState extends State<PageHome> {
                             color: Constant.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: CustomText(text: _taskManager.findByIndex(index).contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                          child: CustomText(text: _door.taskFindbyIndex(index).contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                     )))
             : SizedBox.shrink();
       },
@@ -80,7 +84,6 @@ class _PageHomeState extends State<PageHome> {
 
   @override
   Widget build(BuildContext context) {
-    
     // 画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;

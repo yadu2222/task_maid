@@ -9,6 +9,7 @@ class items {
 
   // 画像リスト
   static Map taskMaid = {
+    'move': ['assets/images/Maid_gif.gif'],
     'standing': [
       'assets/images/taskMaid_01.png', //とてもうれしい
       'assets/images/taskMaid_03.png', //びっくり

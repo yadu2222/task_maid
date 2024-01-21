@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:task_maid/data/models/Room.dart';
 import 'pages/page_home.dart';
 import '../const/items.dart';
-import '../data/models/Room_manager.dart';
 import '../data/database_helper.dart';
+
+// 各情報のクラス
+import '../data/models/door.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  final RoomManager _roomManager = RoomManager();
+  final Door _door = Door();
 
   // 既にdbが存在しているかを判定し、なければ追加
   dbroomFirstAdd() async {
@@ -54,7 +55,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     super.initState();
     dbroomFirstAdd();
-    _roomManager.load();
+    _door.load();
   }
 
   @override

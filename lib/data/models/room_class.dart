@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'Task.dart';
+import 'task_class.dart';
+import 'msg_manager.dart';
 
 class Room {
   // 固有値
@@ -11,10 +12,9 @@ class Room {
   List leaders;
   // 労働者
   List workers;
-  // タスクリスト
+  // タスクidリスト
   List tasks;
-  //
-  List<Task> taskDatas = [];
+
   // 検索用の値
   String roomNumber;
   // サブルームか否か
@@ -24,9 +24,16 @@ class Room {
   //
   List sameGroup;
   //
+
+  // 上記の情報からリストを作成
+  // これをもとに画面を生成する
+  List<Task> taskDatas = [];
+
   List<Room> subRoomData = [];
 
-  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroup);
+  MsgManager msgManager;
+
+  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroup,this.msgManager);
 
   // Mapに変換する
   // 保存で使う

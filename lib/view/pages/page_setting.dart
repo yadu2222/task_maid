@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/pages/page_home.dart';
-import '../constant.dart';
 import '../../const/items.dart';
-import '../molecules.dart';
+import '../design_system/constant.dart';
+
+import '../parts/Molecules.dart';
+
+// 各情報のクラス
+import '../../data/models/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/models/room_manager.dart';
+import '../../data/models/task_manager.dart';
+
+
+
 import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json

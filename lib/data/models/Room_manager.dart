@@ -1,24 +1,25 @@
 import 'dart:convert';
-import 'Task.dart';
 
-import 'Room.dart';
-import 'Task_manager.dart';
-import 'package:task_maid/data/database_helper.dart';
+// 各情報のクラス
+import 'room_class.dart';
+import 'task_class.dart';
+import 'msg_class.dart';
+
+// 各情報を操作するクラス
+import 'task_manager.dart';
+import 'msg_manager.dart';
+
+// db操作
+import '../database_helper.dart';
 
 class RoomManager {
-  // ルームリスト
-  List<Room> _roomList = [
-    Room('0', 'うごかない；；', ['12345'], ['12345'], [], '0', 0, '0', ['0'])
+  late List<Room> _roomList = [
+    Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'))
   ];
-
-  // roomManagerのインスタンス
+  // taskManagerのインスタンス
   static final RoomManager _instance = RoomManager._internal();
-
   // プライベートなコンストラクタ
   RoomManager._internal();
-
-  TaskManager _taskManager = TaskManager();
-
   // 自分自身を生成
   factory RoomManager() {
     return _instance;
@@ -35,15 +36,30 @@ class RoomManager {
 
   // 指定したインデックスの部屋を取得
   Room findByindex(int index) {
-    
     return _roomList[index];
+  }
+
+  Room findByroomid(String roomid) {
+    for (Room room in _roomList) {
+      if (room.roomid == roomid) {
+        return room;
+      }
+    }
+
+    print("ないないある");
+    return _roomList[0];
+  }
+
+  Room getLastRoom() {
+    return _roomList.last;
   }
 
   // 部屋を追加する
   // 改修
-  void add(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, [List? sameGroup, String? mainRoomid]) {
+  void add(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, TaskManager _taskManager, [List? sameGroup, String? mainRoomid]) {
     var roomid = count() == 0 ? 1 : int.parse(_roomList.last.roomid) + 1;
 
+    // nullチェック
     String mainRoomiii = roomid.toString();
     if (mainRoomid != null) {
       mainRoomiii = mainRoomid;
@@ -62,18 +78,11 @@ class RoomManager {
       }
     }
 
+    MsgManager msgManager = new MsgManager(roomid.toString());
+
     // インスタンス生成
-    var room = Room(
-      roomid.toString(),
-      roomName,
-      leaders,
-      workers,
-      [],
-      roomid.toString(),
-      boolSubRoom,
-      mainRoomiii,
-      sameGrouppp,
-    );
+    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGrouppp,msgManager);
+
     // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
     room.taskDatas = _taskManager.findByRoomid(roomid.toString());
     room.subRoomData = getSameData(sameGrouppp);
@@ -126,11 +135,7 @@ class RoomManager {
         deleateRoom.add(check);
       }
     }
-
     _roomList.removeWhere((value) => value.mainRoomid == room.mainRoomid);
-    // タスクリストから削除
-    _taskManager.deleat(deleateRoom);
-
     // リストから削除
     _roomList.remove(room);
   }
@@ -144,7 +149,7 @@ class RoomManager {
   }
 
   // 部屋情報の読み込み
-  void load() async {
+  void load(TaskManager taskManager) async {
     List loadList = await DatabaseHelper.queryAllRows('rooms');
     _roomList.clear();
     for (Map room in loadList) {
@@ -153,16 +158,17 @@ class RoomManager {
       List leaders = jsonDecode(room['leaders']);
       List workers = jsonDecode(room['workers']);
       List tasks = jsonDecode(room['tasks']);
-      List<Task> taskDates = _taskManager.findByRoomid(roomid);
       String roomNumber = room['room_number'];
       List sameGroup = jsonDecode(room['sub_rooms']);
       int subRoom = room['bool_sub_room'];
       String mainRoomid = room['main_room_id'];
 
       // リストに追加
-      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup);
-      loadRoom.subRoomData = getSameData(sameGroup);
-      loadRoom.taskDatas = _taskManager.findByRoomid(roomid);
+      MsgManager msgManager = new MsgManager(roomid);
+      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup, msgManager);
+      loadRoom.subRoomData = await getSameData(sameGroup);
+      loadRoom.taskDatas = await taskManager.findByRoomid(roomid);
+
       _roomList.add(loadRoom);
     }
   }

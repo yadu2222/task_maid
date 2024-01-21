@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/data/models/msg_manager.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import 'package:task_maid/view/pages/page_roomSetting.dart';
 import 'package:task_maid/view/pages/page_taskSetting.dart';
@@ -7,15 +8,18 @@ import '../design_system/constant.dart';
 import 'page_messages.dart';
 
 import '../../const/items.dart';
-import '../molecules.dart';
-import '../../data/models/Task.dart';
-import '../../data/models/Task_manager.dart';
-import '../../data/models/Room.dart';
-import '../../data/models/Room_manager.dart';
-import '../../data/models/Msg_manager.dart';
-import '../../data/models/ChatRoom.dart';
-import '../../data/models/ChatRoom_manager.dart';
+import '../parts/Molecules.dart';
 
+// 各情報のクラス
+import '../../data/models/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/models/room_manager.dart';
+import '../../data/models/task_manager.dart';
+
+// 通信用のクラス
 import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
@@ -59,7 +63,6 @@ class _PageTask extends State<PageTask> {
   // クラス呼び出し
   final TaskManager _taskManager = TaskManager();
   final RoomManager _roomManager = RoomManager();
-  final chatRoomManager _chatRoomManager = chatRoomManager();
 
   // タスク作成時などに使う保存用変数
   String dateText = '期日を入力してね';
@@ -214,7 +217,7 @@ class _PageTask extends State<PageTask> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => PageMassages(
-                                    messageRoom: _chatRoomManager.findindex(nowRoomInfo.roomid),
+                                    messageRoom: nowRoomInfo,
                                   )),
                         ).then((value) {
                           //戻ってきたら再描画
@@ -299,6 +302,7 @@ class _PageTask extends State<PageTask> {
                             nowRoomInfo.workers,
                             [],
                             1,
+                            _taskManager,
                             [],
                             nowRoomInfo.mainRoomid,
                           );
@@ -554,7 +558,7 @@ class _PageTask extends State<PageTask> {
   ) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
-    ChatRoom chatRoom = _chatRoomManager.findindex(nowRoomInfo.roomid);
+    MsgManager msgManager = nowRoomInfo.msgManager;
 
     // ボタンに表示する文字を管理する変数
     List buttunType = buttuntypeSelect(type);
@@ -570,10 +574,10 @@ class _PageTask extends State<PageTask> {
         // dbにメッセージ追加
         switch (type) {
           case 0:
-            chatRoom.msgList.add('できました！！！！！！！', 3, 0, task.taskid, 0);
+            msgManager.add('できました！！！！！！！', 3, 0, task.taskid, 0);
             break;
           case 1:
-            chatRoom.msgList.add('進捗どうですか？？？？？？？', 1, 0, task.taskid, 5);
+            msgManager.add('進捗どうですか？？？？？？？', 1, 0, task.taskid, 5);
             break;
           case 2:
             // 建設予定
@@ -584,7 +588,7 @@ class _PageTask extends State<PageTask> {
                 please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
-            chatRoom.msgList.add('リスケお願いします', 3, 0, task.taskid, 2);
+            msgManager.add('リスケお願いします', 3, 0, task.taskid, 2);
         }
 
         // dbから取り出し
@@ -594,7 +598,7 @@ class _PageTask extends State<PageTask> {
           context,
           MaterialPageRoute(
               builder: (context) => PageMassages(
-                    messageRoom: chatRoom,
+                    messageRoom: nowRoomInfo,
                   )),
         ).then((value) {
           //戻ってきたら再描画
@@ -676,7 +680,7 @@ class _PageTask extends State<PageTask> {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
 
-                              _roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, []);
+                              _roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, _taskManager, []);
 
                               // items.myroom.add(newRoomid);
                             }
@@ -766,7 +770,8 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    ChatRoom chatRoom = _chatRoomManager.findindex(nowRoomInfo.roomid);
+    
+    MsgManager msgManager = nowRoomInfo.msgManager;
 
     return Container(
       alignment: Alignment.centerRight,
@@ -929,14 +934,14 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            chatRoom.msgList.add('がんばってください', 1, 0,'0',0);
+                            msgManager.add('がんばってください', 1, 0, '0', 0);
 
                             setState(() {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => PageMassages(
-                                          messageRoom: chatRoom,
+                                          messageRoom: nowRoomInfo,
                                         )),
                               ).then((value) {
                                 //戻ってきたら再描画

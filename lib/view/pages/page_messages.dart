@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:task_maid/data/models/msg_manager.dart';
 
 // widgetとか
-import 'package:task_maid/view/molecules.dart';
 import '../design_system/constant.dart';
+import '../parts/Molecules.dart';
 
 // userInfoや画像のパス
 import '../../const/items.dart';
 
-import '../../data/models/Room_manager.dart';
-import '../../data/models/Task.dart';
-import '../../data/models/Task_manager.dart';
-// メッセージ
-import '../../data/models/ChatRoom.dart';
-import '../../data/models/Msg_manager.dart';
-import '../../data/models/Msg.dart';
+// 各情報のクラス
+import '../../data/models/door.dart';
+import '../../data/models/task_class.dart';
+
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+import '../../data/models/task_manager.dart';
 
 // import 'package:intl/intl.dart';
 
 class PageMassages extends StatefulWidget {
   // 誰とのメッセージなのかを引数でもらう
-  final ChatRoom messageRoom;
+  final Room messageRoom;
 
   PageMassages({required this.messageRoom, Key? key}) : super(key: key);
   @override
@@ -27,7 +28,7 @@ class PageMassages extends StatefulWidget {
 }
 
 class _PageMassages extends State<PageMassages> {
-  ChatRoom messageRoom;
+  Room messageRoom;
   _PageMassages({required this.messageRoom});
 
   // 画面の再構築メソッド
@@ -40,11 +41,11 @@ class _PageMassages extends State<PageMassages> {
   // final chatRoomManager _chatRoomManager = chatRoomManager();
   final TaskManager _taskManager = TaskManager();
 
+
   // 仮置きする変数
   String message = '';
   int level = 0;
   int status = 0;
-
 
   // MsgManager messageList = messageRoom.msgList;
   // 引用の有無
@@ -100,12 +101,12 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
     // 変数に代入
-    String msg = messageRoom.msgList.findByindex(index).msg;
-    String sender = messageRoom.msgList.findByindex(index).senderid;
-    int stampid = messageRoom.msgList.findByindex(index).stampid;
+    String msg = messageRoom.msgManager.findByindex(index).msg;
+    String sender = messageRoom.msgManager.findByindex(index).senderid;
+    int stampid = messageRoom.msgManager.findByindex(index).stampid;
 
     // タスクを用意できておればよい
-    String quoteTaskid = messageRoom.msgList.findByindex(index).quoteid;
+    String quoteTaskid =  messageRoom.msgManager.findByindex(index).quoteid;
     Task quoteTask = _taskManager.findByid(quoteTaskid);
 
     switch (status) {
@@ -191,8 +192,8 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
     // 比較するデータを変数に代入
-    String data1 = index > 0 ? messageRoom.msgList.findByindex(index - 1).msgDatetime : '0'; // 0だとエラーが出る
-    String data2 = messageRoom.msgList.findByindex(index).msgDatetime;
+    String data1 = index > 0 ?  messageRoom.msgManager.findByindex(index - 1).msgDatetime : '0'; // 0だとエラーが出る
+    String data2 = messageRoom.msgManager.findByindex(index).msgDatetime;
 
     // indexが0より大きければ比較
     // 年月日をそれぞれ比較
@@ -214,7 +215,7 @@ class _PageMassages extends State<PageMassages> {
             padding: EdgeInsets.only(bottom: screenSizeHeight * 0.01),
             alignment: Alignment.bottomCenter,
             width: screenSizeWidth * 0.1,
-            child: CustomText(text: dateformat(messageRoom.msgList.findByindex(index).msgDatetime, 2), fontSize: screenSizeWidth * 0.025, color: Constant.white),
+            child: CustomText(text: dateformat(messageRoom.msgManager.findByindex(index).msgDatetime, 2), fontSize: screenSizeWidth * 0.025, color: Constant.white),
           )
         : const SizedBox.shrink();
   }
@@ -266,8 +267,8 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    String senderid = messageRoom.msgList.findByindex(index).senderid;
-    int statusAddition = messageRoom.msgList.findByindex(index).statusAddition;
+    String senderid =  messageRoom.msgManager.findByindex(index).senderid;
+    int statusAddition = messageRoom.msgManager.findByindex(index).statusAddition;
 
     return Container(
         width: screenSizeWidth,
@@ -298,14 +299,14 @@ class _PageMassages extends State<PageMassages> {
                           ),
                           // statusに合わせてメッセージ表示メソッド
                           child: Column(children: [
-                            messageRoom.msgList.findByindex(index).statusAddition != 2 ? choiceMsg(0, index) : choiceMsg(statusAddition, index),
-                            messageRoom.msgList.findByindex(index).statusAddition == 1 || messageRoom.msgList.findByindex(index).statusAddition == 3
+                             messageRoom.msgManager.findByindex(index).statusAddition != 2 ? choiceMsg(0, index) : choiceMsg(statusAddition, index),
+                             messageRoom.msgManager.findByindex(index).statusAddition == 1 || messageRoom.msgManager.findByindex(index).statusAddition == 3
                                 ? choiceMsg(statusAddition, index)
                                 : const SizedBox.shrink()
                           ]))
                     ]),
                     // 送信時間表示
-                    sendTime(index, messageRoom.msgList.findByindex(index).senderid != items.userInfo['userid']),
+                    sendTime(index,  messageRoom.msgManager.findByindex(index).senderid != items.userInfo['userid']),
                   ]))))
         ]));
   }
@@ -318,7 +319,7 @@ class _PageMassages extends State<PageMassages> {
       // controllerの設置
       controller: _scrollController,
       // indexの作成 widgetが表示される数
-      itemCount: messageRoom.msgList.count(),
+      itemCount: messageRoom.msgManager.count(),
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: msgCard(index));
@@ -330,7 +331,7 @@ class _PageMassages extends State<PageMassages> {
   Widget msgbutton(bool status, int index) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
-    String quoteid = messageRoom.msgList.findByindex(index).quoteid;
+    String quoteid =  messageRoom.msgManager.findByindex(index).quoteid;
 
     String msg1 = '順調です！！！！！！';
     String msg2 = 'リスケお願いします';
@@ -339,7 +340,7 @@ class _PageMassages extends State<PageMassages> {
       onTap: () {
         // メッセージ追加
 
-        messageRoom.msgList.add(status ? msg1 : msg2, 1, 0, quoteid, 0);
+        messageRoom.msgManager.add(status ? msg1 : msg2, 1, 0, quoteid, 0);
 
         // 再読み込みとスクロール
         setState(() {
@@ -388,7 +389,7 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
         onTap: () async {
           status = 2;
-          messageRoom.msgList.add(
+          messageRoom.msgManager.add(
             '',
             status,
             picture,
@@ -503,7 +504,7 @@ class _PageMassages extends State<PageMassages> {
                                   height: screenSizeHeight * 0.05,
                                   alignment: const Alignment(0.0, 0.0),
                                   margin: EdgeInsets.only(top: screenSizeWidth * 0.03, bottom: screenSizeWidth * 0.02),
-                                  child: CustomText(text: '${messageRoom.room.roomName}からのタスク', fontSize: screenSizeWidth * 0.038, color: Constant.blackGlay)),
+                                  child: CustomText(text: '${messageRoom.roomName}からのタスク', fontSize: screenSizeWidth * 0.038, color: Constant.blackGlay)),
 
                               // 箱の中身
                               SizedBox(
@@ -524,7 +525,7 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
     //変数に格納
-    Task task = messageRoom.room.taskDatas[index];
+    Task task = messageRoom.taskDatas[index];
     String taskid = task.taskid;
     String taskLimit = task.taskLimit;
     String contents = task.contents;
@@ -572,7 +573,7 @@ class _PageMassages extends State<PageMassages> {
 
   // タスク選択時の処理
   Widget taskList() {
-    List<Task> taskDataList = messageRoom.room.taskDatas;
+    List<Task> taskDataList = messageRoom.taskDatas;
 
     return ListView.builder(
       // indexの作成 widgetが表示される数
@@ -667,7 +668,7 @@ class _PageMassages extends State<PageMassages> {
           // db追加メソッド呼び出し
           // 怒りレベル建設予定地
 
-          messageRoom.msgList.add(message, status, 0, quoteTaskid, 0);
+          messageRoom.msgManager.add(message, status, 0, quoteTaskid, 0);
 
           // 入力フォームの初期化
           _messageController.clear();
@@ -718,7 +719,7 @@ class _PageMassages extends State<PageMassages> {
                   alignment: Alignment.topCenter,
                   child: Column(children: [
                     // 上部バー
-                    molecules.PageTitle(context, messageRoom.room.roomName, 0, const SizedBox.shrink()),
+                    molecules.PageTitle(context, messageRoom.roomName, 0, const SizedBox.shrink()),
                     // メッセージ部分
                     SizedBox(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.8, child: messageList()),
                   ]),

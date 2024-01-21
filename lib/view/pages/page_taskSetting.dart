@@ -6,10 +6,11 @@ import '../design_system/constant.dart';
 import '../parts/Molecules.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
-import '../../data/models/Room.dart';
-import '../../data/models/Room_manager.dart';
-import '../../data/models/Task.dart';
-import '../../data/models/ChatRoom_manager.dart';
+
+import '../../data/models/door.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+import '../../data/models/task_class.dart';
 
 // ページのひな型
 class page_taskSetting extends StatefulWidget {
@@ -26,10 +27,8 @@ class _page_taskSetting extends State<page_taskSetting> {
   Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
 
-  chatRoomManager _chatRoomManager = chatRoomManager();
-
   List selectButton = [true];
-  
+
   // 引数を元に必要な情報を参照する
   infoGet() async {
     // 初期化
@@ -248,15 +247,14 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       // 画面の更新
                                       // msg
 
-                                      
-                                      _chatRoomManager.findindex(nowRoomInfo.roomid).msgList.add ('かえたよ～～～～', 1, 0, list[index].taskid, 0);
-                                     
+                                      nowRoomInfo.msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0);
+
                                       setState(() {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => PageMassages(
-                                                    messageRoom: _chatRoomManager.findindex(nowRoomInfo.roomid),
+                                                    messageRoom: nowRoomInfo,
                                                   )),
                                         ).then((value) {
                                           //戻ってきたら再描画
@@ -362,7 +360,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-   
+
     nowRoomInfo = widget.nowRoomInfo;
     infoGet();
   }

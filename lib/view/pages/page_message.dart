@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import '../design_system/constant.dart';
 import 'page_messages.dart';
-import '../molecules.dart';
-import '../../data/database_helper.dart';
-import '../../data/models/Room.dart';
-import '../../data/models/Room_manager.dart';
-import '../../data/models/ChatRoom_manager.dart';
+import '../parts/Molecules.dart';
 
+// 各情報のクラス
+import '../../data/models/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/models/room_manager.dart';
+import '../../data/models/task_manager.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -134,12 +138,10 @@ class _PageMails extends State<PageMails> {
   Room mainRoom;
   _PageMails({required this.mainRoom});
 
-  chatRoomManager _chatRoomManager = chatRoomManager();
-
   List msgList = [];
 
   msgListGet(String room_id) async {
-    msgList = await DatabaseHelper.serachRows('msg_chats', 1, ['room_id'], [room_id], 'msg_datetime');
+    // msgList = await DatabaseHelper.serachRows('msg_chats', 1, ['room_id'], [room_id], 'msg_datetime');
     print(msgList);
     setState(() {});
   }
@@ -183,7 +185,7 @@ class _PageMails extends State<PageMails> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageMassages(
-                          messageRoom: _chatRoomManager.findindex(mainRoom.subRoomData[index].roomid)
+                          messageRoom: mainRoom.subRoomData[index]
                         )),
               ).then((value) {
                 //戻ってきたら再描画

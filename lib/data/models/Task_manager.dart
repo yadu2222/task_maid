@@ -1,8 +1,7 @@
 import 'package:intl/intl.dart';
-import 'Room_manager.dart';
-import 'Task.dart';
+import 'task_class.dart';
 import 'package:task_maid/data/database_helper.dart';
-import 'Room.dart';
+import 'room_class.dart';
 
 class TaskManager {
   // タスクリスト
@@ -10,11 +9,8 @@ class TaskManager {
 
   // taskManagerのインスタンス
   static final TaskManager _instance = TaskManager._internal();
-  // final RoomManager _roomManager = RoomManager();
-
   // プライベートなコンストラクタ
   TaskManager._internal();
-
   // 自分自身を生成
   factory TaskManager() {
     return _instance;
