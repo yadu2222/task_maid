@@ -24,8 +24,6 @@ class MsgManager {
     return _msgList[index];
   }
 
-  
-
   // msgを追加する
   void add(String msg, int statusAddition, int stampid, String quoteid, int level) {
     // (int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom
@@ -45,7 +43,7 @@ class MsgManager {
   }
 
   // 指定した部屋のmsgListを生成
-    // ルームに合わせてタスクリストを生成
+  // ルームに合わせてタスクリストを生成
   List<MSG> findByRoomid(String roomid) {
     List<MSG> result = [];
     for (MSG msg in _msgList) {
@@ -55,7 +53,15 @@ class MsgManager {
     }
     return result;
   }
-  
+
+  // 最新のmsgを返す
+  String lastMsg() {
+    String result = '';
+    if (_msgList.isNotEmpty) {
+      result = _msgList.last.msg;
+    }
+    return result;
+  }
 
   void load() async {
     // roomidで検索し、dbのメッセージをidごとにリスト化

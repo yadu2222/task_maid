@@ -198,9 +198,7 @@ class _PageMails extends State<PageMails> {
                 children: [
                   Column(children: [
                     // 最終送信日時とかも入れたいね
-
-                    // 最新を入れたいのでソートを行わないといけない
-                    // 名前の表示
+                    // 部屋の名前の表示
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
@@ -209,9 +207,8 @@ class _PageMails extends State<PageMails> {
                     Container(
                         width: _screenSizeWidth * 0.7,
                         child:
-                            // 部屋の名前表示
-                            // 建設予定
-                            CustomText(text: '建設予定', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                            // 最新のメッセージを表示
+                            CustomText(text:_roomManager.findByroomid(mainRoom.sameGroupId[index].toString()).msgManager.lastMsg(), fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
                   ])
                 ],
               ),

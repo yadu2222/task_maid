@@ -37,17 +37,16 @@ import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {
   final Room nowRoomInfo;
-  
 
   const PageTask({
     required this.nowRoomInfo,
-   
     Key? key,
-  })  : 
-        super(key: key);
+  }) : super(key: key);
 
   @override
-  _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo,);
+  _PageTask createState() => _PageTask(
+        nowRoomInfo: nowRoomInfo,
+      );
 }
 
 class _PageTask extends State<PageTask> {
@@ -173,8 +172,10 @@ class _PageTask extends State<PageTask> {
               ? ListTile(
                   title: CustomText(text: 'いいえ', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
                   onTap: () {
-                    exit = false;
-                    exitConfirmation = false;
+                    setState(() {
+                      exit = false;
+                      exitConfirmation = false;
+                    });
                   },
                 )
               : const SizedBox.shrink(),
@@ -265,16 +266,16 @@ class _PageTask extends State<PageTask> {
           for (int i = 0; i < nowRoomInfo.sameGroupId.length; i++)
             roomDisplay
                 ? ListTile(
-                    leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
+                    leading: nowRoomInfo.roomid == nowRoomInfo.sameGroupId[i].toString() ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
                       // subRoomであれば鍵アイコン
-                      roomManager.findByindex(i).subRoom == 1 ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
-                      CustomText(text: '\t\t\t${roomManager.findByindex(i).roomName}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                      roomManager.findByroomid(nowRoomInfo.sameGroupId[i].toString()).subRoom == 1 ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
+                      CustomText(text: '\t\t\t${roomManager.findByroomid(nowRoomInfo.sameGroupId[i].toString()).roomName}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // タップで該当の部屋にとべる
                     onTap: () {
                       // saveMainRoom();
-                      nowRoomInfo = roomManager.findByindex(i);
+                      nowRoomInfo = roomManager.findByroomid(nowRoomInfo.sameGroupId[i].toString());
                       // nowRoomid = subRooms[i]['room_id'];
                       setState(() {});
                     },
@@ -699,7 +700,7 @@ class _PageTask extends State<PageTask> {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
 
-                              roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager, []);
+                              roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager);
 
                               // items.myroom.add(newRoomid);
                             }

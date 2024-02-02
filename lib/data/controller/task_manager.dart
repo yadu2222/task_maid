@@ -10,6 +10,7 @@ import 'dart:math';
 class TaskManager extends ChangeNotifier {
   // タスクリスト
   List<Task> _taskList = [];
+  Task dummy = Task('000', 'dummy', 'おわらん', 0, "", '12345', '1234');
 
   // taskManagerのインスタンス
   static final TaskManager _instance = TaskManager._internal();
@@ -39,7 +40,7 @@ class TaskManager extends ChangeNotifier {
 
   // タスクを検索して返却
   Task findByid(String id) {
-    Task result = _taskList[0];
+    Task result = dummy;
     for (Task task in _taskList) {
       if (id == task.taskid) {
         result = task;
