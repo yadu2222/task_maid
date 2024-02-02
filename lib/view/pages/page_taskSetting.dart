@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/data/controller/room_manager.dart';
 
 import '../design_system/constant.dart';
 import '../parts/Molecules.dart';
@@ -26,13 +27,15 @@ class _page_taskSetting extends State<page_taskSetting> {
   Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
 
+  RoomManager _roomManager = RoomManager();
+
   List selectButton = [true];
 
   // 引数を元に必要な情報を参照する
   infoGet() async {
     // 初期化
     selectButton = [];
-    for (int i = 0; i < nowRoomInfo.sameGroup.length + 1; i++) {
+    for (int i = 0; i < nowRoomInfo.sameGroupId.length + 1; i++) {
       if (i == 0) {
         selectButton.add(true);
       } else {
@@ -61,20 +64,23 @@ class _page_taskSetting extends State<page_taskSetting> {
         // リストの向きを横向きにする
         scrollDirection: Axis.horizontal,
         // indexの作成 widgetが表示される数
-        itemCount: nowRoomInfo.sameGroup.length,
+        itemCount: nowRoomInfo.sameGroupId.length,
         itemBuilder: (context, index) {
           // 繰り返し描画されるwidget
-          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(nowRoomInfo.subRoomData, index));
+          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(nowRoomInfo.sameGroupId, index));
         },
       ),
     );
   }
 
   // - ルームリストで繰り返し表示するひながた
-  Widget roomCard(List<Room> roomList, int index) {
+  Widget roomCard(List<dynamic> roomList, int index) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     String selectRoomid;
+
+    // 現在の部屋
+    Room dispRoom = _roomManager.findByroomid(roomList[index].toString());
 
     return InkWell(
         onTap: () async {
@@ -84,7 +90,7 @@ class _page_taskSetting extends State<page_taskSetting> {
           if (index == 0) {
             selectRoomid = nowRoomInfo.roomid;
           } else {
-            selectRoomid = roomList[index - 1].roomid;
+            selectRoomid = dispRoom.roomid;
           }
           // nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
           setState(() {});
@@ -96,7 +102,7 @@ class _page_taskSetting extends State<page_taskSetting> {
           alignment: const Alignment(0.0, 0.0), //真ん中に配置
           decoration: BoxDecoration(color: selectButton[index] ? Constant.white : Constant.glay, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
           child: // index == 0 ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay):
-              CustomText(text: roomList[index].roomName, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+              CustomText(text: dispRoom.roomName, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
         ));
   }
 
@@ -385,7 +391,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-               // molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
+                molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),

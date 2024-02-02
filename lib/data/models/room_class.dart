@@ -22,7 +22,7 @@ class Room {
   // サブルームであった場合参照 メインルームの値
   String mainRoomid;
   //
-  List sameGroup;
+  List sameGroupId;
   //
 
   // 上記の情報からリストを作成
@@ -33,7 +33,7 @@ class Room {
 
   MsgManager msgManager;
 
-  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroup,this.msgManager);
+  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroupId, this.msgManager);
 
   // Mapに変換する
   // 保存で使う
@@ -45,7 +45,7 @@ class Room {
       'workers': jsonEncode(workers),
       'tasks': jsonEncode(tasks),
       'room_number': roomNumber,
-      'sub_rooms': jsonEncode(sameGroup),
+      'sub_rooms': jsonEncode(sameGroupId),
       'bool_sub_room': subRoom,
       'main_room_id': mainRoomid
     };

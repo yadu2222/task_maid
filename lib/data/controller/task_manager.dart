@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/task_class.dart';
 import 'package:task_maid/data/database_helper.dart';
 import '../models/room_class.dart';
 import 'room_manager.dart';
+import 'dart:math';
 
 class TaskManager extends ChangeNotifier {
   // タスクリスト
@@ -72,7 +74,8 @@ class TaskManager extends ChangeNotifier {
 
   // タスクを追加する
   void add(String title, String contents, String taskLimit, String worker, String roomid) {
-    var taskid = count() == 0 ? 1 : int.parse(_taskList.last.taskid) + 1;
+    var random = Random();
+    var taskid = random.nextInt(100000);
     // var dateTime = getDateTime();
     var task = Task(taskid.toString(), title, contents, 0, taskLimit, worker, roomid);
     // リストに追加

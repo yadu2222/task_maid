@@ -61,7 +61,7 @@ class RoomManager extends ChangeNotifier {
 
   // 部屋を追加する
   // 改修
-  void add(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, TaskManager _taskManager, [List? sameGroup, String? mainRoomid]) {
+  void add(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, TaskManager _taskManager, [List? sameGroupId, String? mainRoomid]) {
     var roomid = count() == 0 ? 1 : int.parse(_roomList.last.roomid) + 1;
 
     // nullチェック
@@ -70,15 +70,15 @@ class RoomManager extends ChangeNotifier {
       mainRoomiii = mainRoomid;
     }
 
-    List sameGrouppp = [roomid];
-    if (sameGroup != null) {
-      sameGrouppp = sameGroup;
+    List sameGroupIdpp = [roomid];
+    if (sameGroupId != null) {
+      sameGroupIdpp = sameGroupId;
     }
 
     if (boolSubRoom != 0) {
       for (Room room in _roomList) {
         if (room.mainRoomid == mainRoomid) {
-          sameGrouppp.add(room.roomid);
+          sameGroupIdpp.add(room.roomid);
         }
       }
     }
@@ -86,32 +86,31 @@ class RoomManager extends ChangeNotifier {
     MsgManager msgManager = new MsgManager(roomid.toString());
 
     // インスタンス生成
-    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGrouppp, msgManager);
+    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGroupIdpp, msgManager);
 
     // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
     room.taskDatas = _taskManager.findByRoomid(roomid.toString());
-    room.subRoomData = getSameData(sameGrouppp);
+    room.subRoomData = getSameData(sameGroupIdpp);
 
     _roomList.add(room);
 
     // 他の部屋の情報の上書き
     for (Room checkRoom in _roomList) {
       if (nowRoom.mainRoomid == checkRoom.mainRoomid) {
-        checkRoom.sameGroup.add(roomid);
-        update(checkRoom, checkRoom.leaders, checkRoom.workers, checkRoom.tasks, checkRoom.sameGroup);
+        checkRoom.sameGroupId.add(roomid);
+        update(checkRoom, checkRoom.leaders, checkRoom.workers, checkRoom.tasks, checkRoom.sameGroupId);
       }
     }
     save(room, true);
     notifyListeners();
   }
 
-  // 指定した部屋のsameGroupに格納されたidをRoomオブジェクトと紐づける
-  List<Room> getSameData(List sameGroup) {
+  // 指定した部屋のsameGroupIdに格納されたidをRoomオブジェクトと紐づける
+  List<Room> getSameData(List sameGroupId) {
     List<Room> result = [];
-
     for (Room room in _roomList) {
-      print(sameGroup);
-      for (var serchRoomid in sameGroup) {
+      print(sameGroupId);
+      for (var serchRoomid in sameGroupId) {
         if (room.roomid != null && room.roomid == serchRoomid) {
           result.add(room);
         }
@@ -122,11 +121,11 @@ class RoomManager extends ChangeNotifier {
   }
 
   // 部屋情報の更新
-  void update(Room room, List leaders, List workers, List tasks, List sameGroup) {
+  void update(Room room, List leaders, List workers, List tasks, List sameGroupId) {
     room.leaders = leaders;
     room.workers = workers;
     room.tasks = tasks;
-    room.sameGroup = sameGroup;
+    room.sameGroupId = sameGroupId;
     save(room, false);
     notifyListeners();
   }
@@ -168,18 +167,20 @@ class RoomManager extends ChangeNotifier {
       List workers = jsonDecode(room['workers']);
       List tasks = jsonDecode(room['tasks']);
       String roomNumber = room['room_number'];
-      List sameGroup = jsonDecode(room['sub_rooms']);
+      List sameGroupIdid = jsonDecode(room['sub_rooms']);
       int subRoom = room['bool_sub_room'];
       String mainRoomid = room['main_room_id'];
 
       // リストに追加
       MsgManager msgManager = new MsgManager(roomid);
-      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup, msgManager);
-      loadRoom.subRoomData = await getSameData(sameGroup);
+      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupIdid, msgManager);
+      loadRoom.subRoomData = await getSameData(sameGroupIdid);
       loadRoom.taskDatas = await taskManager.findByRoomid(roomid);
 
       _roomList.add(loadRoom);
     }
+
+    print(_roomList);
 
     notifyListeners();
   }

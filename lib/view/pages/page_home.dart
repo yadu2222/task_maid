@@ -51,8 +51,7 @@ class _PageHomeState extends State<PageHome> {
                         MaterialPageRoute(
                             builder: (context) => PageTask(
                                   nowRoomInfo: _door.roomFindbyid(_door.taskFindbyIndex(index).roomid),
-                                  taskManager: _taskManager,
-                                  roomManager: _roomManager,
+                                  
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
@@ -129,8 +128,7 @@ class _PageHomeState extends State<PageHome> {
                                 functionIcon: Icons.check_box,
                                 widget: PageTask(
                                   nowRoomInfo: _roomManager.findByindex(0),
-                                  taskManager: _taskManager,
-                                  roomManager: _roomManager,
+                                  
                                 ),
                               ),
 

@@ -41,7 +41,7 @@
 
 //   // 部屋を追加する
 //   // 改修
-//   void add(TaskRoom nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, [List? sameGroup, String? mainRoomid]) {
+//   void add(TaskRoom nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, [List? sameGroupId, String? mainRoomid]) {
 //     var roomid = count() == 0 ? 1 : int.parse(_roomList.last.roomid) + 1;
 
 //     String mainRoomiii = roomid.toString();
@@ -49,15 +49,15 @@
 //       mainRoomiii = mainRoomid;
 //     }
 
-//     List sameGrouppp = [roomid];
-//     if (sameGroup != null) {
-//       sameGrouppp = sameGroup;
+//     List sameGroupIdpp = [roomid];
+//     if (sameGroupId != null) {
+//       sameGroupIdpp = sameGroupId;
 //     }
 
 //     if (boolSubRoom != 0) {
 //       for (TaskRoom room in _roomList) {
 //         if (room.mainRoomid == mainRoomid) {
-//           sameGrouppp.add(room.roomid);
+//           sameGroupIdpp.add(room.roomid);
 //         }
 //       }
 //     }
@@ -72,31 +72,31 @@
 //       roomid.toString(),
 //       boolSubRoom,
 //       mainRoomiii,
-//       sameGrouppp,
+//       sameGroupIdpp,
 //     );
 //     // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
 //     room.taskDatas = _taskManager.findByRoomid(roomid.toString());
-//     room.subRoomData = getSameData(sameGrouppp);
+//     room.subRoomData = getSameData(sameGroupIdpp);
 
 //     _roomList.add(room);
 
 //     // 他の部屋の情報の上書き
 //     for (TaskRoom checkRoom in _roomList) {
 //       if (nowRoom.mainRoomid == checkRoom.mainRoomid) {
-//         checkRoom.sameGroup.add(roomid);
-//         update(checkRoom, checkRoom.leaders, checkRoom.workers, checkRoom.tasks, checkRoom.sameGroup);
+//         checkRoom.sameGroupId.add(roomid);
+//         update(checkRoom, checkRoom.leaders, checkRoom.workers, checkRoom.tasks, checkRoom.sameGroupId);
 //       }
 //     }
 //     save(room, true);
 //   }
 
-//   // 指定した部屋のsameGroupに格納されたidをRoomオブジェクトと紐づける
-//   List<TaskRoom> getSameData(List sameGroup) {
+//   // 指定した部屋のsameGroupIdに格納されたidをRoomオブジェクトと紐づける
+//   List<TaskRoom> getSameData(List sameGroupId) {
 //     List<TaskRoom> result = [];
 
 //     for (TaskRoom room in _roomList) {
-//       print(sameGroup);
-//       for (var serchRoomid in sameGroup) {
+//       print(sameGroupId);
+//       for (var serchRoomid in sameGroupId) {
 //         if (room.roomid != null && room.roomid == serchRoomid) {
 //           result.add(room);
 //         }
@@ -107,11 +107,11 @@
 //   }
 
 //   // 部屋情報の更新
-//   void update(TaskRoom room, List leaders, List workers, List tasks, List sameGroup) {
+//   void update(TaskRoom room, List leaders, List workers, List tasks, List sameGroupId) {
 //     room.leaders = leaders;
 //     room.workers = workers;
 //     room.tasks = tasks;
-//     room.sameGroup = sameGroup;
+//     room.sameGroupId = sameGroupId;
 //     save(room, false);
 //   }
 
@@ -155,13 +155,13 @@
 //       List tasks = jsonDecode(room['tasks']);
 //       List<Task> taskDates = _taskManager.findByRoomid(roomid);
 //       String roomNumber = room['room_number'];
-//       List sameGroup = jsonDecode(room['sub_rooms']);
+//       List sameGroupId = jsonDecode(room['sub_rooms']);
 //       int subRoom = room['bool_sub_room'];
 //       String mainRoomid = room['main_room_id'];
 
 //       // リストに追加
-//       Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroup);
-//       loadRoom.subRoomData = getSameData(sameGroup);
+//       Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupId);
+//       loadRoom.subRoomData = getSameData(sameGroupId);
 //       loadRoom.taskDatas = _taskManager.findByRoomid(roomid);
 //       _roomList.add(loadRoom);
 //     }

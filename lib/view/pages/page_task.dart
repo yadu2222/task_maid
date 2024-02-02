@@ -9,6 +9,7 @@ import 'page_messages.dart';
 
 import '../../const/items.dart';
 import '../parts/Molecules.dart';
+import '../parts/loading.dart';
 
 // 各情報のクラス
 import '../../data/controller/door.dart';
@@ -36,24 +37,17 @@ import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {
   final Room nowRoomInfo;
-  final TaskManager _taskManager;
-  final RoomManager _roomManager;
+  
 
   const PageTask({
     required this.nowRoomInfo,
-    required TaskManager taskManager,
-    required RoomManager roomManager,
+   
     Key? key,
-  })  : _taskManager = taskManager,
-        _roomManager = roomManager,
+  })  : 
         super(key: key);
 
   @override
-  _PageTask createState() => _PageTask(
-        nowRoomInfo: nowRoomInfo,
-        taskManager: _taskManager,
-        roomManager: _roomManager
-      );
+  _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo,);
 }
 
 class _PageTask extends State<PageTask> {
@@ -83,11 +77,11 @@ class _PageTask extends State<PageTask> {
 
   // インスタンスを引継ぎ
   // そもそもシングルトンなんだから引き継ぐ必要なんてなくない？と今思っているなう
-  final TaskManager taskManager;
-  final RoomManager roomManager;
+  final TaskManager taskManager = TaskManager();
+  final RoomManager roomManager = RoomManager();
   // 現在の部屋を取得
   Room nowRoomInfo;
-  _PageTask({required this.taskManager, required this.roomManager, required this.nowRoomInfo});
+  _PageTask({required this.nowRoomInfo});
 
   // タスク作成時などに使う保存用変数
   String dateText = '期日を入力してね';
@@ -268,7 +262,7 @@ class _PageTask extends State<PageTask> {
             },
           ),
 
-          for (int i = 0; i < nowRoomInfo.sameGroup.length; i++)
+          for (int i = 0; i < nowRoomInfo.sameGroupId.length; i++)
             roomDisplay
                 ? ListTile(
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
@@ -960,6 +954,8 @@ class _PageTask extends State<PageTask> {
                             // msg
                             msgManager.add('がんばってください', 1, 0, '0', 0);
 
+                            const Loading();
+
                             setState(() {
                               Navigator.push(
                                 context,
@@ -1231,60 +1227,56 @@ class _PageTask extends State<PageTask> {
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return ChangeNotifierProvider<TaskManager>(
-      create: (context) => taskManager,
-      child:
-    
-    
-    
-    Scaffold(
-        resizeToAvoidBottomInset: false,
-        key: sideBarKey,
-        body: Center(
-            child: Container(
-          width: screenSizeWidth,
-          height: screenSizeHeight,
-          decoration: const BoxDecoration(color: Constant.main),
-          child: SafeArea(
-              child: Stack(children: [
-            Column(
-              children: [
-                SizedBox(
-                    width: screenSizeWidth,
-                    // バー部分
-                    child: Row(children: [
-                      molecules.PageTitle(context, 'タスク', 1, PageHome()),
-                      SizedBox(
-                        width: screenSizeWidth * 0.3,
-                      ),
-                      // タスク追加ボタン　リーダーのみ表示
-                      //leaderCheck()
-                      // メインタスクはリーダーのみ追加可能
-                      addTaskBottun(),
+        create: (context) => taskManager,
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            key: sideBarKey,
+            body: Center(
+                child: Container(
+              width: screenSizeWidth,
+              height: screenSizeHeight,
+              decoration: const BoxDecoration(color: Constant.main),
+              child: SafeArea(
+                  child: Stack(children: [
+                Column(
+                  children: [
+                    SizedBox(
+                        width: screenSizeWidth,
+                        // バー部分
+                        child: Row(children: [
+                          molecules.PageTitle(context, 'タスク', 1, PageHome()),
+                          SizedBox(
+                            width: screenSizeWidth * 0.3,
+                          ),
+                          // タスク追加ボタン　リーダーのみ表示
+                          //leaderCheck()
+                          // メインタスクはリーダーのみ追加可能
+                          addTaskBottun(),
 
-                      // サイドバーを開く
-                      IconButton(
-                          onPressed: () {
-                            sideBarKey.currentState!.openEndDrawer();
-                          },
-                          icon: const Icon(
-                            Icons.menu,
-                            color: Constant.glay,
-                            size: 35,
-                          ))
-                    ])),
+                          // サイドバーを開く
+                          IconButton(
+                              onPressed: () {
+                                sideBarKey.currentState!.openEndDrawer();
+                              },
+                              icon: const Icon(
+                                Icons.menu,
+                                color: Constant.glay,
+                                size: 35,
+                              ))
+                        ])),
 
-                // 現在表示しているルームのボタン
-                // ここからルーム選択、検索、追加ができる
-                nowRoomInfo.subRoom == 1 ? subRoomName() : roomBottun(),
+                    // 現在表示しているルームのボタン
+                    // ここからルーム選択、検索、追加ができる
+                    nowRoomInfo.subRoom == 1 ? subRoomName() : roomBottun(),
 
-                // タスク表示
-                SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList())
-              ],
-            ),
-          ])),
-        )),
+                    // タスク表示
+                    SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList())
+                  ],
+                ),
+              ])),
+            )),
 
-        // サイドバー設定
-        endDrawer: sideBar()));
+            // サイドバー設定
+            endDrawer: sideBar()));
   }
 }
