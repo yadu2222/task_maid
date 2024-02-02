@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:task_maid/data/models/msg_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import 'package:task_maid/view/pages/page_roomSetting.dart';
 import 'package:task_maid/view/pages/page_taskSetting.dart';
@@ -11,24 +11,49 @@ import '../../const/items.dart';
 import '../parts/Molecules.dart';
 
 // 各情報のクラス
-import '../../data/models/door.dart';
+import '../../data/controller/door.dart';
 import '../../data/models/task_class.dart';
 import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
 
-import '../../data/models/room_manager.dart';
-import '../../data/models/task_manager.dart';
+import '../../data/controller/room_manager.dart';
+import '../../data/controller/task_manager.dart';
+import 'package:task_maid/data/controller/msg_manager.dart';
 
 // 通信用のクラス
 import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
+// class PageTask extends StatefulWidget {
+//   // どこの部屋のタスクを参照したいのか引数でもらう
+//   final Room nowRoomInfo;
+//   final TaskManager _taskManager;
+//   final RoomManager roomManager;
+//   const PageTask({required this.nowRoomInfo, this.roomManager,this._taskManager Key? key}) : super(key: key);
+//   @override
+//   _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo);
+// }
+
 class PageTask extends StatefulWidget {
-  // どこの部屋のタスクを参照したいのか引数でもらう
   final Room nowRoomInfo;
-  const PageTask({required this.nowRoomInfo, Key? key}) : super(key: key);
+  final TaskManager _taskManager;
+  final RoomManager _roomManager;
+
+  const PageTask({
+    required this.nowRoomInfo,
+    required TaskManager taskManager,
+    required RoomManager roomManager,
+    Key? key,
+  })  : _taskManager = taskManager,
+        _roomManager = roomManager,
+        super(key: key);
+
   @override
-  _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo);
+  _PageTask createState() => _PageTask(
+        nowRoomInfo: nowRoomInfo,
+        taskManager: _taskManager,
+        roomManager: _roomManager
+      );
 }
 
 class _PageTask extends State<PageTask> {
@@ -56,13 +81,13 @@ class _PageTask extends State<PageTask> {
     _scaffoldKey.currentState?.reassemble();
   }
 
-  // 参照したい部屋の情報を引数にもらう
+  // インスタンスを引継ぎ
+  // そもそもシングルトンなんだから引き継ぐ必要なんてなくない？と今思っているなう
+  final TaskManager taskManager;
+  final RoomManager roomManager;
+  // 現在の部屋を取得
   Room nowRoomInfo;
-  _PageTask({required this.nowRoomInfo});
-
-  // クラス呼び出し
-  final TaskManager _taskManager = TaskManager();
-  final RoomManager _roomManager = RoomManager();
+  _PageTask({required this.taskManager, required this.roomManager, required this.nowRoomInfo});
 
   // タスク作成時などに使う保存用変数
   String dateText = '期日を入力してね';
@@ -169,12 +194,12 @@ class _PageTask extends State<PageTask> {
                     nowRoomInfo.workers.remove(items.userInfo['userid']);
 
                     // 退室処理呼び出し
-                    _roomManager.deleat(nowRoomInfo);
+                    roomManager.deleat(nowRoomInfo);
 
                     // 手持ちのデータを更新
-                    nowRoomInfo = _roomManager.findByindex(0);
+                    nowRoomInfo = roomManager.findByindex(0);
 
-                    _taskManager.load();
+                    taskManager.load();
 
                     setState(() {});
                   },
@@ -249,13 +274,13 @@ class _PageTask extends State<PageTask> {
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
                       // subRoomであれば鍵アイコン
-                      _roomManager.findByindex(i).subRoom == 1 ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
-                      CustomText(text: '\t\t\t${_roomManager.findByindex(i).roomName}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                      roomManager.findByindex(i).subRoom == 1 ? const Icon(Icons.key_rounded) : const Icon(Icons.sensor_door),
+                      CustomText(text: '\t\t\t${roomManager.findByindex(i).roomName}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // タップで該当の部屋にとべる
                     onTap: () {
                       // saveMainRoom();
-                      nowRoomInfo = _roomManager.findByindex(i);
+                      nowRoomInfo = roomManager.findByindex(i);
                       // nowRoomid = subRooms[i]['room_id'];
                       setState(() {});
                     },
@@ -295,14 +320,14 @@ class _PageTask extends State<PageTask> {
                           FocusScope.of(context).unfocus(); //キーボードを閉じる
 
                           // 部屋の追加
-                          _roomManager.add(
+                          roomManager.add(
                             nowRoomInfo,
                             newSubRoomName,
                             [items.userInfo['userid']],
                             nowRoomInfo.workers,
                             [],
                             1,
-                            _taskManager,
+                            taskManager,
                             [],
                             nowRoomInfo.mainRoomid,
                           );
@@ -371,7 +396,7 @@ class _PageTask extends State<PageTask> {
       itemCount: nowRoomInfo.taskDatas.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return nowRoomInfo.tasks[index]['status_progress'] == 0
+        return nowRoomInfo.taskDatas[index].status == 0
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
@@ -566,7 +591,7 @@ class _PageTask extends State<PageTask> {
       onTap: () async {
         if (type == 0 || type == 2) {
           // できました！！またはリスケ申請であれば更新処理
-          _taskManager.update(task, task.contents, type == 0 ? 1 : 2, task.taskLimit, task.worker);
+          taskManager.update(task, task.contents, type == 0 ? 1 : 2, task.taskLimit, task.worker);
 
           setState(() {});
         }
@@ -680,14 +705,14 @@ class _PageTask extends State<PageTask> {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
 
-                              _roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, _taskManager, []);
+                              roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager, []);
 
                               // items.myroom.add(newRoomid);
                             }
 
                             // 現在の部屋の切り替えと変数の上書き
                             // nowRoomid = newRoomid;
-                            nowRoomInfo = _roomManager.findByindex(_roomManager.count() - 1);
+                            nowRoomInfo = roomManager.findByindex(roomManager.count() - 1);
 
                             setState(() {});
 
@@ -727,17 +752,17 @@ class _PageTask extends State<PageTask> {
       height: screenSizeHeight * 0.35,
       // 繰り返し表示
       child: ListView.builder(
-        itemCount: _roomManager.count() + 1,
+        itemCount: roomManager.count() + 1,
         itemBuilder: (context, index) {
           // 最後のうぃじぇっとがaddRoomになるよう条件付け
-          return index != _roomManager.count() && _roomManager.findByindex(index).subRoom == 0
+          return index != roomManager.count() && roomManager.findByindex(index).subRoom == 0
               ? Card(
                   color: Constant.glay.withAlpha(0),
                   elevation: 0,
                   child: InkWell(
                     onTap: () async {
                       // 表示する部屋の切り替え
-                      nowRoomInfo = _roomManager.findByindex(index);
+                      nowRoomInfo = roomManager.findByindex(index);
                       setState(() {});
                       Navigator.pop(context); // 前のページに戻る
                     },
@@ -751,13 +776,13 @@ class _PageTask extends State<PageTask> {
                       alignment: const Alignment(0, 0),
                       child: CustomText(
                         // db
-                        text: _roomManager.findByindex(index).roomName,
+                        text: roomManager.findByindex(index).roomName,
                         color: Constant.white,
                         fontSize: screenSizeWidth * 0.04,
                       ),
                     ),
                   ))
-              : index == _roomManager.count()
+              : index == roomManager.count()
                   ? addRoom()
                   : const SizedBox.shrink();
         },
@@ -770,7 +795,6 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    
     MsgManager msgManager = nowRoomInfo.msgManager;
 
     return Container(
@@ -889,7 +913,7 @@ class _PageTask extends State<PageTask> {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
-                            _taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
+                            taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -1206,7 +1230,13 @@ class _PageTask extends State<PageTask> {
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
+    return ChangeNotifierProvider<TaskManager>(
+      create: (context) => taskManager,
+      child:
+    
+    
+    
+    Scaffold(
         resizeToAvoidBottomInset: false,
         key: sideBarKey,
         body: Center(
@@ -1255,6 +1285,6 @@ class _PageTask extends State<PageTask> {
         )),
 
         // サイドバー設定
-        endDrawer: sideBar());
+        endDrawer: sideBar()));
   }
 }

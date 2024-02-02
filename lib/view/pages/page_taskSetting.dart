@@ -7,8 +7,7 @@ import '../parts/Molecules.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
 
-import '../../data/models/door.dart';
-import '../../data/models/msg_class.dart';
+import '../../data/controller/door.dart';
 import '../../data/models/room_class.dart';
 import '../../data/models/task_class.dart';
 
@@ -386,7 +385,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-                molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
+               // molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),

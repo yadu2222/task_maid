@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_maid/data/models/msg_manager.dart';
+import 'package:task_maid/data/controller/msg_manager.dart';
 
 // widgetとか
 import '../design_system/constant.dart';
@@ -9,12 +9,12 @@ import '../parts/Molecules.dart';
 import '../../const/items.dart';
 
 // 各情報のクラス
-import '../../data/models/door.dart';
+import '../../data/controller/door.dart';
 import '../../data/models/task_class.dart';
 
 import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
-import '../../data/models/task_manager.dart';
+import '../../data/controller/task_manager.dart';
 
 // import 'package:intl/intl.dart';
 

@@ -3,9 +3,9 @@ import 'dart:convert';
 // このクラスを読み込むだけで各操作ができるようにしたい
 
 // 各情報のクラス
-import 'room_class.dart';
-import 'task_class.dart';
-import 'msg_class.dart';
+import '../models/room_class.dart';
+import '../models/task_class.dart';
+import '../models/msg_class.dart';
 
 // 各情報を操作するクラス
 import 'task_manager.dart';

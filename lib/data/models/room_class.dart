@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'task_class.dart';
-import 'msg_manager.dart';
+import '../controller/msg_manager.dart';
 
 class Room {
   // 固有値

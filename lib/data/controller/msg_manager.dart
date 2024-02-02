@@ -1,8 +1,8 @@
 import 'dart:convert';
 import '../database_helper.dart';
 
-import 'msg_class.dart';
-import 'room_class.dart';
+import '../models/msg_class.dart';
+import '../models/room_class.dart';
 
 class MsgManager {
   String roomid;

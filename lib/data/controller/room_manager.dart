@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 // 各情報のクラス
-import 'room_class.dart';
-import 'task_class.dart';
-import 'msg_class.dart';
+import 'package:flutter/material.dart';
+
+import '../models/room_class.dart';
+import '../models/task_class.dart';
+import '../models/msg_class.dart';
 
 // 各情報を操作するクラス
 import 'task_manager.dart';
@@ -12,10 +14,9 @@ import 'msg_manager.dart';
 // db操作
 import '../database_helper.dart';
 
-class RoomManager {
-  late List<Room> _roomList = [
-    Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'))
-  ];
+class RoomManager extends ChangeNotifier {
+  Room dummy = Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'));
+  late List<Room> _roomList = [Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'))];
   // taskManagerのインスタンス
   static final RoomManager _instance = RoomManager._internal();
   // プライベートなコンストラクタ
@@ -36,7 +37,11 @@ class RoomManager {
 
   // 指定したインデックスの部屋を取得
   Room findByindex(int index) {
-    return _roomList[index];
+    if (count() != 0) {
+      return _roomList[index];
+    } else {
+      return dummy;
+    }
   }
 
   Room findByroomid(String roomid) {
@@ -81,7 +86,7 @@ class RoomManager {
     MsgManager msgManager = new MsgManager(roomid.toString());
 
     // インスタンス生成
-    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGrouppp,msgManager);
+    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGrouppp, msgManager);
 
     // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
     room.taskDatas = _taskManager.findByRoomid(roomid.toString());
@@ -97,6 +102,7 @@ class RoomManager {
       }
     }
     save(room, true);
+    notifyListeners();
   }
 
   // 指定した部屋のsameGroupに格納されたidをRoomオブジェクトと紐づける
@@ -122,6 +128,7 @@ class RoomManager {
     room.tasks = tasks;
     room.sameGroup = sameGroup;
     save(room, false);
+    notifyListeners();
   }
 
   // 部屋情報の削除
@@ -138,6 +145,7 @@ class RoomManager {
     _roomList.removeWhere((value) => value.mainRoomid == room.mainRoomid);
     // リストから削除
     _roomList.remove(room);
+    notifyListeners();
   }
 
   // 部屋情報の保存
@@ -146,6 +154,7 @@ class RoomManager {
     // trueでinsert
     // falseでupdate
     saveType ? DatabaseHelper.insert('rooms', saveRoom) : DatabaseHelper.update('rooms', 'room_id', saveRoom, room.roomid);
+    notifyListeners();
   }
 
   // 部屋情報の読み込み
@@ -171,5 +180,7 @@ class RoomManager {
 
       _roomList.add(loadRoom);
     }
+
+    notifyListeners();
   }
 }

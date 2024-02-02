@@ -1,14 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'task_class.dart';
+import '../models/task_class.dart';
 import 'package:task_maid/data/database_helper.dart';
-import 'room_class.dart';
+import '../models/room_class.dart';
+import 'room_manager.dart';
 
-class TaskManager {
+class TaskManager extends ChangeNotifier {
   // タスクリスト
   List<Task> _taskList = [];
 
   // taskManagerのインスタンス
   static final TaskManager _instance = TaskManager._internal();
+
+  final RoomManager _roomManager = RoomManager();
+
+  List<Task> getTaskList() {
+    return _taskList;
+  }
+
   // プライベートなコンストラクタ
   TaskManager._internal();
   // 自分自身を生成
@@ -122,7 +131,8 @@ class TaskManager {
         break;
     }
 
-    // _roomManager.load();
+    _roomManager.load(_instance);
+    notifyListeners();
   }
 
   // タスクを読み込む
@@ -139,8 +149,9 @@ class TaskManager {
       String taskLimit = task['task_limit'];
       String worker = task['worker'];
       String roomid = task['room_id'];
-
       _taskList.add(Task(taskid, title, contents, status, taskLimit, worker, roomid));
     }
+
+    notifyListeners();
   }
 }

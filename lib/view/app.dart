@@ -1,21 +1,32 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_maid/data/controller/room_manager.dart';
+import 'package:task_maid/data/controller/task_manager.dart';
 import 'pages/page_home.dart';
 import '../const/items.dart';
 import '../data/database_helper.dart';
 
 // 各情報のクラス
-import '../data/models/door.dart';
+import '../data/controller/door.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false, //デバッグの表示を消す
-      home: MyStatefulWidget(), //ホーム画面を呼び出す
+
+      // 状態管理
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => TaskManager()),
+          ChangeNotifierProvider(create: (context) => RoomManager())],
+         child: MyStatefulWidget()), //ホーム画面を呼び出す
     );
   }
 }
@@ -60,7 +71,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: PageHome(),
     );

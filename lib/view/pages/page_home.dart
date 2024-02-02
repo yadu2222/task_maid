@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_maid/data/models/room_manager.dart';
+import 'package:provider/provider.dart';
+import 'package:task_maid/data/controller/room_manager.dart';
 import '../design_system/constant.dart';
 import '../../const/items.dart';
 import 'page_task.dart';
@@ -8,13 +9,13 @@ import 'page_message.dart';
 import '../parts/Molecules.dart';
 
 // 各情報のクラス
-import '../../data/models/door.dart';
+import '../../data/controller/door.dart';
 import '../../data/models/task_class.dart';
 import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
 
-import '../../data/models/room_manager.dart';
-import '../../data/models/task_manager.dart';
+import '../../data/controller/room_manager.dart';
+import '../../data/controller/task_manager.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -26,11 +27,8 @@ class PageHome extends StatefulWidget {
 class _PageHomeState extends State<PageHome> {
   final Door _door = Door();
 
-  final RoomManager _roomManager = RoomManager();
-  final TaskManager _taskManager = TaskManager();
-
   // task_listの繰り返し処理
-  Widget taskList() {
+  Widget taskList(TaskManager _taskManager, RoomManager _roomManager) {
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
@@ -53,6 +51,8 @@ class _PageHomeState extends State<PageHome> {
                         MaterialPageRoute(
                             builder: (context) => PageTask(
                                   nowRoomInfo: _door.roomFindbyid(_door.taskFindbyIndex(index).roomid),
+                                  taskManager: _taskManager,
+                                  roomManager: _roomManager,
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
@@ -82,16 +82,24 @@ class _PageHomeState extends State<PageHome> {
     super.initState();
   }
 
+  final TaskManager _taskManager = TaskManager();
+  final RoomManager _roomManager = RoomManager();
+
   @override
   Widget build(BuildContext context) {
     // 画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
+    // 状態管理
+    return ChangeNotifierProvider<TaskManager>(
+      create: (context) => _taskManager,
+      child:Scaffold(
         body: Center(
       // ページの中身
-      child: Container(
+      child: 
+      
+      Container(
         width: double.infinity,
         height: screenSizeHeight,
         decoration: const BoxDecoration(color: Constant.main),
@@ -119,7 +127,11 @@ class _PageHomeState extends State<PageHome> {
                               //タスク
                               PageShiftIcon(
                                 functionIcon: Icons.check_box,
-                                widget: PageTask(nowRoomInfo: _roomManager.findByindex(0)),
+                                widget: PageTask(
+                                  nowRoomInfo: _roomManager.findByindex(0),
+                                  taskManager: _taskManager,
+                                  roomManager: _roomManager,
+                                ),
                               ),
 
                               //設定
@@ -203,7 +215,7 @@ class _PageHomeState extends State<PageHome> {
                                         borderRadius: BorderRadius.circular(10), // 角丸
                                       ),
                                       // ループ
-                                      child: taskList())
+                                      child: taskList(_taskManager, _roomManager))
                                   : SizedBox.shrink()
                             ])),
                       ]))
@@ -211,6 +223,6 @@ class _PageHomeState extends State<PageHome> {
               ),
             ])),
       ),
-    ));
+    )));
   }
 }
