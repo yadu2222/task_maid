@@ -9,7 +9,6 @@ import '../parts/Molecules.dart';
 import '../../const/items.dart';
 
 // 各情報のクラス
-import '../../data/controller/door.dart';
 import '../../data/models/task_class.dart';
 
 import '../../data/models/msg_class.dart';
@@ -223,7 +222,7 @@ class _PageMassages extends State<PageMassages> {
 
   Widget msgCard(int index, List<MSG> msgList) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
-    double screenSizeHeight = MediaQuery.of(context).size.height;
+    // double screenSizeHeight = MediaQuery.of(context).size.height;
 
     MSG msgData = msgList[index];
     String senderid = msgData.senderid;

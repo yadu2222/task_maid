@@ -10,7 +10,6 @@ import '../parts/Molecules.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
 
-import '../../data/controller/door.dart';
 import '../../data/models/room_class.dart';
 import '../../data/models/task_class.dart';
 
@@ -95,8 +94,6 @@ class _page_taskSetting extends State<page_taskSetting> {
               selectButton[i] = false;
             }
           }
-          
-          // nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
           setState(() {
             selectRoomInfo = dispRoom;
           });
@@ -337,7 +334,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   // プルダウン
   int status_progress = 0;
   Widget statusButton() {
-    List status_name = ['消化中', '消化済', 'リスケ申請中'];
+    // List status_name = ['消化中', '消化済', 'リスケ申請中'];
     return DropdownButton(
       items: const [
         DropdownMenuItem(

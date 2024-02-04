@@ -12,11 +12,8 @@ import '../parts/Molecules.dart';
 import '../parts/loading.dart';
 
 // 各情報のクラス
-import '../../data/controller/door.dart';
 import '../../data/models/task_class.dart';
-import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
-
 import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
 import 'package:task_maid/data/controller/msg_manager.dart';
@@ -24,16 +21,6 @@ import 'package:task_maid/data/controller/msg_manager.dart';
 // 通信用のクラス
 import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
-
-// class PageTask extends StatefulWidget {
-//   // どこの部屋のタスクを参照したいのか引数でもらう
-//   final Room nowRoomInfo;
-//   final TaskManager _taskManager;
-//   final RoomManager roomManager;
-//   const PageTask({required this.nowRoomInfo, this.roomManager,this._taskManager Key? key}) : super(key: key);
-//   @override
-//   _PageTask createState() => _PageTask(nowRoomInfo: nowRoomInfo);
-// }
 
 class PageTask extends StatefulWidget {
   final Room nowRoomInfo;
@@ -52,7 +39,7 @@ class PageTask extends StatefulWidget {
 class _PageTask extends State<PageTask> {
   // textfieldを初期化したり中身の有無を判定するためのコントローラー
   final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _controller = TextEditingController();
+  // final TextEditingController _controller = TextEditingController();
 
   // タスク作成時のフォームに使うコントローラー
   final TextEditingController monthController = TextEditingController();
@@ -74,8 +61,7 @@ class _PageTask extends State<PageTask> {
     _scaffoldKey.currentState?.reassemble();
   }
 
-  // インスタンスを引継ぎ
-  // そもそもシングルトンなんだから引き継ぐ必要なんてなくない？と今思っているなう
+  // インスタンス呼び出し
   final TaskManager taskManager = TaskManager();
   final RoomManager roomManager = RoomManager();
   final MsgManager msgManager = MsgManager();
@@ -89,6 +75,9 @@ class _PageTask extends State<PageTask> {
   String worker = '';
   String newTask = '0000';
   DateTime limitTime = DateTime.now();
+
+  // メインルームidを保存
+  
 
   // リーダーチェック
   bool leaderCheck() {
@@ -997,7 +986,7 @@ class _PageTask extends State<PageTask> {
   // サブルーム選択時のルーム名表示部分
   Widget subRoomName() {
     double screenSizeWidth = MediaQuery.of(context).size.width;
-    double screenSizeHeight = MediaQuery.of(context).size.height;
+    // double screenSizeHeight = MediaQuery.of(context).size.height;
     return Container(
       width: screenSizeWidth * 0.625,
       alignment: Alignment(0, 0),

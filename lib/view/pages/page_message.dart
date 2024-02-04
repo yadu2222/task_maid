@@ -5,13 +5,8 @@ import 'page_messages.dart';
 import '../parts/Molecules.dart';
 
 // 各情報のクラス
-import '../../data/controller/door.dart';
-import '../../data/models/task_class.dart';
-import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
-
 import '../../data/controller/room_manager.dart';
-import '../../data/controller/task_manager.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);

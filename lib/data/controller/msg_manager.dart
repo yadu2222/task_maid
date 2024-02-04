@@ -2,8 +2,6 @@ import '../database_helper.dart';
 import '../models/msg_class.dart';
 
 class MsgManager {
-  
-
   // msg_list
   List<MSG> _msgList = [];
 
@@ -24,7 +22,7 @@ class MsgManager {
   }
 
   // msgを追加する
-  void add(String msg, int statusAddition, int stampid, String quoteid, int level,String roomid) {
+  void add(String msg, int statusAddition, int stampid, String quoteid, int level, String roomid) {
     // (int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom
     var msgid = count() == 0 ? 1 : _msgList.last.msgid + 1;
     String senderid = '12345';
@@ -33,6 +31,7 @@ class MsgManager {
     // インスタンス生成
     var newMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg);
     _msgList.add(newMsg);
+    save(newMsg);
   }
 
   // 保存
@@ -64,14 +63,13 @@ class MsgManager {
 
   void load() async {
     // roomidで検索し、dbのメッセージをidごとにリスト化
-    List loadList = await DatabaseHelper.serachRows('msg_chats', 0, [], [], 'msg_datetime');
-
     _msgList.clear();
+    List loadList = await DatabaseHelper.serachRows('msg_chats', 0, [], [], 'msg_datetime');
     // リスト化した情報をループしMSGオブジェクトを生成
     for (Map msgRoom in loadList) {
-      int msgid = msgRoom['msg_room'];
-      String msgDatetime = msgRoom['msg_Datetime'];
-      String senderid = msgRoom['sender_id'];
+      int msgid = msgRoom['msg_id'];
+      String msgDatetime = msgRoom['msg_datetime'];
+      String senderid = msgRoom['sender'];
       String roomid = msgRoom['room_id'];
       int level = msgRoom['level'];
       int statusAddition = msgRoom['status_addition'];
@@ -80,7 +78,6 @@ class MsgManager {
       String msg = msgRoom['msg'];
 
       MSG lordMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg);
-      print("msgList{$lordMsg}");
       _msgList.add(lordMsg);
     }
   }
