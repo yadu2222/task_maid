@@ -10,18 +10,18 @@ import '../molecules.dart';
 import 'package:task_maid/database_helper.dart';
 
 class PageHome extends StatefulWidget {
-  final WebSocket ws;
-  const PageHome({required this.ws, Key? key}) : super(key: key);
+  final SocketIO sio;
+  const PageHome({required this.sio, Key? key}) : super(key: key);
   //const PageHome({Key? key}) : super(key: key);
 
   @override
-  _PageHomeState createState() => _PageHomeState(ws: ws);
+  _PageHomeState createState() => _PageHomeState(sio: sio);
 }
 
 class _PageHomeState extends State<PageHome> {
   // インスタンス宣言
-  WebSocket ws;
-  _PageHomeState({required this.ws});
+  SocketIO sio;
+  _PageHomeState({required this.sio});
   // dbにテストルームがあるかないかを判別、なければ追加
   dbroomFirstAdd() async {
     if (!await DatabaseHelper.firstdb()) {
@@ -171,7 +171,7 @@ class _PageHomeState extends State<PageHome> {
                               //設定
                               PageShiftIcon(
                                 functionIcon: Icons.settings,
-                                widget: PageSetting(ws: ws),
+                                widget: PageSetting(sio: sio),
                               )
                             ],
                           ))),

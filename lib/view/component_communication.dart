@@ -77,7 +77,7 @@ class HttpToServer {
 }
 
 // WebSocket
-class WebSocket {
+class SocketIO {
   // fields
   late io.Socket socket;
   String _connectMsg = "";
@@ -85,7 +85,7 @@ class WebSocket {
   String _serverResMsg = "";
 
   // methods
-  WebSocket() {
+  SocketIO() {
     // 接続を開始
     connectWS();
   }

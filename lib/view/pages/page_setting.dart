@@ -11,20 +11,20 @@ import '../app.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class PageSetting extends StatefulWidget {
-  final WebSocket ws;
+  final SocketIO sio;
   const PageSetting({
-    required this.ws,
+    required this.sio,
     Key? key,
   }) : super(key: key);
 
   @override
-  _PageSetting createState() => _PageSetting(ws: ws);
+  _PageSetting createState() => _PageSetting(sio: sio);
 }
 
 class _PageSetting extends State<PageSetting> {
   // インスタンス宣言
-  WebSocket ws;
-  _PageSetting({required this.ws});
+  SocketIO sio;
+  _PageSetting({required this.sio});
   // テキストフィールド
   final controllerTextField = TextEditingController();
 
@@ -91,7 +91,8 @@ class _PageSetting extends State<PageSetting> {
                 // テキストフィールドコントローラからテキストを取り出し、
                 String msg = controllerTextField.text;
                 // wsのテスト用送信メソッドに与え、
-                widget.ws.sendTestMsg(msg);
+                widget.sio.sendTestMsg(msg);
+                sio.sendTestMsg(msg);
                 // テキストフィールドをクリアする
                 controllerTextField.clear();
 
@@ -131,7 +132,7 @@ class _PageSetting extends State<PageSetting> {
               height: screenSizeHeight * 0.075,
               alignment: Alignment(0, 0),
               decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-              child: CustomText(text: ws.testText, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
+              child: CustomText(text: sio.testText, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
             ),
 
             CustomText(text: "Connected Response.", fontSize: screenSizeWidth * 0.05, color: Constant.black),
@@ -140,7 +141,7 @@ class _PageSetting extends State<PageSetting> {
               height: screenSizeHeight * 0.075,
               alignment: Alignment(0, 0),
               decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-              child: CustomText(text: ws.serverResMsg, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
+              child: CustomText(text: sio.serverResMsg, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
             )
           ],
         ),

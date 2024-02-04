@@ -25,20 +25,20 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // wsインスタンスの宣言
-  late WebSocket ws;
+  late SocketIO sio;
 
   @override
   void initState() {
     super.initState();
     // wsインスタンス生成
-    ws = WebSocket();
+    sio = SocketIO();
   }
 
   @override
   Widget build(BuildContext context) {
     items.Nums();
     return Scaffold(
-      body: PageHome(ws: ws),
+      body: PageHome(sio: sio),
     );
   }
 }
