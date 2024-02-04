@@ -23,20 +23,17 @@ import '../app.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class PageSetting extends StatefulWidget {
-  final SocketIO sio;
   const PageSetting({
-    required this.sio,
     Key? key,
   }) : super(key: key);
 
   @override
-  _PageSetting createState() => _PageSetting(sio: sio);
+  _PageSetting createState() => _PageSetting();
 }
 
 class _PageSetting extends State<PageSetting> {
   // インスタンス宣言
-  SocketIO sio;
-  _PageSetting({required this.sio});
+  SocketIO sio = SocketIO();
   // テキストフィールド
   final controllerTextField = TextEditingController();
 
@@ -63,13 +60,7 @@ class _PageSetting extends State<PageSetting> {
         child: Column(
           children: [
             // 上部バー部分
-            molecules.PageTitle(
-                context,
-                '設定',
-                1,
-                PageHome(
-                  sio: sio,
-                )),
+            molecules.PageTitle(context, '設定', 1, PageHome()),
             Container(
                 width: screenSizeWidth,
                 alignment: const Alignment(0.0, 0.0), //真ん中に配置
@@ -109,7 +100,7 @@ class _PageSetting extends State<PageSetting> {
                 // テキストフィールドコントローラからテキストを取り出し、
                 String msg = controllerTextField.text;
                 // wsのテスト用送信メソッドに与え、
-                widget.sio.sendTestMsg(msg);
+                sio.sendTestMsg(msg);
                 sio.sendTestMsg(msg);
                 // テキストフィールドをクリアする
                 controllerTextField.clear();

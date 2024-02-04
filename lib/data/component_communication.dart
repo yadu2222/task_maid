@@ -88,7 +88,7 @@ class SocketIO {
 
   // methods
   ///ファクトリコンストラクタ(factory Class)
-  ///通常のコンストラクタでいう呼び出される処理を担当、通常のコンストラクタと同じく外側から呼び出される。
+  ///通常のコンストラクタでいう呼び出される処理を担当、通常のコンストラクタと同じく外側から呼び出される。(getInstance)
   ///シングルトンインスタンス(=静的でどこから見ても同一のインスタンス)を呼び出し側に返す。
   factory SocketIO() {
     return _instance; // フィールドのシングルトンインスタンス
@@ -98,6 +98,25 @@ class SocketIO {
   ///通常のコンストラクタでいう実際の初期化処理を担当。
   ///シングルトンクラスの場合、クラスが読み込まれてクラス変数が定義されたときにインスタンスが生成される。
   SocketIO._internal() {
+
+
+
+  // SocketIOのインスタンス
+  static final SocketIO _instance = SocketIO._internal();
+
+  // プライベートなコンストラクタ
+  SocketIO._internal();
+  // 上で作ったインスタンスを返す
+  // 外で呼び出された際、必ずこのインスタスが返るため、同一である
+  factory SocketIO() {
+    return _instance;
+  }
+
+  initState() {
+
+
+
+
     // 接続を開始
     _connectWS();
   }
