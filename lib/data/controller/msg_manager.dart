@@ -2,14 +2,15 @@ import '../database_helper.dart';
 import '../models/msg_class.dart';
 
 class MsgManager {
-  String roomid;
+  
 
   // msg_list
   List<MSG> _msgList = [];
 
-  MsgManager(this.roomid) {
-    
-    load();
+  static final MsgManager _instance = MsgManager._internal();
+  MsgManager._internal();
+  factory MsgManager() {
+    return _instance;
   }
 
   // 指定した部屋のメッセージ数を取得
@@ -23,7 +24,7 @@ class MsgManager {
   }
 
   // msgを追加する
-  void add(String msg, int statusAddition, int stampid, String quoteid, int level) {
+  void add(String msg, int statusAddition, int stampid, String quoteid, int level,String roomid) {
     // (int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom
     var msgid = count() == 0 ? 1 : _msgList.last.msgid + 1;
     String senderid = '12345';
@@ -63,7 +64,7 @@ class MsgManager {
 
   void load() async {
     // roomidで検索し、dbのメッセージをidごとにリスト化
-    List loadList = await DatabaseHelper.serachRows('msg_chats', 1, ['room_id'], [roomid], 'msg_datetime');
+    List loadList = await DatabaseHelper.serachRows('msg_chats', 0, [], [], 'msg_datetime');
 
     _msgList.clear();
     // リスト化した情報をループしMSGオブジェクトを生成

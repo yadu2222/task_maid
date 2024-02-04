@@ -77,7 +77,7 @@ class TaskManager extends ChangeNotifier {
   }
 
   // タスクを追加する
-  void add(String title, String contents, String taskLimit, String worker, String roomid) {
+  String add(String title, String contents, String taskLimit, String worker, String roomid) {
     var random = Random();
     var taskid = random.nextInt(100000);
     // var dateTime = getDateTime();
@@ -85,6 +85,9 @@ class TaskManager extends ChangeNotifier {
     // リストに追加
     _taskList.add(task);
     save(0, null, task);
+
+    // 追加したidをかえしてあげる
+    return taskid.toString();
   }
 
   // タスクを更新する
@@ -98,18 +101,19 @@ class TaskManager extends ChangeNotifier {
 
   // タスクを削除
   // 退室処理
-  void deleat(List<Room> deleatRooms) {
+  void deleat(List<dynamic> deleatRooms) {
     // 引数のリストの部屋を削除
-    for (Room deleatRoom in deleatRooms) {
-      _taskList.removeWhere((value) => value.roomid == deleatRoom.roomid);
-      save(2, deleatRoom);
+    for (String deleatRoomid in deleatRooms) {
+      _taskList.removeWhere((value) => value.roomid == deleatRoomid);
+
+      save(2, deleatRoomid);
     }
   }
 
   // タスクリストをdbに保存する
   void save(
     int saveType, [
-    Room? room,
+    String? roomid,
     Task? task,
   ]) async {
     Map<String, dynamic> saveTask = {};
@@ -132,8 +136,8 @@ class TaskManager extends ChangeNotifier {
         }
         break;
       case 2:
-        if (room != null) {
-          await DatabaseHelper.delete('tasks', 'room_id', room.roomid);
+        if (roomid != null) {
+          await DatabaseHelper.delete('tasks', 'room_id', roomid);
         }
         break;
     }
@@ -145,6 +149,7 @@ class TaskManager extends ChangeNotifier {
   // タスクを読み込む
   void load() async {
     // dbから落とす
+    _taskList.clear();
     List loadList = await DatabaseHelper.queryAllRows('tasks');
     // _taskList = loadList.forEach((task) => _taskList.add(task.fromJson(task)));
 

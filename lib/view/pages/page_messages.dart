@@ -40,17 +40,18 @@ class _PageMassages extends State<PageMassages> {
 
   // final chatRoomManager _chatRoomManager = chatRoomManager();
   final TaskManager _taskManager = TaskManager();
+  final MsgManager _msgManager = MsgManager();
 
   // 仮置きする変数
   String message = '';
   int level = 0;
   int status = 0;
 
-  // MsgManager messageList = messageRoom.msgList;
   // 引用の有無
   bool quote = false;
   bool stamp = false;
-  int taskIndex = 0;
+  // int taskIndex = 0;
+
   String quoteTaskid = '';
 
   // listvewを自動スクロールするためのメソッド
@@ -95,17 +96,18 @@ class _PageMassages extends State<PageMassages> {
 
   // メッセージ内容の表示
   // statusの値に合わせて表示するwidgetを変更
-  Widget choiceMsg(int status, int index) {
+  Widget choiceMsg(int status, int index, List<MSG> msgList) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
     // 変数に代入
-    String msg = messageRoom.msgManager.findByindex(index).msg;
-    String sender = messageRoom.msgManager.findByindex(index).senderid;
-    int stampid = messageRoom.msgManager.findByindex(index).stampid;
+    MSG msgData = msgList[index];
+    String msg = msgList[index].msg;
+    String sender = msgList[index].senderid;
+    int stampid = msgList[index].stampid;
 
     // タスクを用意できておればよい
-    String quoteTaskid = messageRoom.msgManager.findByindex(index).quoteid;
+    String quoteTaskid = msgList[index].quoteid;
     Task quoteTask = _taskManager.findByid(quoteTaskid);
 
     switch (status) {
@@ -159,9 +161,9 @@ class _PageMassages extends State<PageMassages> {
                             margin: EdgeInsets.all(screenSizeWidth * 0.03),
                             child: Row(children: [
                               // 順調ですボタン
-                              msgbutton(true, index),
+                              msgbutton(true, index, msgData),
                               // リスケお願いしますボタン
-                              msgbutton(false, index)
+                              msgbutton(false, index, msgData)
                             ]))
                         : const SizedBox.shrink(),
                   ],
@@ -186,13 +188,13 @@ class _PageMassages extends State<PageMassages> {
   }
 
   // msgの日付表示の処理
-  Widget datedisplay(int index) {
+  Widget datedisplay(int index, List<MSG> msgList) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
     // 比較するデータを変数に代入
-    String data1 = index > 0 ? messageRoom.msgManager.findByindex(index - 1).msgDatetime : '0'; // 0だとエラーが出る
-    String data2 = messageRoom.msgManager.findByindex(index).msgDatetime;
+    String data1 = index > 0 ? msgList[index - 1].msgDatetime : '0'; // 0だとエラーが出る
+    String data2 = msgList[index].msgDatetime;
 
     // indexが0より大きければ比較
     // 年月日をそれぞれ比較
@@ -206,7 +208,7 @@ class _PageMassages extends State<PageMassages> {
   }
 
   // 送信時間表示ウィジェット
-  Widget sendTime(int index, bool status) {
+  Widget sendTime(int index, bool status, MSG msgData) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     return status
@@ -214,67 +216,25 @@ class _PageMassages extends State<PageMassages> {
             padding: EdgeInsets.only(bottom: screenSizeHeight * 0.01),
             alignment: Alignment.bottomCenter,
             width: screenSizeWidth * 0.1,
-            child: CustomText(text: dateformat(messageRoom.msgManager.findByindex(index).msgDatetime, 2), fontSize: screenSizeWidth * 0.025, color: Constant.white),
+            child: CustomText(text: dateformat(msgData.msgDatetime, 2), fontSize: screenSizeWidth * 0.025, color: Constant.white),
           )
         : const SizedBox.shrink();
   }
 
-  // Container(
-  //                   width: screenSizeWidth,
-  //                   margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
-  //                   child: Column(children: [
-  //                     // 日付表示
-  //                     datedisplay(index),
-  //                     Container(
-  //                         width: screenSizeWidth,
-  //                         // 相手のメッセージならば左 自分のメッセージなら右に寄せて表示
-  //                         alignment: messageRoom.msgList.findByindex(index).senderid != items.userInfo['userid'] ? Alignment.centerLeft : Alignment.centerRight,
-  //                         child: SizedBox(
-  //                             width: screenSizeWidth * 0.7,
-  //                             // rowの高さを揃えるクラス
-  //                             child: IntrinsicHeight(
-  //                                 child: Row(children: [
-  //                               // 送信時間表示
-  //                               sendTime(index,  messageRoom.msgList.findByindex(index).senderid == items.userInfo['userid']),
-  //                               Column(children: [
-  //                                 Container(
-  //                                     width: screenSizeWidth * 0.6,
-  //                                     padding: messageRoom.msgList.findByindex(index).statusAddition != 2
-  //                                         ? EdgeInsets.only(top: screenSizeWidth * 0.035, left: screenSizeWidth * 0.035, right: screenSizeWidth * 0.035, bottom: screenSizeWidth * 0.03)
-  //                                         : const EdgeInsets.all(0),
-  //                                     decoration: BoxDecoration(
-  //                                       color: messageRoom.msgList.findByindex(index).statusAddition == 0 || messageRoom.msgList.findByindex(index).statusAddition == 1 || messageRoom.msgList.findByindex(index).statusAddition == 3
-  //                                           ? Constant.glay
-  //                                           : Constant.glay.withOpacity(0),
-  //                                       borderRadius: BorderRadius.circular(10), // 角丸
-  //                                     ),
-  //                                     // statusに合わせてメッセージ表示メソッド
-  //                                     child: Column(children: [
-  //                                      messageRoom.msgList.findByindex(index).statusAddition != 2 ? choiceMsg(0, messages, index) : choiceMsg(messageRoom.msgList.findByindex(index).statusAddition, messages, index),
-  //                                       messageRoom.msgList.findByindex(index).statusAddition == 1 || messageRoom.msgList.findByindex(index).statusAddition == 3
-  //                                           ? choiceMsg(messageRoom.msgList.findByindex(index).statusAddition, messages, index)
-  //                                           : const SizedBox.shrink()
-  //                                     ]))
-  //                               ]),
-  //                               // 送信時間表示
-  //                               sendTime(index, messageRoom.msgList.findByindex(index).senderid != items.userInfo['userid']),
-  //                             ]))))
-  //                   ]))
-  // -----------------もとのやつ-------------
-
-  Widget msgCard(int index) {
+  Widget msgCard(int index, List<MSG> msgList) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    String senderid = messageRoom.msgManager.findByindex(index).senderid;
-    int statusAddition = messageRoom.msgManager.findByindex(index).statusAddition;
+    MSG msgData = msgList[index];
+    String senderid = msgData.senderid;
+    int statusAddition = msgData.statusAddition;
 
     return Container(
         width: screenSizeWidth,
         margin: EdgeInsets.only(top: screenSizeWidth * 0.02),
         child: Column(children: [
           // 日付表示
-          datedisplay(index),
+          datedisplay(index, msgList),
           Container(
               width: screenSizeWidth,
               // 相手のメッセージならば左 自分のメッセージなら右に寄せて表示
@@ -285,7 +245,7 @@ class _PageMassages extends State<PageMassages> {
                   child: IntrinsicHeight(
                       child: Row(children: [
                     // 送信時間表示
-                    sendTime(index, senderid == items.userInfo['userid']),
+                    sendTime(index, senderid == items.userInfo['userid'], msgData),
                     Column(children: [
                       Container(
                           width: screenSizeWidth * 0.6,
@@ -298,37 +258,37 @@ class _PageMassages extends State<PageMassages> {
                           ),
                           // statusに合わせてメッセージ表示メソッド
                           child: Column(children: [
-                            messageRoom.msgManager.findByindex(index).statusAddition != 2 ? choiceMsg(0, index) : choiceMsg(statusAddition, index),
-                            messageRoom.msgManager.findByindex(index).statusAddition == 1 || messageRoom.msgManager.findByindex(index).statusAddition == 3
-                                ? choiceMsg(statusAddition, index)
-                                : const SizedBox.shrink()
+                            statusAddition != 2 ? choiceMsg(0, index, msgList) : choiceMsg(statusAddition, index, msgList),
+                            statusAddition == 1 || statusAddition == 3 ? choiceMsg(statusAddition, index, msgList) : const SizedBox.shrink()
                           ]))
                     ]),
                     // 送信時間表示
-                    sendTime(index, messageRoom.msgManager.findByindex(index).senderid != items.userInfo['userid']),
+                    sendTime(index, senderid != items.userInfo['userid'], msgData),
                   ]))))
         ]));
   }
 
   // メッセージ表示処理
   Widget messageList() {
+    final List<MSG> msgList = _msgManager.findByRoomid(messageRoom.roomid);
+
     return ListView.builder(
       // controllerの設置
       controller: _scrollController,
       // indexの作成 widgetが表示される数
-      itemCount: messageRoom.msgManager.count(),
+      itemCount: msgList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: msgCard(index));
+        return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: msgCard(index, msgList));
       },
     );
   }
 
   // 順調ですorリスケお願いしますボタン
-  Widget msgbutton(bool status, int index) {
+  Widget msgbutton(bool status, int index, MSG msgData) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
-    String quoteid = messageRoom.msgManager.findByindex(index).quoteid;
+    String quoteid = msgData.quoteid;
 
     String msg1 = '順調です！！！！！！';
     String msg2 = 'リスケお願いします';
@@ -336,8 +296,7 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
       onTap: () {
         // メッセージ追加
-
-        messageRoom.msgManager.add(status ? msg1 : msg2, 1, 0, quoteid, 0);
+        _msgManager.add(status ? msg1 : msg2, 1, 0, quoteid, 0, messageRoom.roomid);
 
         // 再読み込みとスクロール
         setState(() {
@@ -386,13 +345,7 @@ class _PageMassages extends State<PageMassages> {
     return InkWell(
         onTap: () async {
           status = 2;
-          messageRoom.msgManager.add(
-            '',
-            status,
-            picture,
-            '',
-            0,
-          );
+          _msgManager.add('', status, picture, '', 0, messageRoom.roomid);
           setState(() {
             // ステータス書き換え
             stamp = false;
@@ -518,11 +471,11 @@ class _PageMassages extends State<PageMassages> {
     );
   }
 
-  Widget taskCard(int index) {
+  Widget taskCard(Task task) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
     //変数に格納
-    Task task = messageRoom.taskDatas[index];
+    // Task task = taskDataList[index];
     String taskid = task.taskid;
     String taskLimit = task.taskLimit;
     String contents = task.contents;
@@ -539,7 +492,7 @@ class _PageMassages extends State<PageMassages> {
               // この変数がどこの子なのかわからない、、
               // ダミーーーー
               // task_idを指定したい
-              taskIndex = index;
+              // taskIndex = index;
               quoteTaskid = taskid;
               Navigator.of(context).pop();
             });
@@ -570,15 +523,15 @@ class _PageMassages extends State<PageMassages> {
 
   // タスク選択時の処理
   Widget taskList() {
-    List<Task> taskDataList = messageRoom.taskDatas;
+    List<Task> taskDataList = _taskManager.findByRoomid(messageRoom.roomid);
 
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: taskDataList.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return taskDataList[index].taskid == '0'
-            ? taskCard(index)
+        return taskDataList[index].status == 0
+            ? taskCard(taskDataList[index])
             // falseなら空の箱を返す
             : const SizedBox.shrink();
       },
@@ -588,9 +541,7 @@ class _PageMassages extends State<PageMassages> {
   // タスクを選択した際表示されるバー
   Widget taskBar(BuildContext context) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
-
     // ここでタスクを用意できておればよい
-
     return quote
         ? Container(
             width: screenSizeWidth,
@@ -608,7 +559,7 @@ class _PageMassages extends State<PageMassages> {
                   icon: const Icon(Icons.close),
                   color: Constant.blackGlay,
                 ),
-                CustomText(text: '改修！！！！！！！！！', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay)
+                CustomText(text: _taskManager.findByid(quoteTaskid).contents, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay)
               ],
             ),
           )
@@ -665,7 +616,7 @@ class _PageMassages extends State<PageMassages> {
           // db追加メソッド呼び出し
           // 怒りレベル建設予定地
 
-          messageRoom.msgManager.add(message, status, 0, quoteTaskid, 0);
+          _msgManager.add(message, status, 0, quoteTaskid, 0, messageRoom.roomid);
 
           // 入力フォームの初期化
           _messageController.clear();
@@ -674,6 +625,7 @@ class _PageMassages extends State<PageMassages> {
         // 値の更新
         // stamplistを消す
         stamp = false;
+        quoteTaskid = '';
 
         // 再読み込みとスクロール
         setState(() {});

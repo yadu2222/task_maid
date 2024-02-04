@@ -26,6 +26,7 @@ class Door {
   final TaskManager _taskManager = TaskManager();
   // final MsgManager _msgManager = MsgManager();
   final RoomManager _roomManager = RoomManager();
+  final MsgManager _msgManager = MsgManager();
 
   TaskManager getTaskManager() {
     return _taskManager;
@@ -86,7 +87,7 @@ class Door {
 
   // 部屋を削除する
   void deleate(Room room) {
-    _taskManager.deleat(room.subRoomData);
+    _taskManager.deleat(room.sameGroupId);
     _roomManager.deleat(room);
   }
 
@@ -100,5 +101,7 @@ class Door {
     _roomManager.load(
       _taskManager,
     );
+    _taskManager.load();
+    _msgManager.load();
   }
 }

@@ -208,7 +208,7 @@ class _PageMails extends State<PageMails> {
                         width: _screenSizeWidth * 0.7,
                         child:
                             // 最新のメッセージを表示
-                            CustomText(text:_roomManager.findByroomid(mainRoom.sameGroupId[index].toString()).msgManager.lastMsg(), fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                            CustomText(text:"けんちくよてい", fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
                   ])
                 ],
               ),

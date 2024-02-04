@@ -1,10 +1,10 @@
 class items {
-  static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'tasks': taskList, 'rooms': myroom, 'mail': ''};
+  static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'tasks': [], 'rooms': myroom, 'mail': ''};
 
   static Map<String, dynamic> friend = {
-    '12345': {'name': 'おさかな', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
-    '23456': {'name': 'せろり', 'userTask': taskList, 'message': message, 'myroom': '1234', 'bool': false},
-    '67890': {'name': 'ニャリオット', 'userTask': taskList, 'message': message, 'myroom': '2345', 'bool': false}
+    '12345': {'name': 'おさかな', 'userTask': [], 'message': [], 'myroom': '1234', 'bool': false},
+    '23456': {'name': 'せろり', 'userTask': [], 'message': [], 'myroom': '1234', 'bool': false},
+    '67890': {'name': 'ニャリオット', 'userTask': [], 'message': [], 'myroom': '2345', 'bool': false}
   };
 
   static List myroom = [
@@ -16,24 +16,24 @@ class items {
 
   String testText = "";
 
-  //タスクリスト
-  // dbからデータの取得
-  static List taskList = [];
-  static Map userAccount = {};
-  static List rooms = [];
-  static List message = [];
-  static List newTask = [];
-  // static List subRooms = [];
+  // //タスクリスト
+  // // dbからデータの取得
+  // static List taskList = [];
+  // static Map userAccount = {};
+  // static List rooms = [];
+  // static List message = [];
+  // static List newTask = [];
+  // // static List subRooms = [];
 
-  // static Nums() async {
-  //   taskList = await DatabaseHelper.queryAllRows('tasks');
-  //   // print(taskList);
-  //   message = await DatabaseHelper.queryAllRows('msg_chats');
-  //   // print(msgchats);
-  //   rooms = await DatabaseHelper.queryAllRows('rooms');
-  //   // print(rooms);
-  //   // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
-  // }
+  // // static Nums() async {
+  // //   taskList = await DatabaseHelper.queryAllRows('tasks');
+  // //   // print(taskList);
+  // //   message = await DatabaseHelper.queryAllRows('msg_chats');
+  // //   // print(msgchats);
+  // //   rooms = await DatabaseHelper.queryAllRows('rooms');
+  // //   // print(rooms);
+  // //   // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
+  // // }
 
   // 画像リスト
   static Map taskMaid = {

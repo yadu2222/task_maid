@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:task_maid/data/controller/msg_manager.dart';
 import 'package:task_maid/data/controller/room_manager.dart';
+import 'package:task_maid/data/controller/task_manager.dart';
 
 import '../design_system/constant.dart';
 import '../parts/Molecules.dart';
@@ -27,7 +29,9 @@ class _page_taskSetting extends State<page_taskSetting> {
   Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
 
-  RoomManager _roomManager = RoomManager();
+  final RoomManager _roomManager = RoomManager();
+  final MsgManager _msgManager = MsgManager();
+  final TaskManager _taskManager = TaskManager();
 
   List selectButton = [true];
 
@@ -57,7 +61,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   Widget selectRoomList() {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
-    return Container(
+    return SizedBox(
       width: screenSizeWidth * 0.9,
       height: screenSizeHeight * 0.065,
       child: ListView.builder(
@@ -252,7 +256,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       // 画面の更新
                                       // msg
 
-                                      nowRoomInfo.msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0);
+                                      _msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0, nowRoomInfo.roomid);
 
                                       setState(() {
                                         Navigator.push(
@@ -286,7 +290,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   }
 
   // -タスクを繰り返し表示する際のひな形
-  Widget taskCard(List taskList, int index) {
+  Widget taskCard(List<Task> taskList, int index) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
@@ -306,8 +310,8 @@ class _page_taskSetting extends State<page_taskSetting> {
             height: screenSizeHeight * 0.1,
             alignment: const Alignment(0.0, 0.0), //真ん中に配置
             padding: EdgeInsets.all(screenSizeWidth * 0.025),
-            child: CustomText(
-                text: '${DateTime.parse(taskList[index]['task_limit']).month}\n${DateTime.parse(taskList[index]['task_limit']).day}', fontSize: screenSizeWidth * 0.055, color: Constant.blackGlay),
+            child:
+                CustomText(text: '${DateTime.parse(taskList[index].taskLimit).month}\n${DateTime.parse(taskList[index].taskLimit).day}', fontSize: screenSizeWidth * 0.055, color: Constant.blackGlay),
           ),
           SizedBox(
             width: screenSizeWidth * 0.01,
@@ -320,10 +324,10 @@ class _page_taskSetting extends State<page_taskSetting> {
                 Container(
                     width: screenSizeWidth * 0.625,
                     alignment: Alignment.centerLeft,
-                    child: CustomText(text: '${taskList[index]['worker']}さん\n-------------------------------', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                    child: CustomText(text: '${taskList[index].worker}さん\n-------------------------------', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                 // 中身
                 Container(
-                    width: screenSizeWidth * 0.625, alignment: Alignment.centerLeft, child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay))
+                    width: screenSizeWidth * 0.625, alignment: Alignment.centerLeft, child: CustomText(text: taskList[index].contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay))
               ]))
         ]));
   }
@@ -398,11 +402,11 @@ class _page_taskSetting extends State<page_taskSetting> {
                 statusButton()
               ])),
               // タスク部分
-              Container(
+              SizedBox(
                   width: screenSizeWidth * 0.9,
                   height: screenSizeHeight * 0.85,
                   child: Column(
-                    children: [selectRoomList(), Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(nowRoomInfo.taskDatas))],
+                    children: [selectRoomList(), SizedBox(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(_taskManager.findByRoomid(nowRoomInfo.mainRoomid)))],
                   )),
             ],
           ),

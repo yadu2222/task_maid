@@ -78,6 +78,7 @@ class _PageTask extends State<PageTask> {
   // そもそもシングルトンなんだから引き継ぐ必要なんてなくない？と今思っているなう
   final TaskManager taskManager = TaskManager();
   final RoomManager roomManager = RoomManager();
+  final MsgManager msgManager = MsgManager();
   // 現在の部屋を取得
   Room nowRoomInfo;
   _PageTask({required this.nowRoomInfo});
@@ -385,13 +386,15 @@ class _PageTask extends State<PageTask> {
 
   // タスク表示の処理
   Widget taskList() {
+    List<Task> taskDatas = taskManager.findByRoomid(nowRoomInfo.roomid);
+
     return ListView.builder(
       // indexの作成 widgetが表示される数
       // 現在の部屋の情報からタスクの数を取得
-      itemCount: nowRoomInfo.taskDatas.length,
+      itemCount: taskDatas.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return nowRoomInfo.taskDatas[index].status == 0
+        return taskDatas[index].status == 0
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
@@ -410,11 +413,11 @@ class _PageTask extends State<PageTask> {
                                     elevation: 0.0, // ダイアログの影を削除
                                     backgroundColor: Constant.white.withOpacity(0), // 背景色
                                     // 中身
-                                    content: taskDialog(nowRoomInfo.taskDatas, index));
+                                    content: taskDialog(taskDatas, index));
                               });
                         },
                         // 繰り返し表示されるひな形呼び出し
-                        child: taskCard(nowRoomInfo.taskDatas, index)))
+                        child: taskCard(taskDatas, index)))
             : const SizedBox.shrink();
       },
     );
@@ -577,8 +580,9 @@ class _PageTask extends State<PageTask> {
     Task task,
   ) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
+    String nowRoomid = nowRoomInfo.roomid;
 
-    MsgManager msgManager = nowRoomInfo.msgManager;
+    // MsgManager msgManager = nowRoomInfo.msgManager;
 
     // ボタンに表示する文字を管理する変数
     List buttunType = buttuntypeSelect(type);
@@ -594,10 +598,10 @@ class _PageTask extends State<PageTask> {
         // dbにメッセージ追加
         switch (type) {
           case 0:
-            msgManager.add('できました！！！！！！！', 3, 0, task.taskid, 0);
+            msgManager.add('できました！！！！！！！', 3, 0, task.taskid, 0, nowRoomid);
             break;
           case 1:
-            msgManager.add('進捗どうですか？？？？？？？', 1, 0, task.taskid, 5);
+            msgManager.add('進捗どうですか？？？？？？？', 1, 0, task.taskid, 5, nowRoomid);
             break;
           case 2:
             // 建設予定
@@ -608,7 +612,7 @@ class _PageTask extends State<PageTask> {
                 please = '${date.year}年${date.month}月${date.day}日${date.hour}時${date.minute}分';
               });
             }, currentTime: DateTime.now(), locale: LocaleType.jp);
-            msgManager.add('リスケお願いします', 3, 0, task.taskid, 2);
+            msgManager.add('リスケお願いします', 3, 0, task.taskid, 2, nowRoomid);
         }
 
         // dbから取り出し
@@ -790,7 +794,7 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    MsgManager msgManager = nowRoomInfo.msgManager;
+    // MsgManager msgManager = nowRoomInfo.msgManager;
 
     return Container(
       alignment: Alignment.centerRight,
@@ -908,7 +912,7 @@ class _PageTask extends State<PageTask> {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
-                            taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
+                            String addTaskid = taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -953,7 +957,7 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            msgManager.add('がんばってください', 1, 0, '0', 0);
+                            msgManager.add('がんばってください', 1, 0, addTaskid, 0, nowRoomInfo.roomid);
 
                             const Loading();
 
