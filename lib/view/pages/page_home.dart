@@ -19,19 +19,17 @@ import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
 
 class PageHome extends StatefulWidget {
-  final SocketIO sio;
-  const PageHome({required this.sio, Key? key}) : super(key: key);
+
+  const PageHome({Key? key}) : super(key: key);
   //const PageHome({Key? key}) : super(key: key);
 
   @override
-  _PageHomeState createState() => _PageHomeState(sio: sio);
+  _PageHomeState createState() => _PageHomeState();
 }
 
 class _PageHomeState extends State<PageHome> {
   // インスタンス宣言
-  SocketIO sio;
-
-  _PageHomeState({required this.sio});
+  SocketIO sio = SocketIO();
 
   final Door _door = Door();
 

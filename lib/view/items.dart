@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'constant.dart';
-import 'package:task_maid/database_helper.dart';
-
 class items {
   static Map<String, dynamic> userInfo = {'name': 'おさかな', 'userid': '12345', 'tasks': taskList, 'rooms': myroom, 'mail': ''};
 
@@ -29,15 +25,15 @@ class items {
   static List newTask = [];
   // static List subRooms = [];
 
-  static Nums() async {
-    taskList = await DatabaseHelper.queryAllRows('tasks');
-    // print(taskList);
-    message = await DatabaseHelper.queryAllRows('msg_chats');
-    // print(msgchats);
-    rooms = await DatabaseHelper.queryAllRows('rooms');
-    // print(rooms);
-    // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
-  }
+  // static Nums() async {
+  //   taskList = await DatabaseHelper.queryAllRows('tasks');
+  //   // print(taskList);
+  //   message = await DatabaseHelper.queryAllRows('msg_chats');
+  //   // print(msgchats);
+  //   rooms = await DatabaseHelper.queryAllRows('rooms');
+  //   // print(rooms);
+  //   // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
+  // }
 
   // 画像リスト
   static Map taskMaid = {

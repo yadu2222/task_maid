@@ -68,7 +68,7 @@ class _PageSetting extends State<PageSetting> {
                 '設定',
                 1,
                 PageHome(
-                  sio: sio,
+                 
                 )),
             Container(
                 width: screenSizeWidth,

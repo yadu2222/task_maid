@@ -85,8 +85,20 @@ class SocketIO {
   String _testText = "";
   String _serverResMsg = "";
 
-  // methods
-  SocketIO() {
+  // SocketIOのインスタンス
+  static final SocketIO _instance = SocketIO._internal();
+
+  // クラス内で使わないならいらない
+  // final SocketIO _socketIO = SocketIO();
+  // プライベートなコンストラクタ
+  SocketIO._internal();
+  // 上で作ったインスタンスを返す
+  // 外で呼び出された際、必ずこのインスタスが返るため、同一である
+  factory SocketIO() {
+    return _instance;
+  }
+
+  initState() {
     // 接続を開始
     connectWS();
   }

@@ -68,8 +68,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageHome(sio: sio),
+    return const Scaffold(
+      body: PageHome(),
     );
   }
 }
