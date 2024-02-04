@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
-import 'constant.dart';
+import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "MSI.local"; // "127.0.0.1""10.200.0.82""tidalhip.local""10.200.0.115"10.25.10.10710.200.0.16310.0.2.2
+  static const String serverIP = "unSerori.local"; // "127.0.0.1""10.200.0.82""tidalhip.local""10.200.0.115"10.25.10.10710.200.0.16310.0.2.2
   static const String server_port = "8282";
   static const String protocol = "http";
 

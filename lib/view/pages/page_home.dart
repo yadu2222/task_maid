@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
-import '../items.dart';
+import 'package:provider/provider.dart';
+import 'package:task_maid/data/controller/room_manager.dart';
+import '../design_system/constant.dart';
+import '../../const/items.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_message.dart';
-import '../molecules.dart';
-import 'package:task_maid/database_helper.dart';
+import '../parts/Molecules.dart';
+
+// 各情報のクラス
+import '../../data/controller/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/controller/room_manager.dart';
+import '../../data/controller/task_manager.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -15,80 +25,37 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  // dbにテストルームがあるかないかを判別、なければ追加
-  dbroomFirstAdd() async {
-    if (!await DatabaseHelper.firstdb()) {
-      // 追加する部屋の変数
-      var leaders = [
-        {'leader': items.userInfo['userid']}
-      ];
-      var workers = [
-        {'worker': items.userInfo['userid']},
-        {'worker': '23456'}
-      ];
-      var tasks = [{}];
-      dbAddRoom('1111', 'てすとるーむ', leaders, workers, tasks, 0, '1111');
-      setState(() {
-        defaultRoomSet();
-      });
-    }
-  }
-
-  List defaultRoom = [];
-  List taskList = [];
-  int dbCount = 0;
-  int futureCount = 0;
-  defaultRoomSet() async {
-    if (dbCount != futureCount) {
-      defaultRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], ['1111'], 'room_id');
-
-      taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-      // ここで更新することでページ遷移時に渡す変数が書き換えられる
-      print(taskList);
-      setState(() {
-        futureCount = dbCount;
-      });
-    }
-  }
-
-  taskGet() async {
-    taskList = await DatabaseHelper.serachRows('tasks', 2, ['worker', 'status_progress'], [items.userInfo['userid'], 0], 'task_limit');
-    print(taskList);
-    // setState(() {});
-  }
+  final Door _door = Door();
 
   // task_listの繰り返し処理
-  Widget _taskList(List taskList) {
+  Widget taskList(TaskManager _taskManager, RoomManager _roomManager) {
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: taskList.length,
+      itemCount: _door.taskCount(),
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return taskList[index]['status_progress'] == 0
+        return _door.taskFindbyIndex(index).status == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
                 child: InkWell(
                     onTap: () async {
                       // ページ遷移
-                      List selectRoom = await DatabaseHelper.serachRows('rooms', 1, ['room_id'], [taskList[index]['room_id']], 'room_id');
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => PageTask(
-                                  nowRoomInfo: selectRoom,
+                                  nowRoomInfo: _door.roomFindbyid(_door.taskFindbyIndex(index).roomid),
+                                  
                                 )),
                       ).then((value) {
                         // 戻ってきたら再描画
-                        setState(() {
-                          dbCount++;
-                          taskGet();
-                        });
+                        setState(() {});
                       });
                     },
                     child: ConstrainedBox(
@@ -102,7 +69,7 @@ class _PageHomeState extends State<PageHome> {
                             color: Constant.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: CustomText(text: taskList[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                          child: CustomText(text: _door.taskFindbyIndex(index).contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                     )))
             : SizedBox.shrink();
       },
@@ -111,26 +78,27 @@ class _PageHomeState extends State<PageHome> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    dbCount++;
     super.initState();
-    items.Nums();
-    dbroomFirstAdd();
-    defaultRoomSet();
-    taskGet();
   }
+
+  final TaskManager _taskManager = TaskManager();
+  final RoomManager _roomManager = RoomManager();
 
   @override
   Widget build(BuildContext context) {
-    taskGet();
     // 画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
+    // 状態管理
+    return ChangeNotifierProvider<TaskManager>(
+      create: (context) => _taskManager,
+      child:Scaffold(
         body: Center(
       // ページの中身
-      child: Container(
+      child: 
+      
+      Container(
         width: double.infinity,
         height: screenSizeHeight,
         decoration: const BoxDecoration(color: Constant.main),
@@ -158,7 +126,10 @@ class _PageHomeState extends State<PageHome> {
                               //タスク
                               PageShiftIcon(
                                 functionIcon: Icons.check_box,
-                                widget: PageTask(nowRoomInfo: defaultRoom),
+                                widget: PageTask(
+                                  nowRoomInfo: _roomManager.findByindex(0),
+                                  
+                                ),
                               ),
 
                               //設定
@@ -219,11 +190,12 @@ class _PageHomeState extends State<PageHome> {
                                 ),
                                 // ふきだしの中身
                                 child: CustomText(
-                                    text: 
+                                    text:
                                         // 処理建設予定地
-                                        items.message.isNotEmpty
-                                            ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'
-                                            : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                        // items.message.isNotEmpty
+                                        //     ? '${items.message[items.message.length - 1]['room_id']}号室から「${items.message[items.message.length - 1]['msg']}」とお手紙が届いていますよ'
+                                        //     : 'おつかれさまでした。大変でしたね。今日はたくさん休んでください',
+                                        'おわんないですね……',
                                     fontSize: screenSizeWidth * 0.035,
                                     color: Constant.blackGlay),
                               ),
@@ -231,7 +203,7 @@ class _PageHomeState extends State<PageHome> {
                               // タスクリスト
                               // リストが空であれば表示しない
                               // 更新のタイミングが謎
-                              taskList.isNotEmpty
+                              _taskManager.count() != 0
                                   ? Container(
                                       width: screenSizeWidth * 0.38,
                                       height: screenSizeHeight * 0.565, // エラー発生中
@@ -241,7 +213,7 @@ class _PageHomeState extends State<PageHome> {
                                         borderRadius: BorderRadius.circular(10), // 角丸
                                       ),
                                       // ループ
-                                      child: _taskList(taskList))
+                                      child: taskList(_taskManager, _roomManager))
                                   : SizedBox.shrink()
                             ])),
                       ]))
@@ -249,6 +221,6 @@ class _PageHomeState extends State<PageHome> {
               ),
             ])),
       ),
-    ));
+    )));
   }
 }

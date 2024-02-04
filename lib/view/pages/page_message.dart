@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
-import '../items.dart';
+import 'package:task_maid/view/pages/page_home.dart';
+import '../design_system/constant.dart';
 import 'page_messages.dart';
-import '../molecules.dart';
-import '../../database_helper.dart';
+import '../parts/Molecules.dart';
+
+// 各情報のクラス
+import '../../data/controller/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/controller/room_manager.dart';
+import '../../data/controller/task_manager.dart';
 
 class PageMail extends StatefulWidget {
   const PageMail({Key? key}) : super(key: key);
@@ -14,8 +22,10 @@ class PageMail extends StatefulWidget {
 
 class _PageMail extends State<PageMail> {
   dbroomGet() async {
-    items.rooms = await DatabaseHelper.queryAllRows('rooms');
+    //  items.rooms = await DatabaseHelper.queryAllRows('rooms');
   }
+
+  RoomManager _roomManager = RoomManager();
 
   // トークルームの繰り返し処理
   Widget _messages() {
@@ -24,10 +34,10 @@ class _PageMail extends State<PageMail> {
     var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: items.rooms.length,
+      itemCount: _roomManager.count(),
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return items.rooms[index]['bool_sub_room'] == 0
+        return _roomManager.findByindex(index).subRoom == 0
             ? Card(
                 color: Constant.glay,
                 elevation: 0,
@@ -38,7 +48,7 @@ class _PageMail extends State<PageMail> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => PageMails(
-                                mainRoomid: items.rooms[index]['main_room_id'],
+                                mainRoom: _roomManager.findByindex(index),
                               )),
                     ).then((value) {
                       //戻ってきたら再描画
@@ -63,7 +73,7 @@ class _PageMail extends State<PageMail> {
                           Container(
                             width: _screenSizeWidth * 0.7,
                             alignment: Alignment.topLeft,
-                            child: CustomText(text: items.rooms[index]['room_name'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                            child: CustomText(text: _roomManager.findByindex(index).roomName, fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                           ),
                           Container(
                               width: _screenSizeWidth * 0.7,
@@ -100,7 +110,7 @@ class _PageMail extends State<PageMail> {
         child: Column(
           children: [
             // バー部分
-            molecules.PageTitle(context, 'メッセージ'),
+            molecules.PageTitle(context, 'メッセージ', 1, PageHome()),
             Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),
@@ -110,30 +120,25 @@ class _PageMail extends State<PageMail> {
 }
 
 class PageMails extends StatefulWidget {
-  final String mainRoomid;
-  const PageMails({Key? key, required this.mainRoomid}) : super(key: key);
+  final Room mainRoom;
+  const PageMails({Key? key, required this.mainRoom}) : super(key: key);
 
   @override
-  _PageMails createState() => _PageMails(mainRoomid: mainRoomid);
+  _PageMails createState() => _PageMails(mainRoom: mainRoom);
 }
 
 class _PageMails extends State<PageMails> {
   // ひらいたメインルームに属する部屋をすべて取得
-  List nowRoomSet = [];
-  String mainRoomName = '';
-  dbroomGet() async {
-    nowRoomSet = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [mainRoomid], 'room_id');
-    mainRoomName = nowRoomSet[0]['room_name'];
-    setState(() {});
-  }
 
-  String mainRoomid;
-  _PageMails({required this.mainRoomid});
+  Room mainRoom;
+  _PageMails({required this.mainRoom});
+
+  RoomManager _roomManager = RoomManager();
 
   List msgList = [];
 
   msgListGet(String room_id) async {
-    msgList = await DatabaseHelper.serachRows('msg_chats', 1, ['room_id'], [room_id], 'msg_datetime');
+    // msgList = await DatabaseHelper.serachRows('msg_chats', 1, ['room_id'], [room_id], 'msg_datetime');
     print(msgList);
     setState(() {});
   }
@@ -153,8 +158,8 @@ class _PageMails extends State<PageMails> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    mainRoomid = widget.mainRoomid;
-    dbroomGet();
+    // mainRoomid = widget.mainRoomid;
+    // dbroomGet();
   }
 
   // トークルームの繰り返し処理
@@ -164,7 +169,7 @@ class _PageMails extends State<PageMails> {
     var _screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // indexの作成 widgetが表示される数
-      itemCount: nowRoomSet.length,
+      itemCount: mainRoom.sameGroupId.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         return Card(
@@ -175,10 +180,7 @@ class _PageMails extends State<PageMails> {
               // ページ遷移
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => PageMassages(
-                          messenger: items.rooms[index],
-                        )),
+                MaterialPageRoute(builder: (context) => PageMassages(messageRoom: _roomManager.findByroomid(mainRoom.sameGroupId[index].toString()))),
               ).then((value) {
                 //戻ってきたら再描画
                 setState(() {});
@@ -196,20 +198,17 @@ class _PageMails extends State<PageMails> {
                 children: [
                   Column(children: [
                     // 最終送信日時とかも入れたいね
-
-                    // 最新を入れたいのでソートを行わないといけない
-                    // 名前の表示
+                    // 部屋の名前の表示
                     Container(
                       width: _screenSizeWidth * 0.7,
                       alignment: Alignment.topLeft,
-                      child: CustomText(text: nowRoomSet[index]['room_name'], fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
+                      child: CustomText(text: _roomManager.findByroomid(mainRoom.sameGroupId[index].toString()).roomName, fontSize: _screenSizeWidth * 0.04, color: Constant.blackGlay),
                     ),
                     Container(
                         width: _screenSizeWidth * 0.7,
                         child:
-                            // 部屋の名前表示
-                            // 建設予定
-                            CustomText(text: '建設予定', fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
+                            // 最新のメッセージを表示
+                            CustomText(text:_roomManager.findByroomid(mainRoom.sameGroupId[index].toString()).msgManager.lastMsg(), fontSize: _screenSizeWidth * 0.035, color: Constant.blackGlay))
                   ])
                 ],
               ),
@@ -220,13 +219,14 @@ class _PageMails extends State<PageMails> {
     );
   }
 
+  // これなに？？
   @override
   Widget build(BuildContext context) {
-    dbroomGet();
     //画面サイズ
     var _screenSizeWidth = MediaQuery.of(context).size.width;
     var _screenSizeHeight = MediaQuery.of(context).size.height;
 
+    // TODO: nanoda
     return Scaffold(
         body: Center(
             child: Container(
@@ -238,7 +238,7 @@ class _PageMails extends State<PageMails> {
         child: Column(
           children: [
             // バー部分
-            molecules.PageTitle(context, mainRoomName),
+            molecules.PageTitle(context, mainRoom.roomName, 0, PageHome()),
             Container(width: _screenSizeWidth * 0.95, height: _screenSizeHeight * 0.85, child: _messages())
           ],
         ),

@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import '../constant.dart';
-import '../items.dart';
-import '../Molecules.dart';
-import 'package:task_maid/database_helper.dart';
+import 'package:task_maid/data/controller/room_manager.dart';
+
+import '../design_system/constant.dart';
+import '../parts/Molecules.dart';
 import 'page_task.dart';
 import 'page_messages.dart';
+
+import '../../data/controller/door.dart';
+import '../../data/models/room_class.dart';
+import '../../data/models/task_class.dart';
 
 // ページのひな型
 class page_taskSetting extends StatefulWidget {
   // どこの部屋のタスクを参照したいのか引数でもらう
-  final List nowRoomInfo;
+  final Room nowRoomInfo;
   const page_taskSetting({required this.nowRoomInfo, Key? key}) : super(key: key);
 
   @override
@@ -20,24 +24,18 @@ class page_taskSetting extends StatefulWidget {
 
 class _page_taskSetting extends State<page_taskSetting> {
   // 参照したい部屋の情報を引数でもらう
-  List nowRoomInfo;
+  Room nowRoomInfo;
   _page_taskSetting({required this.nowRoomInfo});
 
-  List nowRoomTaskList = [];
-  List decodedWorkers = [];
-  List decodedRooms = [];
+  RoomManager _roomManager = RoomManager();
+
   List selectButton = [true];
-  List subRooms = [];
+
   // 引数を元に必要な情報を参照する
   infoGet() async {
-    nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [nowRoomInfo[0]['room_id']], 'task_limit');
-    decodedWorkers = decodeJsonList(nowRoomInfo[0]['workers']);
-    decodedRooms = decodeJsonList(nowRoomInfo[0]['sub_rooms']);
-    subRooms = await DatabaseHelper.serachRows('rooms', 1, ['main_room_id'], [nowRoomInfo[0]['main_room_id']], 'room_id');
-
     // 初期化
     selectButton = [];
-    for (int i = 0; i < subRooms.length + 1; i++) {
+    for (int i = 0; i < nowRoomInfo.sameGroupId.length + 1; i++) {
       if (i == 0) {
         selectButton.add(true);
       } else {
@@ -66,20 +64,23 @@ class _page_taskSetting extends State<page_taskSetting> {
         // リストの向きを横向きにする
         scrollDirection: Axis.horizontal,
         // indexの作成 widgetが表示される数
-        itemCount: subRooms.length,
+        itemCount: nowRoomInfo.sameGroupId.length,
         itemBuilder: (context, index) {
           // 繰り返し描画されるwidget
-          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(subRooms, index));
+          return Card(color: Constant.glay.withAlpha(0), elevation: 0, child: roomCard(nowRoomInfo.sameGroupId, index));
         },
       ),
     );
   }
 
   // - ルームリストで繰り返し表示するひながた
-  Widget roomCard(List roomList, int index) {
+  Widget roomCard(List<dynamic> roomList, int index) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     String selectRoomid;
+
+    // 現在の部屋
+    Room dispRoom = _roomManager.findByroomid(roomList[index].toString());
 
     return InkWell(
         onTap: () async {
@@ -87,11 +88,11 @@ class _page_taskSetting extends State<page_taskSetting> {
 
           selectButton[index] = !selectButton[index];
           if (index == 0) {
-            selectRoomid = nowRoomInfo[0]['room_id'];
+            selectRoomid = nowRoomInfo.roomid;
           } else {
-            selectRoomid = roomList[index - 1]['room_id'];
+            selectRoomid = dispRoom.roomid;
           }
-          nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
+          // nowRoomTaskList = await DatabaseHelper.serachRows('tasks', 1, ['room_id'], [selectRoomid], 'task_limit');
           setState(() {});
         },
         child: Container(
@@ -101,13 +102,13 @@ class _page_taskSetting extends State<page_taskSetting> {
           alignment: const Alignment(0.0, 0.0), //真ん中に配置
           decoration: BoxDecoration(color: selectButton[index] ? Constant.white : Constant.glay, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
           child: // index == 0 ? CustomText(text: 'すべて', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay):
-           CustomText(text: roomList[index]['room_name'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
+              CustomText(text: dispRoom.roomName, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay),
         ));
   }
 
   // タスクリスト
   Widget allTaskList(
-    List list,
+    List<Task> list,
   ) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
@@ -117,15 +118,15 @@ class _page_taskSetting extends State<page_taskSetting> {
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
         // statusの値に合わせて表示を変更
-        return list[index]['status_progress'] == status_progress || status_progress == 3
+        return list[index].status == status_progress || status_progress == 3
             ? Card(
                 color: Constant.glay.withAlpha(0),
                 elevation: 0,
                 child: InkWell(
                     onTap: () {
-                      DateTime limitTime = DateTime.parse(list[index]['task_limit']);
+                      DateTime limitTime = DateTime.parse(list[index].taskLimit);
                       String dateText = '新しい期日を入力してね';
-                      String worker = list[index]['worker'];
+                      String worker = list[index].worker;
                       // ここに処理を記述
                       // 編集用ダイアログを起動
                       showDialog(
@@ -183,14 +184,14 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                       // 内容
-                                      child: CustomText(text: list[index]['contents'], fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
+                                      child: CustomText(text: list[index].contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
 
                                   Container(child: CustomText(text: '誰に頼む？', fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay)),
 
                                   Container(
                                     height: screenSizeHeight * 0.15,
                                     child: ListView.builder(
-                                      itemCount: decodedWorkers.length,
+                                      itemCount: nowRoomInfo.workers.length,
                                       itemBuilder: (context, index) {
                                         return Card(
                                             color: Constant.glay,
@@ -205,7 +206,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                                 // うまく更新されないね；～～～～～～～；
                                                 // タスク追加用変数に代入を行っている
                                                 setState(() {
-                                                  worker = decodedWorkers[index]['worker'];
+                                                  worker = nowRoomInfo.workers[index];
                                                 });
 
                                                 //  items.friend[workerId]['bool'] = true;
@@ -217,7 +218,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                                 decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
 
                                                 // ここでサーバーから名前をもらってくる
-                                                child: CustomText(text: decodedWorkers[index]['worker'], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                                child: CustomText(text: nowRoomInfo.workers[index], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                               ),
                                             ));
                                       },
@@ -230,35 +231,35 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       FocusScope.of(context).unfocus(); // キーボードを閉じる
                                       Navigator.of(context).pop(); // 戻る
 
+                                      // 改築
+
                                       // タスクを上書き
-                                      Map<String, dynamic> updTask = {
-                                        'task_id': list[index]['task_id'],
-                                        'task_limit': limitTime.toString(),
-                                        'status_progress': list[index]['status_progress'],
-                                        'leaders': list[index]['leaders'],
-                                        'worker': worker,
-                                        'room_id': list[index]['room_id'],
-                                        'contents': list[index]['contents']
-                                      };
-                                      DatabaseHelper.update('tasks', 'contents', updTask, list[index]['contents']);
+                                      // Map<String, dynamic> updTask = {
+                                      //   'task_id': list[index]['task_id'],
+                                      //   'task_limit': limitTime.toString(),
+                                      //   'status_progress': list[index]['status_progress'],
+                                      //   'leaders': list[index]['leaders'],
+                                      //   'worker': worker,
+                                      //   'room_id': list[index]['room_id'],
+                                      //   'contents': list[index]['contents']
+                                      // };
+                                      // DatabaseHelper.update('tasks', 'contents', updTask, list[index]['contents']);
 
                                       // 値の更新
-                                      items.taskList = await DatabaseHelper.queryAllRows('tasks');
+                                      // items.taskList = await DatabaseHelper.queryAllRows('tasks');
                                       // msgのdbに追加
-                                      infoGet();
+                                      // infoGet();
                                       // 画面の更新
                                       // msg
-                                      int karioki2 = 67890;
-                                      addMessage(karioki2, '変更しました', 1, 0, list[index]['task_id'], 0, nowRoomInfo[0]['room_id']);
-                                      // msg更新
-                                      items.message = await DatabaseHelper.queryAllRows('msg_chats');
+
+                                      nowRoomInfo.msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0);
 
                                       setState(() {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => PageMassages(
-                                                    messenger: nowRoomInfo[0],
+                                                    messageRoom: nowRoomInfo,
                                                   )),
                                         ).then((value) {
                                           //戻ってきたら再描画
@@ -364,7 +365,7 @@ class _page_taskSetting extends State<page_taskSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.Nums();
+
     nowRoomInfo = widget.nowRoomInfo;
     infoGet();
   }
@@ -390,7 +391,7 @@ class _page_taskSetting extends State<page_taskSetting> {
               SizedBox(
                   child: Row(children: [
                 // 上部バー部分
-                molecules.PageTitle(context, 'スタッフルーム'),
+                molecules.PageTitle(context, 'スタッフルーム', 0, PageTask(nowRoomInfo: nowRoomInfo)),
                 SizedBox(
                   width: screenSizeWidth * 0.05,
                 ),
@@ -401,7 +402,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                   width: screenSizeWidth * 0.9,
                   height: screenSizeHeight * 0.85,
                   child: Column(
-                    children: [selectRoomList(), Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(nowRoomTaskList))],
+                    children: [selectRoomList(), Container(width: screenSizeWidth * 0.9, height: screenSizeHeight * 0.75, child: allTaskList(nowRoomInfo.taskDatas))],
                   )),
             ],
           ),
