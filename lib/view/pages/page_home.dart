@@ -19,7 +19,6 @@ import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
 
 class PageHome extends StatefulWidget {
-
   const PageHome({Key? key}) : super(key: key);
   //const PageHome({Key? key}) : super(key: key);
 
@@ -137,7 +136,7 @@ class _PageHomeState extends State<PageHome> {
                                   //設定
                                   PageShiftIcon(
                                     functionIcon: Icons.settings,
-                                    widget: PageSetting(sio: sio),
+                                    widget: PageSetting(),
                                   )
                                 ],
                               ))),
