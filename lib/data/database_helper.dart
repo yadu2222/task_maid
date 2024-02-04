@@ -65,8 +65,8 @@ class DatabaseHelper {
     // ルームを管理するためのテーブル
     await db.execute('''
     CREATE TABLE rooms (
-      room_id TEXT ,
-      room_name TEXT PRIMARY KEY,
+      room_id TEXT PRIMARY KEY,
+      room_name TEXT ,
       leaders TEXT,
       workers TEXT,
       tasks TEXT,
@@ -80,12 +80,12 @@ class DatabaseHelper {
     // タスクを管理するためのテーブル
     await db.execute('''
     CREATE TABLE tasks (
-      task_id TEXT,
-      task_limit TEXT NOT NULL,
+      task_id TEXT primary key,
+      task_limit ,
       status_progress integer,
-      leaders TEXT,
       worker TEXT,
       room_id text,
+      title text,
       contents TEXT
     )
   ''');
@@ -157,12 +157,6 @@ class DatabaseHelper {
     return await db!.rawQuery("select * from $tableName");
   }
 
-  // その2
-  // 毎回全部落とすより差分もらってくるほうがええんとちゃいますののやつ
-  static Future<List<Map<String, dynamic>>> queryRow(String key) async {
-    Database? db = await instance.database;
-    return await db!.rawQuery("select * from msg_chats where '${key}' == 'message'");
-  }
 
   static Future<bool> firstdb() async {
     Database? db = await instance.database;

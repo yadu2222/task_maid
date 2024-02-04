@@ -2,23 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // http
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
+import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
   static const String serverIP = "10.109.0.41"; // "unserori.local"
-  static const String server_port = "5108";
+  static const String serverPort = "8282";
   static const String protocol = "http";
 
   // 設定した値から鯖のURLを生成
   static baseUrl() {
     // 鯖のURLを設定
-    return protocol + "://" + serverIP + ":" + server_port;
+    return protocol + "://" + serverIP + ":" + serverPort;
   }
 
   // 設定した値から鯖のURLを生成(プロトコルなし)
   static baseUrlWithoutProtcol() {
     // 鯖のURLを設定
-    return "://" + serverIP + ":" + server_port;
+    return "://" + serverIP + ":" + serverPort;
   }
 }
 
@@ -97,7 +98,7 @@ class SocketIO {
   /// 接続確立
   Future<void> connectWS() async {
     // wsの接続先を指定し、ソケットのインスタンスを生成し確立する
-    socket = io.io('http://' + Url.serverIP + ":" + Url.server_port, <String, dynamic>{
+    socket = io.io('http://' + Url.serverIP + ":" + Url.serverPort, <String, dynamic>{
       'transports': ['websocket'],
     });
 

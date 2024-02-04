@@ -1,10 +1,22 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import '../constant.dart';
-import '../items.dart';
-import '../molecules.dart';
-import '../component_communication.dart';
+import 'package:task_maid/view/pages/page_home.dart';
+import '../../const/items.dart';
+import '../design_system/constant.dart';
+
+import '../parts/Molecules.dart';
+
+// 各情報のクラス
+import '../../data/controller/door.dart';
+import '../../data/models/task_class.dart';
+import '../../data/models/msg_class.dart';
+import '../../data/models/room_class.dart';
+
+import '../../data/controller/room_manager.dart';
+import '../../data/controller/task_manager.dart';
+
+import '../../data/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
 import '../app.dart';
@@ -51,7 +63,13 @@ class _PageSetting extends State<PageSetting> {
         child: Column(
           children: [
             // 上部バー部分
-            molecules.PageTitle(context, '設定'),
+            molecules.PageTitle(
+                context,
+                '設定',
+                1,
+                PageHome(
+                  sio: sio,
+                )),
             Container(
                 width: screenSizeWidth,
                 alignment: const Alignment(0.0, 0.0), //真ん中に配置

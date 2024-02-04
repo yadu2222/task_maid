@@ -4,4 +4,4 @@ import 'view/app.dart';
 void main() {
   runApp(const MyApp());
 }
-// FlutterNativeSplash.remove();-
+// FlutterNativeSplash.remove();
