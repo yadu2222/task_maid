@@ -1,8 +1,5 @@
-import 'dart:convert';
 import '../database_helper.dart';
-
 import '../models/msg_class.dart';
-import '../models/room_class.dart';
 
 class MsgManager {
   String roomid;
@@ -11,6 +8,7 @@ class MsgManager {
   List<MSG> _msgList = [];
 
   MsgManager(this.roomid) {
+    
     load();
   }
 
@@ -81,6 +79,7 @@ class MsgManager {
       String msg = msgRoom['msg'];
 
       MSG lordMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg);
+      print("msgList{$lordMsg}");
       _msgList.add(lordMsg);
     }
   }

@@ -41,7 +41,6 @@ class _PageMassages extends State<PageMassages> {
   // final chatRoomManager _chatRoomManager = chatRoomManager();
   final TaskManager _taskManager = TaskManager();
 
-
   // 仮置きする変数
   String message = '';
   int level = 0;
@@ -106,7 +105,7 @@ class _PageMassages extends State<PageMassages> {
     int stampid = messageRoom.msgManager.findByindex(index).stampid;
 
     // タスクを用意できておればよい
-    String quoteTaskid =  messageRoom.msgManager.findByindex(index).quoteid;
+    String quoteTaskid = messageRoom.msgManager.findByindex(index).quoteid;
     Task quoteTask = _taskManager.findByid(quoteTaskid);
 
     switch (status) {
@@ -192,7 +191,7 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
     // 比較するデータを変数に代入
-    String data1 = index > 0 ?  messageRoom.msgManager.findByindex(index - 1).msgDatetime : '0'; // 0だとエラーが出る
+    String data1 = index > 0 ? messageRoom.msgManager.findByindex(index - 1).msgDatetime : '0'; // 0だとエラーが出る
     String data2 = messageRoom.msgManager.findByindex(index).msgDatetime;
 
     // indexが0より大きければ比較
@@ -267,7 +266,7 @@ class _PageMassages extends State<PageMassages> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    String senderid =  messageRoom.msgManager.findByindex(index).senderid;
+    String senderid = messageRoom.msgManager.findByindex(index).senderid;
     int statusAddition = messageRoom.msgManager.findByindex(index).statusAddition;
 
     return Container(
@@ -299,22 +298,20 @@ class _PageMassages extends State<PageMassages> {
                           ),
                           // statusに合わせてメッセージ表示メソッド
                           child: Column(children: [
-                             messageRoom.msgManager.findByindex(index).statusAddition != 2 ? choiceMsg(0, index) : choiceMsg(statusAddition, index),
-                             messageRoom.msgManager.findByindex(index).statusAddition == 1 || messageRoom.msgManager.findByindex(index).statusAddition == 3
+                            messageRoom.msgManager.findByindex(index).statusAddition != 2 ? choiceMsg(0, index) : choiceMsg(statusAddition, index),
+                            messageRoom.msgManager.findByindex(index).statusAddition == 1 || messageRoom.msgManager.findByindex(index).statusAddition == 3
                                 ? choiceMsg(statusAddition, index)
                                 : const SizedBox.shrink()
                           ]))
                     ]),
                     // 送信時間表示
-                    sendTime(index,  messageRoom.msgManager.findByindex(index).senderid != items.userInfo['userid']),
+                    sendTime(index, messageRoom.msgManager.findByindex(index).senderid != items.userInfo['userid']),
                   ]))))
         ]));
   }
 
   // メッセージ表示処理
   Widget messageList() {
-    double screenSizeWidth = MediaQuery.of(context).size.width;
-    double screenSizeHeight = MediaQuery.of(context).size.height;
     return ListView.builder(
       // controllerの設置
       controller: _scrollController,
@@ -331,7 +328,7 @@ class _PageMassages extends State<PageMassages> {
   Widget msgbutton(bool status, int index) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
 
-    String quoteid =  messageRoom.msgManager.findByindex(index).quoteid;
+    String quoteid = messageRoom.msgManager.findByindex(index).quoteid;
 
     String msg1 = '順調です！！！！！！';
     String msg2 = 'リスケお願いします';

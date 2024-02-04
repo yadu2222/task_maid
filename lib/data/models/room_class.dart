@@ -27,13 +27,13 @@ class Room {
 
   // 上記の情報からリストを作成
   // これをもとに画面を生成する
-  List<Task> taskDatas = [];
+  List<Task> taskDatas;
 
-  List<Room> subRoomData = [];
+  List<Room> subRoomData;
 
   MsgManager msgManager;
 
-  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroupId, this.msgManager);
+  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroupId, this.msgManager,this.taskDatas,this.subRoomData);
 
   // Mapに変換する
   // 保存で使う

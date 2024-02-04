@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-// このクラスを読み込むだけで各操作ができるようにしたい
+// このクラスを読み込むだけで各操作ができるようにしたかった
 
 // 各情報のクラス
 import '../models/room_class.dart';

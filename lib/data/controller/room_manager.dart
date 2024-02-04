@@ -15,8 +15,8 @@ import 'msg_manager.dart';
 import '../database_helper.dart';
 
 class RoomManager extends ChangeNotifier {
-  Room dummy = Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'));
-  late List<Room> _roomList = [Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'))];
+  Room dummy = Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], new MsgManager('1233'),[],[]);
+  late List<Room> _roomList = [dummy];
   // taskManagerのインスタンス
   static final RoomManager _instance = RoomManager._internal();
   // プライベートなコンストラクタ
@@ -84,13 +84,14 @@ class RoomManager extends ChangeNotifier {
     }
 
     MsgManager msgManager = new MsgManager(roomid.toString());
+    List<Room> addRoomData = getSameData(sameGroupIdpp);
 
     // インスタンス生成
-    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGroupIdpp, msgManager);
+    var room = Room(roomid.toString(), roomName, leaders, workers, [], roomid.toString(), boolSubRoom, mainRoomiii, sameGroupIdpp, msgManager,[],addRoomData);
 
     // List<Task> taskDatas = _taskManager.findByRoomid(roomid.toString());
-    room.taskDatas = _taskManager.findByRoomid(roomid.toString());
-    room.subRoomData = getSameData(sameGroupIdpp);
+    // room.taskDatas = _taskManager.findByRoomid(roomid.toString());
+    // room.subRoomData = getSameData(sameGroupIdpp);
 
     _roomList.add(room);
 
@@ -167,15 +168,18 @@ class RoomManager extends ChangeNotifier {
       List workers = jsonDecode(room['workers']);
       List tasks = jsonDecode(room['tasks']);
       String roomNumber = room['room_number'];
-      List sameGroupIdid = jsonDecode(room['sub_rooms']);
+      List sameGroupId = jsonDecode(room['sub_rooms']);
       int subRoom = room['bool_sub_room'];
       String mainRoomid = room['main_room_id'];
 
       // リストに追加
-      MsgManager msgManager = new MsgManager(roomid);
-      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupIdid, msgManager);
-      loadRoom.subRoomData = await getSameData(sameGroupIdid);
-      loadRoom.taskDatas = await taskManager.findByRoomid(roomid);
+      MsgManager msgManager = MsgManager(roomid);
+      List<Task> loadTaskData =   taskManager.findByRoomid(roomid);
+      List<Room> loadSubRoomData =  getSameData(sameGroupId);
+      ;
+
+
+      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupId, msgManager,loadTaskData,loadSubRoomData);
 
       _roomList.add(loadRoom);
     }
