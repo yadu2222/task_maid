@@ -80,15 +80,26 @@ class HttpToServer {
 // WebSocket
 class SocketIO {
   // fields
-  late io.Socket socket;
+  late io.Socket socket; // ソケットIOの実体
+  static final SocketIO _instance = SocketIO._internal(); // シングルトンインスタンス
   String _connectMsg = "";
   String _testText = "";
   String _serverResMsg = "";
 
   // methods
-  SocketIO() {
+  ///ファクトリコンストラクタ(factory Class)
+  ///通常のコンストラクタでいう呼び出される処理を担当、通常のコンストラクタと同じく外側から呼び出される。
+  ///シングルトンインスタンス(=静的でどこから見ても同一のインスタンス)を呼び出し側に返す。
+  factory SocketIO() {
+    return _instance; // フィールドのシングルトンインスタンス
+  }
+
+  ///コンストラクタ(Class._internal())
+  ///通常のコンストラクタでいう実際の初期化処理を担当。
+  ///シングルトンクラスの場合、クラスが読み込まれてクラス変数が定義されたときにインスタンスが生成される。
+  SocketIO._internal() {
     // 接続を開始
-    connectWS();
+    _connectWS();
   }
 
   void msgSetter(String connectMsg) {
@@ -96,7 +107,7 @@ class SocketIO {
   }
 
   /// 接続確立
-  Future<void> connectWS() async {
+  Future<void> _connectWS() async {
     // wsの接続先を指定し、ソケットのインスタンスを生成し確立する
     socket = io.io('http://' + Url.serverIP + ":" + Url.serverPort, <String, dynamic>{
       'transports': ['websocket'],
@@ -166,4 +177,156 @@ class SocketIO {
 //     sk.connect().emit('connect_socket', "connect_socket");
 //     debugPrint("コネクト官僚");
 //   }
+// }
+
+// class SocketIO {
+//   // fields
+//   late io.Socket socket; // ソケットIOの実体
+//   String _connectMsg = "";
+//   String _testText = "";
+//   String _serverResMsg = "";
+
+//   // methods
+//   ///コンストラクタ
+//   SocketIO() {
+//     // 接続を開始
+//     connectWS();
+//   }
+
+//   ///accessor
+//   void msgSetter(String connectMsg) {
+//     this._connectMsg = "connect" + connectMsg;
+//   }
+
+//   /// 接続確立
+//   Future<void> connectWS() async {
+//     // wsの接続先を指定し、ソケットのインスタンスを生成し確立する
+//     socket = io.io('http://' + Url.serverIP + ":" + Url.serverPort, <String, dynamic>{
+//       'transports': ['websocket'],
+//     });
+
+//     // event handlers  ハンドル名connectを明示的に定義すると動かなかった。
+//     /// コネクト時のサーバーからのレスポンスを受け取る
+//     socket.on('connected_response', (data) {
+//       debugPrint("Response from server: " + data);
+//       _serverResMsg = data;
+//     });
+
+//     /// テスト
+//     socket.on('test_msg_res', (data) {
+//       debugPrint("Sent back TEST from server: " + data);
+//       _testText = data;
+//     });
+
+//     socket.on(
+//       '',
+//       (data) {},
+//     );
+
+//     /// disconnect
+//     socket.on('disconnect', (data) {});
+
+//     /// 接続
+//     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
+//     socket.connect().emit('connected', "connect?"); // "time": DateTime.now().toString(),}
+//   }
+
+//   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
+//   void dispose() {
+//     socket.disconnect();
+//   }
+
+//   // サーバーに送ったりするメソッドとか
+//   /// テストメッセージ
+//   void sendTestMsg(String msg) {
+//     if (msg.isNotEmpty) {
+//       socket.emit('test_msg', msg);
+//     }
+//   }
+
+//   // accessor getter setter
+//   String get connectMsg => _connectMsg;
+//   String get testText => _testText;
+//   String get serverResMsg => _serverResMsg;
+// }
+
+// // WebSocket
+// class SocketIO {
+//   // fields
+//   late io.Socket socket; // ソケットIOの実体
+//   static final SocketIO _instance = SocketIO._internal(); // シングルトンインスタンス
+//   String _connectMsg = "";
+//   String _testText = "";
+//   String _serverResMsg = "";
+
+//   // methods
+//   ///ファクトリコンストラクタ(factory Class)
+//   ///通常のコンストラクタでいう呼び出される処理を担当、通常のコンストラクタと同じく外側から呼び出される。
+//   ///シングルトンインスタンス(=静的でどこから見ても同一のインスタンス)を呼び出し側に返す。
+//   factory SocketIO() {
+//     return _instance; // フィールドのシングルトンインスタンス
+//   }
+
+//   ///コンストラクタ(Class._internal())
+//   ///通常のコンストラクタでいう実際の初期化処理を担当。
+//   ///シングルトンクラスの場合、クラスが読み込まれてクラス変数が定義されたときにインスタンスが生成される。
+//   SocketIO._internal() {
+//     // 接続を開始
+//     _connectWS();
+//   }
+
+//   void msgSetter(String connectMsg) {
+//     this._connectMsg = "connect" + connectMsg;
+//   }
+
+//   /// 接続確立
+//   Future<void> _connectWS() async {
+//     // wsの接続先を指定し、ソケットのインスタンスを生成し確立する
+//     socket = io.io('http://' + Url.serverIP + ":" + Url.serverPort, <String, dynamic>{
+//       'transports': ['websocket'],
+//     });
+
+//     // event handlers  ハンドル名connectを明示的に定義すると動かなかった。
+//     /// コネクト時のサーバーからのレスポンスを受け取る
+//     socket.on('connected_response', (data) {
+//       debugPrint("Response from server: " + data);
+//       _serverResMsg = data;
+//     });
+
+//     /// テスト
+//     socket.on('test_msg_res', (data) {
+//       debugPrint("Sent back TEST from server: " + data);
+//       _testText = data;
+//     });
+
+//     socket.on(
+//       '',
+//       (data) {},
+//     );
+
+//     /// disconnect
+//     socket.on('disconnect', (data) {});
+
+//     /// 接続
+//     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
+//     socket.connect().emit('connected', "connect?"); // "time": DateTime.now().toString(),}
+//   }
+
+//   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
+//   void dispose() {
+//     socket.disconnect();
+//   }
+
+//   // サーバーに送ったりするメソッドとか
+//   /// テストメッセージ
+//   void sendTestMsg(String msg) {
+//     if (msg.isNotEmpty) {
+//       socket.emit('test_msg', msg);
+//     }
+//   }
+
+//   // accessor getter setter
+//   String get connectMsg => _connectMsg;
+//   String get testText => _testText;
+//   String get serverResMsg => _serverResMsg;
 // }
