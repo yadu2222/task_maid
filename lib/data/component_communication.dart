@@ -6,7 +6,7 @@ import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "10.200.0.190"; // win + r で gipcしてね♡
+  static const String serverIP = "192.168.10.104"; // win + r で gipcしてね♡
   static const String serverPort = "5108";
   static const String protocol = "http";
 
@@ -155,6 +155,13 @@ class SocketIO {
   void sendTestMsg(String msg) {
     if (msg.isNotEmpty) {
       socket.emit('test_msg', msg);
+    }
+  }
+
+  ///任意のエンドポイントにメッセージを送る
+  void sendMsg(String wsEvent, Map<String, dynamic> wsData) {
+    if (wsData.isNotEmpty) {
+      socket.emit(wsEvent, wsData);
     }
   }
 

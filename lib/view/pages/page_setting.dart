@@ -35,9 +35,10 @@ class _PageSetting extends State<PageSetting> {
   // インスタンス宣言
   SocketIO sio = SocketIO();
   // テキストフィールド
-  final TextEditingController controllerTextFieldWSMsg = TextEditingController();
+  final TextEditingController controllerTextFieldWSTest = TextEditingController();
   final TextEditingController controllerTextFieldHttpInsertUsersMail = TextEditingController();
   final TextEditingController controllerTextFieldHttpInsertUsersName = TextEditingController();
+  final TextEditingController controllerTextFieldWSMsg = TextEditingController();
   String resCode = "";
   String resBody = "";
 
@@ -85,12 +86,12 @@ class _PageSetting extends State<PageSetting> {
                           child: ListView(
                             // indexの作成 widgetが表示される数
                             children: [
-                              // ws
+                              // WS
                               CustomText(text: "WS", fontSize: screenSizeWidth * 0.05, color: Constant.black),
                               SizedBox(
                                 width: screenSizeWidth * 0.8,
                                 child: TextField(
-                                  controller: controllerTextFieldWSMsg, // 入力内容を入れる
+                                  controller: controllerTextFieldWSTest, // 入力内容を入れる
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(), // 枠
                                     labelText: "ここにいれた文字を鯖にwsで送る。",
@@ -104,11 +105,11 @@ class _PageSetting extends State<PageSetting> {
                                   // ここに処理を書いてね
                                   // ws
                                   // テキストフィールドコントローラからテキストを取り出し、
-                                  String msg = controllerTextFieldWSMsg.text;
+                                  String msg = controllerTextFieldWSTest.text;
                                   // wsのテスト用送信メソッドに与え、
                                   sio.sendTestMsg(msg);
                                   // テキストフィールドをクリアする
-                                  controllerTextFieldWSMsg.clear();
+                                  controllerTextFieldWSTest.clear();
                                 },
                                 child: Container(
                                   margin: EdgeInsets.all(screenSizeWidth * 0.03),
@@ -148,10 +149,10 @@ class _PageSetting extends State<PageSetting> {
                                     "pKeyValue": "uuid-1",
                                     "recordData": {
                                       "room_id": "uuid-1",
-                                      "room_name": "Sp:でかでかでっかまんのへや",
+                                      "room_name": "てすとるーむ",
                                       "applicant": ["uuid"],
-                                      "workers": ["46956da2-7b0a-49e6-b980-f5ef4e7e3f12"],
-                                      "leaders": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
+                                      "workers": ["ca12c172-297d-459b-b371-9748754e9c34"],
+                                      "leaders": ["c76c4655-0113-4c3c-a466-7e62dcae8875"],
                                       "tasks": ["479d765d-9677-465a-8901-c1116cc9b5e3"],
                                       "room_number": "8282",
                                       "is_sub_room": 0,
@@ -174,7 +175,7 @@ class _PageSetting extends State<PageSetting> {
                               ),
 
                               // http insert into users
-                              CustomText(text: "HTTP /post_ins_new_record users", fontSize: screenSizeWidth * 0.03, color: Constant.black),
+                              CustomText(text: "HTTP /post_ins_new_record users", fontSize: screenSizeWidth * 0.05, color: Constant.black),
                               SizedBox(
                                 width: screenSizeWidth * 0.8,
                                 child: TextField(
@@ -223,7 +224,7 @@ class _PageSetting extends State<PageSetting> {
                               ),
 
                               // http insert into users
-                              CustomText(text: "HTTP /post_ins_new_record users set", fontSize: screenSizeWidth * 0.03, color: Constant.black),
+                              CustomText(text: "HTTP /post_ins_new_record users set", fontSize: screenSizeWidth * 0.05, color: Constant.black),
                               InkWell(
                                 onTap: () async {
                                   // http
@@ -268,6 +269,94 @@ class _PageSetting extends State<PageSetting> {
                                 alignment: Alignment(0, 0),
                                 decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
                                 child: CustomText(text: "Res code: " + resCode + ",Res body: " + resBody, fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay), // ws.testText
+                              ),
+
+                              // WSで相手にmsgを送る
+                              CustomText(text: "WS_msg", fontSize: screenSizeWidth * 0.05, color: Constant.black),
+                              SizedBox(
+                                width: screenSizeWidth * 0.8,
+                                child: TextField(
+                                  controller: controllerTextFieldWSMsg, // 入力内容を入れる
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(), // 枠
+                                    labelText: "ここにいれた文字を相手にwsで送る。",
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  // ws
+                                  // テキストフィールドコントローラからテキストを取り出し、
+                                  String msg = controllerTextFieldWSMsg.text;
+                                  // wsのテスト用送信メソッドに与え、
+                                  sio.sendMsg("send_msg_chat", {
+                                    "tableName": "msg_chats",
+                                    // pKey, pKeyValue はauto_incrementなので不要
+                                    "recordData": {
+                                      "msg_datetime": DateTime.now().toString(),
+                                      "receiver": "ca12c172-297d-459b-b371-9748754e9c34",
+                                      "room_id": "89480fc8-68dc-47fe-960c-54caf4d29fe0",
+                                      "level": 0,
+                                      "status": 0,
+                                      "stamp_id": 0,
+                                      "quote_id": "",
+                                      "msg": msg
+                                    },
+                                    "token_mail": "deka@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
+                                  });
+                                  // テキストフィールドをクリアする
+                                  controllerTextFieldWSMsg.clear();
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(screenSizeWidth * 0.03),
+                                  width: screenSizeWidth * 0.8,
+                                  height: screenSizeHeight * 0.05,
+                                  decoration: BoxDecoration(color: Constant.glay),
+                                  child: CustomText(text: 'てすとBUTTON: ;~~~; WS_msg', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay),
+                                ),
+                              ),
+                              // レスポンス
+                              CustomText(text: "WS test response", fontSize: screenSizeWidth * 0.03, color: Constant.black),
+                              Container(
+                                margin: EdgeInsets.all(screenSizeWidth * 0.02),
+                                height: screenSizeHeight * 0.075,
+                                alignment: Alignment(0, 0),
+                                decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
+                                child: CustomText(text: sio.testText, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay), // ws.testText
+                              ),
+
+                              // http get records
+                              CustomText(text: "HTTP /get_records", fontSize: screenSizeWidth * 0.05, color: Constant.black),
+                              InkWell(
+                                onTap: () async {
+                                  // http
+                                  http.Response httpResponse = await HttpToServer.httpReq("POST", "/get_records", {
+                                    "tableName": "rooms",
+                                    "keyList": [
+                                      {
+                                        "pKey": "room_name",
+                                        "pKeyValue": "てすとるーむ",
+                                        "isList": "False",
+                                      },
+                                      {
+                                        "pKey": "leaders",
+                                        "pKeyValue": "c76c4655-0113-4c3c-a466-7e62dcae8875",
+                                        "isList": "True",
+                                      }
+                                    ]
+                                  });
+                                  resCode = httpResponse.statusCode.toString();
+                                  debugPrint(resCode);
+                                  resBody = httpResponse.body.toString();
+                                  debugPrint(resBody);
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(screenSizeWidth * 0.03),
+                                  width: screenSizeWidth * 0.8,
+                                  height: screenSizeHeight * 0.05,
+                                  decoration: BoxDecoration(color: Constant.glay),
+                                  child: CustomText(text: 'てすとBUTTON: ;~~~; http insert into users set', fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay),
+                                ),
                               ),
                             ],
                           ),
