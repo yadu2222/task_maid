@@ -1,5 +1,6 @@
 import '../database_helper.dart';
 import '../models/msg_class.dart';
+import '../component_communication.dart';
 
 class MsgManager {
   // msg_list
@@ -10,6 +11,8 @@ class MsgManager {
   factory MsgManager() {
     return _instance;
   }
+
+  final SocketIO _socketIO = SocketIO();
 
   // 指定した部屋のメッセージ数を取得
   int count() {

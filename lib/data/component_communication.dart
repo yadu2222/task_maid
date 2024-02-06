@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // http
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
-import '../view/design_system/constant.dart';
+
+import '../data/controller/door.dart';
+import '../data/database_helper.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "10.109.0.41"; // "unserori.local"
-  static const String serverPort = "8282";
+  static const String serverIP = "172.22.80.1"; // win + r で gipcしてね♡
+  static const String serverPort = "5108";
   static const String protocol = "http";
 
   // 設定した値から鯖のURLを生成
@@ -133,6 +135,26 @@ class SocketIO {
     });
 
     socket.on(
+      'receive__update',
+      (data) async {
+        // サーバー側で更新があれば｛"tableName":テーブル名,"pKey":主キー,"pKeyValue":主キーの値｝を受信する。
+        // http通信でget申請
+        http.Response response = await HttpToServer.httpReq("GET", "/get_record", {"tableName": data["tableName"], "pKey": data["pKey"], "pKeyValue": data["pKeyValue"]});
+
+        // 返ってきたデータを読み込むためのインスタンス生成
+        Door door = Door();
+        print(response.statusCode);
+        print(response.body);
+        // 返ってきたデータをJSONに変換
+        Map<String, dynamic> responseBody = jsonDecode(response.body);
+        // dbに追加
+        DatabaseHelper.insert(data["tableName"], responseBody);
+        // 読み込み
+        door.load();
+      },
+    );
+
+    socket.on(
       '',
       (data) {},
     );
@@ -152,9 +174,9 @@ class SocketIO {
 
   // サーバーに送ったりするメソッドとか
   /// テストメッセージ
-  void sendTestMsg(String msg) {
+  void sendTestMsg(Map msg) {
     if (msg.isNotEmpty) {
-      socket.emit('test_msg', msg);
+      socket.emit('message', msg);
     }
   }
 

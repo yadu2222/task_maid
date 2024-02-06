@@ -16,25 +16,6 @@ class items {
 
   String testText = "";
 
-  // //タスクリスト
-  // // dbからデータの取得
-  // static List taskList = [];
-  // static Map userAccount = {};
-  // static List rooms = [];
-  // static List message = [];
-  // static List newTask = [];
-  // // static List subRooms = [];
-
-  // // static Nums() async {
-  // //   taskList = await DatabaseHelper.queryAllRows('tasks');
-  // //   // print(taskList);
-  // //   message = await DatabaseHelper.queryAllRows('msg_chats');
-  // //   // print(msgchats);
-  // //   rooms = await DatabaseHelper.queryAllRows('rooms');
-  // //   // print(rooms);
-  // //   // subRooms = await DatabaseHelper.queryAllRows('sub_rooms');
-  // // }
-
   // 画像リスト
   static Map taskMaid = {
     'standing': [

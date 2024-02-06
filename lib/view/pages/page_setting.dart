@@ -94,37 +94,37 @@ class _PageSetting extends State<PageSetting> {
               ),
             ),
             InkWell(
-              onTap: () {
+              onTap: () async{
                 // ここに処理を書いてね
                 // ws
                 // テキストフィールドコントローラからテキストを取り出し、
                 String msg = controllerTextField.text;
                 // wsのテスト用送信メソッドに与え、
-                sio.sendTestMsg(msg);
-                sio.sendTestMsg(msg);
+                // sio.sendTestMsg(msg);
+                // sio.sendTestMsg(msg);
                 // テキストフィールドをクリアする
                 controllerTextField.clear();
 
                 // http
-                // http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
-                //   "tableName": "rooms",
-                //   "pKey": "room_id",
-                //   "pKeyValue": "uuid-1",
-                //   "recordData": {
-                //     "room_id": "uuid-1",
-                //     "room_name": "Sp:でかでかでっかまんのへや",
-                //     "applicant": ["uuid"],
-                //     "workers": ["46956da2-7b0a-49e6-b980-f5ef4e7e3f12"],
-                //     "leaders": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
-                //     "tasks": ["479d765d-9677-465a-8901-c1116cc9b5e3"],
-                //     "room_number": "8282",
-                //     "is_sub_room": 0,
-                //     "main_room_id": "uuid",
-                //     "sub_rooms": ["7163c555-4f0b-4a69-b757-36d68c4ee1bb", "bfa33bc9-d76c-4818-bdc8-e7cf2464eb50"],
-                //   }
-                // });
-                // print(response.statusCode);
-                // print(response.body);
+                http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
+                  "tableName": "rooms",
+                  "pKey": "room_id",
+                  "pKeyValue": "uuid-1",
+                  "recordData": {
+                    "room_id": "uuid-1",
+                    "room_name": "Sp:でかでかでっかまんのへや",
+                    "applicant": ["uuid"],
+                    "workers": ["46956da2-7b0a-49e6-b980-f5ef4e7e3f12"],
+                    "leaders": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
+                    "tasks": ["479d765d-9677-465a-8901-c1116cc9b5e3"],
+                    "room_number": "8282",
+                    "is_sub_room": 0,
+                    "main_room_id": "uuid",
+                    "sub_rooms": ["7163c555-4f0b-4a69-b757-36d68c4ee1bb", "bfa33bc9-d76c-4818-bdc8-e7cf2464eb50"],
+                  }
+                });
+                print(response.statusCode);
+                print(response.body);
               },
               child: Container(
                 margin: EdgeInsets.all(screenSizeWidth * 0.03),

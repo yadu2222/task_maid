@@ -134,7 +134,7 @@ class _PageTask extends State<PageTask> {
           ),
           ListTile(
             title: CustomText(
-              text: '${nowRoomInfo.roomid}号室',
+              text: '${nowRoomInfo.roomNumber}号室',
               color: Constant.blackGlay,
               fontSize: screenSizeWidth * 0.035,
             ),
@@ -313,8 +313,7 @@ class _PageTask extends State<PageTask> {
                             [],
                             1,
                             taskManager,
-                            [],
-                            nowRoomInfo.mainRoomid,
+                            
                           );
 
                           setState(() {});
@@ -901,7 +900,7 @@ class _PageTask extends State<PageTask> {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
-                            String addTaskid = taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
+                            taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -946,7 +945,7 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            msgManager.add('がんばってください', 1, 0, addTaskid, 0, nowRoomInfo.roomid);
+                            msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid , 0, nowRoomInfo.roomid);
 
                             const Loading();
 
