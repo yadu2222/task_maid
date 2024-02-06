@@ -6,7 +6,7 @@ import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "192.168.10.104"; // "unserori.local"
+  static const String serverIP = "10.200.0.190"; // win + r で gipcしてね♡
   static const String serverPort = "5108";
   static const String protocol = "http";
 
@@ -142,7 +142,7 @@ class SocketIO {
 
     /// 接続
     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
-    socket.connect().emit('connected', {"user_id": "qaws", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
+    socket.connect().emit('connected', {"mail": "deka@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
   }
 
   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
