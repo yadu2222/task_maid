@@ -156,7 +156,6 @@ class RoomManager extends ChangeNotifier {
   // 部屋情報の保存
   // 追加または更新する部屋のデータ,ins,upd,deleteの選択,エンドポイント
   void save(Room room, int saveType, String httpRoute) async {
-
     // insとupdでidの扱いが違うのでその対応
     // 不細工だね
     String postType = "uuid-1";
@@ -198,6 +197,7 @@ class RoomManager extends ChangeNotifier {
       case 0:
         room.roomid = result; // サーバーからもらった正規のidを格納
         room.sameGroupId.add(result); // 自分自身をsameGroupIdに追加
+        updSameGroup(room);
 
         // サブルームならば
         if (room.subRoom == 1) {
@@ -207,6 +207,9 @@ class RoomManager extends ChangeNotifier {
             if (checkRoom.mainRoomid == room.mainRoomid) {
               checkRoom.sameGroupId = room.sameGroupId;
               update(checkRoom, checkRoom.leaders, checkRoom.workers, checkRoom.tasks, checkRoom.sameGroupId);
+
+              // サーバー側にも更新をかける
+              updSameGroup(checkRoom);
             }
           }
           // メインルームならば
@@ -232,6 +235,30 @@ class RoomManager extends ChangeNotifier {
     // 値変更の通知 動いてるのかいまいちわからない
     // load();
     notifyListeners();
+  }
+
+  // 同じグループのリストを更新
+  void updSameGroup(Room room) async {
+    http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
+      "tableName": "rooms",
+      "pKey": "room_id",
+      "pKeyValue": room.roomid,
+      "recordData": {
+        "room_id": room.roomid,
+        "room_name": room.roomName,
+        "applicant": [],
+        "workers": room.workers,
+        "leaders": room.leaders,
+        "tasks": room.tasks,
+        "room_number": room.roomNumber,
+        "is_sub_room": room.subRoom,
+        "main_room_id": room.roomid,
+        "sub_rooms": room.sameGroupId,
+      }
+    });
+
+    Map result = jsonDecode(response.body);
+    print(result["server_response_message"]);
   }
 
   // 部屋情報の読み込み

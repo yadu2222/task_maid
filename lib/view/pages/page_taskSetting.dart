@@ -228,7 +228,7 @@ class _page_taskSetting extends State<page_taskSetting> {
                                     ),
                                   ),
 
-                                  // タスク作成ボタン
+                                  // タスク編集確定ボタン
                                   InkWell(
                                     onTap: () async {
                                       FocusScope.of(context).unfocus(); // キーボードを閉じる
@@ -255,7 +255,10 @@ class _page_taskSetting extends State<page_taskSetting> {
                                       // 画面の更新
                                       // msg
 
-                                      _msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0, selectRoomInfo.roomid);
+                                      // タスクを上書き
+                                      _taskManager.update(list[index], list[index].contents, list[index].status, limitTime.toString(), worker);
+
+                                     //  _msgManager.add('かえたよ～～～～', 1, 0, list[index].taskid, 0, selectRoomInfo.roomid);
 
                                       setState(() {
                                         Navigator.push(

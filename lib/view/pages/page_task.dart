@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +79,6 @@ class _PageTask extends State<PageTask> {
   DateTime limitTime = DateTime.now();
 
   // メインルームidを保存
-  
 
   // リーダーチェック
   bool leaderCheck() {
@@ -313,7 +314,6 @@ class _PageTask extends State<PageTask> {
                             [],
                             1,
                             taskManager,
-                            
                           );
 
                           setState(() {});
@@ -691,22 +691,21 @@ class _PageTask extends State<PageTask> {
                             if (roomNameController.text.isNotEmpty) {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
-
+                              // 部屋を追加
                               roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager);
-
-                              // items.myroom.add(newRoomid);
                             }
 
                             // 現在の部屋の切り替えと変数の上書き
                             // nowRoomid = newRoomid;
+
+                            // 2秒間待機
+                            await Future.delayed(Duration(milliseconds: 500));
+
                             nowRoomInfo = roomManager.findByindex(roomManager.count() - 1);
-
                             setState(() {});
-
                             // 入力フォームの初期化
                             roomNameController.clear();
                             roomNumController.clear();
-
                             Navigator.of(context).pop(); //もどる
                           },
                           child: Container(
@@ -945,7 +944,7 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid , 0, nowRoomInfo.roomid);
+                            msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid, 0, nowRoomInfo.roomid);
 
                             const Loading();
 

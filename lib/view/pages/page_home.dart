@@ -139,7 +139,7 @@ class _PageHomeState extends State<PageHome> {
                       // body
                       Container(
                           width: screenSizeWidth,
-                          height: screenSizeHeight * 0.8675, // エラー発生中
+                          height: screenSizeHeight * 0.865, // エラー発生中
                           child: Stack(children: <Widget>[
                             // Row(
                             //   children: [

@@ -127,7 +127,7 @@ class TaskManager extends ChangeNotifier {
           "tableName": "tasks",
           "pKey": "task_id",
           "pKeyValue": "uuid-1",
-          "recordData": {"task_id": "uuid-1", "task_limit": task.taskLimit,"leaders":[], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
+          "recordData": {"task_id": "uuid-1", "task_limit": task.taskLimit, "leaders": [], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
         });
 
         // レスポンスをStringに変換しidを取得
@@ -145,10 +145,11 @@ class TaskManager extends ChangeNotifier {
         http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
           "tableName": "tasks",
           "pKey": "task_id",
-          "pKeyValue": "uuid-1",
-          "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
+          "pKeyValue": task.taskid,
+          "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit,"leaders":[], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
         });
         await DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
+        print(jsonDecode(response.body)["server_response_message"]);
         break;
 
       // delete
@@ -161,8 +162,8 @@ class TaskManager extends ChangeNotifier {
           http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
             "tableName": "tasks",
             "pKey": "task_id",
-            "pKeyValue": "uuid-1",
-            "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "worker": null, "contents": task.contents, "room_id": task.roomid}
+            "pKeyValue": task.taskid,
+            "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit,"leaders":[],"worker": null, "contents": task.contents, "room_id": task.roomid}
           });
           // アプリ内で保持しているタスクリストから削除
           await DatabaseHelper.delete('tasks', 'task_id', task.taskid);
