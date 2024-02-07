@@ -146,13 +146,12 @@ class _PageSetting extends State<PageSetting> {
                                   http.Response httpResponse = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
                                     "tableName": "rooms",
                                     "pKey": "room_id",
-                                    "pKeyValue": "uuid-1",
+                                    "pKeyValue": "28e08fb5-4ce4-4f5e-a317-c1032eb4705c",
                                     "recordData": {
-                                      "room_id": "uuid-1",
-                                      "room_name": "てすとるーむ",
+                                      "room_name": "でかでかでっかまんのへや",
                                       "applicant": ["uuid"],
-                                      "workers": ["ca12c172-297d-459b-b371-9748754e9c34"],
-                                      "leaders": ["c76c4655-0113-4c3c-a466-7e62dcae8875"],
+                                      "workers": ["cd6b4f54-222c-4fe6-9208-e03b3f602f73"],
+                                      "leaders": ["954309f3-e7d6-4409-a10d-80dd26bd6707", "c018f0cd-ad4f-4309-a401-cd0151dcf73c"],
                                       "tasks": ["479d765d-9677-465a-8901-c1116cc9b5e3"],
                                       "room_number": "8282",
                                       "is_sub_room": 0,
@@ -232,7 +231,7 @@ class _PageSetting extends State<PageSetting> {
                                   await HttpToServer.httpReq("POST", "/post_ins_new_record", {
                                     "tableName": "users",
                                     "pKey": "user_id",
-                                    "pKeyValue": "uuid-1",
+                                    "pKeyValue": "954309f3-e7d6-4409-a10d-80dd26bd6707",
                                     "recordData": {
                                       "mail": "deka@gmail.com",
                                       "name": "でかでかでっかまん",
@@ -243,10 +242,21 @@ class _PageSetting extends State<PageSetting> {
                                   await HttpToServer.httpReq("POST", "/post_ins_new_record", {
                                     "tableName": "users",
                                     "pKey": "user_id",
-                                    "pKeyValue": "uuid-1",
+                                    "pKeyValue": "c018f0cd-ad4f-4309-a401-cd0151dcf73c",
                                     "recordData": {
                                       "mail": "gonta@gmail.com",
                                       "name": "ごんた",
+                                      "tasks": ["46956da2-7b0a-49e6-b980-f5ef4e7e3f12"],
+                                      "rooms": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
+                                    }
+                                  });
+                                  await HttpToServer.httpReq("POST", "/post_ins_new_record", {
+                                    "tableName": "users",
+                                    "pKey": "user_id",
+                                    "pKeyValue": "cd6b4f54-222c-4fe6-9208-e03b3f602f73",
+                                    "recordData": {
+                                      "mail": "neruko@gmail.com",
+                                      "name": "ねるこ",
                                       "tasks": ["46956da2-7b0a-49e6-b980-f5ef4e7e3f12"],
                                       "rooms": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
                                     }
@@ -295,7 +305,7 @@ class _PageSetting extends State<PageSetting> {
                                     "recordData": {
                                       "msg_datetime": DateTime.now().toString(),
                                       "receiver": "ca12c172-297d-459b-b371-9748754e9c34",
-                                      "room_id": "89480fc8-68dc-47fe-960c-54caf4d29fe0",
+                                      "room_id": "28e08fb5-4ce4-4f5e-a317-c1032eb4705c",
                                       "level": 0,
                                       "status": 0,
                                       "stamp_id": 0,
@@ -322,7 +332,7 @@ class _PageSetting extends State<PageSetting> {
                                 height: screenSizeHeight * 0.075,
                                 alignment: Alignment(0, 0),
                                 decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-                                child: CustomText(text: sio.testText, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay), // ws.testText
+                                child: CustomText(text: sio.chatMsgWs, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay), // ws.testText
                               ),
 
                               // http get records

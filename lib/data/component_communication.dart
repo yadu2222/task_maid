@@ -6,7 +6,7 @@ import '../view/design_system/constant.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "192.168.10.104"; // win + r で gipcしてね♡
+  static const String serverIP = "10.200.0.190"; // win + r で gipcしてね♡
   static const String serverPort = "5108";
   static const String protocol = "http";
 
@@ -85,6 +85,7 @@ class SocketIO {
   String _connectMsg = "";
   String _testText = "";
   String _serverResMsg = "";
+  String _chatMsgWs = "";
 
   // methods
   ///ファクトリコンストラクタ(factory Class)
@@ -132,6 +133,15 @@ class SocketIO {
       _testText = data;
     });
 
+    ///チャットを受け取る
+    socket.on(
+      'chat_msg',
+      (data) {
+        _chatMsgWs = data;
+        print(data);
+      },
+    );
+
     socket.on(
       '',
       (data) {},
@@ -142,7 +152,7 @@ class SocketIO {
 
     /// 接続
     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
-    socket.connect().emit('connected', {"mail": "deka@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
+    socket.connect().emit('connected', {"mail": "neruko@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
   }
 
   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
@@ -169,6 +179,7 @@ class SocketIO {
   String get connectMsg => _connectMsg;
   String get testText => _testText;
   String get serverResMsg => _serverResMsg;
+  String get chatMsgWs => _chatMsgWs;
 }
 
 // class Tryws {
