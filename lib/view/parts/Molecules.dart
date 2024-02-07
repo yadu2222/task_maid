@@ -84,13 +84,13 @@ class molecules {
   }
 
   // ループして繰り返すリストウィジェットのサンプル
-  static Widget rollList(Widget widget, List list) {
+  static Widget rollList(List list, Card card) {
     return ListView.builder(
       // indexの作成 widgetが表示される数
       itemCount: list.length,
       itemBuilder: (context, index) {
         // 繰り返し描画されるwidget
-        return Card(color: Constant.glay, elevation: 0, child: widget);
+        return card;
       },
     );
   }
