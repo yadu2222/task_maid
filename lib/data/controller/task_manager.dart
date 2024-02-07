@@ -10,7 +10,7 @@ import 'room_manager.dart';
 import 'dart:math';
 
 // 通信
-import '../component_communication.dart';
+import '../models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class TaskManager extends ChangeNotifier {
@@ -28,10 +28,20 @@ class TaskManager extends ChangeNotifier {
   }
 
   // プライベートなコンストラクタ
-  TaskManager._internal();
+  TaskManager._internal() {}
   // 自分自身を生成
   factory TaskManager() {
     return _instance;
+  }
+
+  // サーバーから自分のタスクを全件取得
+  void getTaskListFromServer() async {
+    http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
+      "tableName": "tasks", 
+      "keyList": [{
+        "pKey":"worker",
+        "pKeyValue":12345
+      }]});
   }
 
   // タスクの件数を取得する
@@ -146,7 +156,7 @@ class TaskManager extends ChangeNotifier {
           "tableName": "tasks",
           "pKey": "task_id",
           "pKeyValue": task.taskid,
-          "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit,"leaders":[], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
+          "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "leaders": [], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
         });
         await DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
         print(jsonDecode(response.body)["server_response_message"]);
@@ -163,7 +173,7 @@ class TaskManager extends ChangeNotifier {
             "tableName": "tasks",
             "pKey": "task_id",
             "pKeyValue": task.taskid,
-            "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit,"leaders":[],"worker": null, "contents": task.contents, "room_id": task.roomid}
+            "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "leaders": [], "worker": null, "contents": task.contents, "room_id": task.roomid}
           });
           // アプリ内で保持しているタスクリストから削除
           await DatabaseHelper.delete('tasks', 'task_id', task.taskid);

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_maid/data/controller/room_manager.dart';
 import '../design_system/constant.dart';
 import '../../const/items.dart';
-import '../../data/component_communication.dart';
+import '../../data/models/component_communication.dart';
 import 'page_task.dart';
 import 'page_setting.dart';
 import 'page_message.dart';
@@ -78,6 +78,8 @@ class _PageHomeState extends State<PageHome> {
   @override
   void initState() {
     super.initState();
+
+    
   }
 
   final TaskManager _taskManager = TaskManager();

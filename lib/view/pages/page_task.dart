@@ -21,7 +21,7 @@ import '../../data/controller/task_manager.dart';
 import 'package:task_maid/data/controller/msg_manager.dart';
 
 // 通信用のクラス
-import '../../data/component_communication.dart';
+import '../../data/models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {

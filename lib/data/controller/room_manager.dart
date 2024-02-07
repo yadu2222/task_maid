@@ -12,7 +12,7 @@ import 'task_manager.dart';
 import '../database_helper.dart';
 
 // 通信
-import '../component_communication.dart';
+import '../models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class RoomManager extends ChangeNotifier {
@@ -37,10 +37,16 @@ class RoomManager extends ChangeNotifier {
   // サーバーと通信して検索、部屋を追加
   void serchRoomServer(String roomNumber) async {
     print(roomNumber);
-    http.Response response = await HttpToServer.httpReq("GET", "/get_record", {"tableName": "rooms", "pKey": "room_number", "pKeyValue": roomNumber});
+    http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
+      "tableName": "rooms",
+      "keyList": [
+        {"pKey": "room_number", "pKeyValue": roomNumber, "isList": "False"}
+      ]
+    });
     print(response.body);
-    Map<String, dynamic> result = jsonDecode(response.body);
+    Map<String, dynamic> result = jsonDecode(response.body)["srv_res_data"][0];
     serchRoomName = " ${result["room_name"]}\nに参加しますか？";
+    print(serchRoomName);
     serchRoomData = result;
     print(serchRoomName);
   }
@@ -238,8 +244,8 @@ class RoomManager extends ChangeNotifier {
     });
     // レスポンスをStringに変換
     Map resultData = jsonDecode(response.body);
-    String result = resultData["server_response_data"].toString();
-    print(result);
+    String result = resultData["srv_res_data"].toString();
+    print("server:${result}");
 
     // print(room.sameGroupId);
 
@@ -253,7 +259,7 @@ class RoomManager extends ChangeNotifier {
       case 0:
         room.roomid = result; // サーバーからもらった正規のidを格納
         room.sameGroupId.add(result); // 自分自身をsameGroupIdに追加
-        updSameGroup(room);
+        print(room.sameGroupId);
 
         // サブルームならば
         if (room.subRoom == 1) {
@@ -273,6 +279,7 @@ class RoomManager extends ChangeNotifier {
           // mainRoomidを自分のidに変更
           room.mainRoomid = result;
         }
+        updSameGroup(room);
         saveRoom = room.toJson();
         _roomList.add(room);
         DatabaseHelper.insert('rooms', saveRoom);
@@ -314,7 +321,7 @@ class RoomManager extends ChangeNotifier {
     });
 
     Map result = jsonDecode(response.body);
-    print(result["server_response_message"]);
+    print(result["srv_res_msg"]);
   }
 
   // 部屋情報の読み込み

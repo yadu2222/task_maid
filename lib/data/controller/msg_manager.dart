@@ -1,6 +1,6 @@
 import '../database_helper.dart';
 import '../models/msg_class.dart';
-import '../component_communication.dart';
+import '../models/component_communication.dart';
 
 class MsgManager {
   // msg_list

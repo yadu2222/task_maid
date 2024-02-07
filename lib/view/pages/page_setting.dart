@@ -16,7 +16,7 @@ import '../../data/models/room_class.dart';
 import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
 
-import '../../data/component_communication.dart';
+import '../../data/models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 import 'dart:convert'; // json
 import '../app.dart';

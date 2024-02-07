@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http; // http
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
 
-import '../data/controller/door.dart';
-import '../data/database_helper.dart';
+import '../controller/door.dart';
+import '../database_helper.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
