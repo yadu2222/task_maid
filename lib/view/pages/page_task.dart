@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +21,7 @@ import '../../data/controller/task_manager.dart';
 import 'package:task_maid/data/controller/msg_manager.dart';
 
 // 通信用のクラス
-import '../../data/component_communication.dart';
+import '../../data/models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class PageTask extends StatefulWidget {
@@ -133,7 +135,7 @@ class _PageTask extends State<PageTask> {
           ),
           ListTile(
             title: CustomText(
-              text: '${nowRoomInfo.roomid}号室',
+              text: '${nowRoomInfo.roomNumber}号室',
               color: Constant.blackGlay,
               fontSize: screenSizeWidth * 0.035,
             ),
@@ -312,8 +314,6 @@ class _PageTask extends State<PageTask> {
                             [],
                             1,
                             taskManager,
-                            [],
-                            nowRoomInfo.mainRoomid,
                           );
 
                           setState(() {});
@@ -691,22 +691,21 @@ class _PageTask extends State<PageTask> {
                             if (roomNameController.text.isNotEmpty) {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
-
+                              // 部屋を追加
                               roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager);
-
-                              // items.myroom.add(newRoomid);
                             }
 
                             // 現在の部屋の切り替えと変数の上書き
                             // nowRoomid = newRoomid;
+
+                            // 0.5秒間待機
+                            await Future.delayed(const Duration(milliseconds: 500));
+
                             nowRoomInfo = roomManager.findByindex(roomManager.count() - 1);
-
                             setState(() {});
-
                             // 入力フォームの初期化
                             roomNameController.clear();
                             roomNumController.clear();
-
                             Navigator.of(context).pop(); //もどる
                           },
                           child: Container(
@@ -900,7 +899,7 @@ class _PageTask extends State<PageTask> {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
                             // タスクを追加
-                            String addTaskid = taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
+                            taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -945,7 +944,7 @@ class _PageTask extends State<PageTask> {
                             // taskGet();
                             // 画面の更新
                             // msg
-                            msgManager.add('がんばってください', 1, 0, addTaskid, 0, nowRoomInfo.roomid);
+                            msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid, 0, nowRoomInfo.roomid);
 
                             const Loading();
 
@@ -1076,7 +1075,7 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     return IconButton(
-        onPressed: () {
+        onPressed: () async {
           FocusScope.of(context).unfocus(); //キーボードを閉じる
           Navigator.of(context).pop(); //もどる
 
@@ -1091,7 +1090,11 @@ class _PageTask extends State<PageTask> {
             bool searchBool = true;
             String falseResult = '検索結果はありません';
 
-            String result = searchBool ? searchRoomName : falseResult;
+            // 検索処理
+            roomManager.serchRoomServer(searchID);
+            Future.delayed(const Duration(milliseconds: 500));
+
+            // String result = searchBool ? searchRoomName : falseResult;
 
             // データベースさんへ問い合わせた結果を表示するダイアログ
             showDialog(
@@ -1122,7 +1125,7 @@ class _PageTask extends State<PageTask> {
                               top: screenSizeWidth * 0.0475,
                               bottom: screenSizeWidth * 0.02,
                             ),
-                            child: CustomText(text: searchBool ? '${searchRoomName}\nに参加しますか？' : falseResult, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
+                            child: CustomText(text: roomManager.getSerchRoomName(), fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                           ),
 
                           // 参加しますか？
@@ -1137,10 +1140,13 @@ class _PageTask extends State<PageTask> {
                                       InkWell(
                                           onTap: () {
                                             Navigator.of(context).pop(); //もどる
+
                                             // サーバーに参加問い合わせ
                                             // 既に参加しています or 参加申請を送りました
                                             // 結果
-                                            bool joinBool = true;
+                                            // 参加確定に変更
+                                            // TODO: みらいのわたしさんへ なおしてください
+                                            roomManager.joinRoom();
                                             showDialog(
                                                 context: context,
                                                 builder: (BuildContext context) {
@@ -1155,7 +1161,7 @@ class _PageTask extends State<PageTask> {
                                                         height: screenSizeHeight * 0.215,
                                                         alignment: const Alignment(0, 0),
                                                         decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                                        child: CustomText(text: joinBool ? '既に参加しています' : '参加申請を送りました', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
+                                                        child: CustomText(text: "参加しました！", fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                                                       ));
                                                 });
 

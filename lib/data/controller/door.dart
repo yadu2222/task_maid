@@ -77,7 +77,7 @@ class Door {
   // 部屋を追加する
   void addRoom(Room nowRoom, String roomName, List leaders, List workers, List tasks, int boolSubRoom, [List? sameGroupId, String? mainRoomid]) {
     // Room追加処理
-    _roomManager.add(nowRoom, roomName, leaders, workers, tasks, boolSubRoom, _taskManager, sameGroupId, mainRoomid);
+    _roomManager.add(nowRoom, roomName, leaders, workers, tasks, boolSubRoom, _taskManager);
     // 追加した部屋と依存関係にある部屋のデータ更新
 
     // 追加したroomのtaskData作成処理
@@ -98,9 +98,7 @@ class Door {
 
   // 読み込み
   void load() async {
-    _roomManager.load(
-      _taskManager,
-    );
+    _roomManager.load();
     _taskManager.load();
     _msgManager.load();
   }

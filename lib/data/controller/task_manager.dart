@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,10 @@ import 'package:task_maid/data/database_helper.dart';
 import '../models/room_class.dart';
 import 'room_manager.dart';
 import 'dart:math';
+
+// 通信
+import '../models/component_communication.dart';
+import 'package:http/http.dart' as http; // http
 
 class TaskManager extends ChangeNotifier {
   // タスクリスト
@@ -22,10 +28,20 @@ class TaskManager extends ChangeNotifier {
   }
 
   // プライベートなコンストラクタ
-  TaskManager._internal();
+  TaskManager._internal() {}
   // 自分自身を生成
   factory TaskManager() {
     return _instance;
+  }
+
+  // サーバーから自分のタスクを全件取得
+  void getTaskListFromServer() async {
+    http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
+      "tableName": "tasks", 
+      "keyList": [{
+        "pKey":"worker",
+        "pKeyValue":12345
+      }]});
   }
 
   // タスクの件数を取得する
@@ -77,17 +93,14 @@ class TaskManager extends ChangeNotifier {
   }
 
   // タスクを追加する
-  String add(String title, String contents, String taskLimit, String worker, String roomid) {
+  void add(String title, String contents, String taskLimit, String worker, String roomid) {
     var random = Random();
     var taskid = random.nextInt(100000);
-    // var dateTime = getDateTime();
-    var task = Task(taskid.toString(), title, contents, 0, taskLimit, worker, roomid);
-    // リストに追加
-    _taskList.add(task);
-    save(0, null, task);
 
-    // 追加したidをかえしてあげる
-    return taskid.toString();
+    String dummyID = "888888";
+    // var dateTime = getDateTime();
+    var task = Task(dummyID, title, contents, 0, taskLimit, worker, roomid);
+    save(task, 0, "/post_ins_new_record");
   }
 
   // タスクを更新する
@@ -96,7 +109,7 @@ class TaskManager extends ChangeNotifier {
     task.status = status;
     task.taskLimit = taskLimit;
     task.worker = worker;
-    save(1, null, task);
+    save(task, 1, "/post_upd");
   }
 
   // タスクを削除
@@ -105,44 +118,70 @@ class TaskManager extends ChangeNotifier {
     // 引数のリストの部屋を削除
     for (String deleatRoomid in deleatRooms) {
       _taskList.removeWhere((value) => value.roomid == deleatRoomid);
-
-      save(2, deleatRoomid);
+      for (Task task in _taskList) {
+        if (task.roomid == deleatRoomid) {
+          save(task, 2, "/post_upd", deleatRoomid);
+        }
+      }
     }
   }
 
   // タスクリストをdbに保存する
-  void save(
-    int saveType, [
-    String? roomid,
-    Task? task,
-  ]) async {
-    Map<String, dynamic> saveTask = {};
-    if (task != null) {
-      saveTask = task.toJson();
-    }
+  void save(Task task, int saveType, String httpRoute, [String? deleteId]) async {
+    Map<String, dynamic> saveTask = task.toJson();
 
-    // 0でinsert
-    // 1でupdate
-    // 2でdeleate
     switch (saveType) {
+      // insert
       case 0:
-        if (task != null) {
-          await DatabaseHelper.insert('tasks', saveTask);
-        }
+        http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
+          "tableName": "tasks",
+          "pKey": "task_id",
+          "pKeyValue": "uuid-1",
+          "recordData": {"task_id": "uuid-1", "task_limit": task.taskLimit, "leaders": [], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
+        });
+
+        // レスポンスをStringに変換しidを取得
+        Map resultData = jsonDecode(response.body);
+        String result = resultData["server_response_data"].toString();
+        task.taskid = result;
+        saveTask["task_id"] = result;
+        // リストに追加
+        _taskList.add(task);
+        await DatabaseHelper.insert('tasks', saveTask);
         break;
+
+      // update
       case 1:
-        if (task != null) {
-          await DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
-        }
+        http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
+          "tableName": "tasks",
+          "pKey": "task_id",
+          "pKeyValue": task.taskid,
+          "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "leaders": [], "worker": task.worker, "contents": task.contents, "room_id": task.roomid}
+        });
+        await DatabaseHelper.update('tasks', 'task_id', saveTask, task.taskid.toString());
+        print(jsonDecode(response.body)["server_response_message"]);
         break;
+
+      // delete
       case 2:
-        if (roomid != null) {
-          await DatabaseHelper.delete('tasks', 'room_id', roomid);
+        if (deleteId != null) {
+          // 部屋から自分を消す処理
+          Room room = _roomManager.findByroomid(deleteId);
+          room.workers.removeWhere((value) => value == "12345");
+
+          http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
+            "tableName": "tasks",
+            "pKey": "task_id",
+            "pKeyValue": task.taskid,
+            "recordData": {"task_id": task.taskid, "task_limit": task.taskLimit, "leaders": [], "worker": null, "contents": task.contents, "room_id": task.roomid}
+          });
+          // アプリ内で保持しているタスクリストから削除
+          await DatabaseHelper.delete('tasks', 'task_id', task.taskid);
         }
         break;
     }
 
-    _roomManager.load(_instance);
+    _roomManager.load();
     notifyListeners();
   }
 

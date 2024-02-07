@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // http
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
-import '../view/design_system/constant.dart';
+
+import '../controller/door.dart';
+import '../database_helper.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
@@ -143,6 +145,26 @@ class SocketIO {
     );
 
     socket.on(
+      'receive__update',
+      (data) async {
+        // サーバー側で更新があれば｛"tableName":テーブル名,"pKey":主キー,"pKeyValue":主キーの値｝を受信する。
+        // http通信でget申請
+        http.Response response = await HttpToServer.httpReq("GET", "/get_record", {"tableName": data["tableName"], "pKey": data["pKey"], "pKeyValue": data["pKeyValue"]});
+
+        // 返ってきたデータを読み込むためのインスタンス生成
+        Door door = Door();
+        print(response.statusCode);
+        print(response.body);
+        // 返ってきたデータをJSONに変換
+        Map<String, dynamic> responseBody = jsonDecode(response.body);
+        // dbに追加
+        DatabaseHelper.insert(data["tableName"], responseBody);
+        // 読み込み
+        door.load();
+      },
+    );
+
+    socket.on(
       '',
       (data) {},
     );
@@ -164,7 +186,7 @@ class SocketIO {
   /// テストメッセージ
   void sendTestMsg(String msg) {
     if (msg.isNotEmpty) {
-      socket.emit('test_msg', msg);
+      socket.emit('message', msg);
     }
   }
 

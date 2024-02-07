@@ -8,7 +8,7 @@ import 'pages/page_home.dart';
 import '../const/items.dart';
 import '../data/database_helper.dart';
 import '../data/controller/door.dart'; // 各情報のクラス
-import '../data/component_communication.dart';
+import '../data/models/component_communication.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
