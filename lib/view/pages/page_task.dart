@@ -698,8 +698,8 @@ class _PageTask extends State<PageTask> {
                             // 現在の部屋の切り替えと変数の上書き
                             // nowRoomid = newRoomid;
 
-                            // 2秒間待機
-                            await Future.delayed(Duration(milliseconds: 500));
+                            // 0.5秒間待機
+                            await Future.delayed(const Duration(milliseconds: 500));
 
                             nowRoomInfo = roomManager.findByindex(roomManager.count() - 1);
                             setState(() {});
@@ -1075,7 +1075,7 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     return IconButton(
-        onPressed: () {
+        onPressed: () async {
           FocusScope.of(context).unfocus(); //キーボードを閉じる
           Navigator.of(context).pop(); //もどる
 
@@ -1090,7 +1090,11 @@ class _PageTask extends State<PageTask> {
             bool searchBool = true;
             String falseResult = '検索結果はありません';
 
-            String result = searchBool ? searchRoomName : falseResult;
+            // 検索処理
+            roomManager.serchRoomServer(searchID);
+            Future.delayed(const Duration(milliseconds: 500));
+
+            // String result = searchBool ? searchRoomName : falseResult;
 
             // データベースさんへ問い合わせた結果を表示するダイアログ
             showDialog(
@@ -1121,7 +1125,7 @@ class _PageTask extends State<PageTask> {
                               top: screenSizeWidth * 0.0475,
                               bottom: screenSizeWidth * 0.02,
                             ),
-                            child: CustomText(text: searchBool ? '${searchRoomName}\nに参加しますか？' : falseResult, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
+                            child: CustomText(text: roomManager.getSerchRoomName(), fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                           ),
 
                           // 参加しますか？
@@ -1136,10 +1140,13 @@ class _PageTask extends State<PageTask> {
                                       InkWell(
                                           onTap: () {
                                             Navigator.of(context).pop(); //もどる
+
                                             // サーバーに参加問い合わせ
                                             // 既に参加しています or 参加申請を送りました
                                             // 結果
-                                            bool joinBool = true;
+                                            // 参加確定に変更
+                                            // TODO: みらいのわたしさんへ なおしてください
+                                            roomManager.joinRoom();
                                             showDialog(
                                                 context: context,
                                                 builder: (BuildContext context) {
@@ -1154,7 +1161,7 @@ class _PageTask extends State<PageTask> {
                                                         height: screenSizeHeight * 0.215,
                                                         alignment: const Alignment(0, 0),
                                                         decoration: BoxDecoration(color: Constant.glay, borderRadius: BorderRadius.circular(16)),
-                                                        child: CustomText(text: joinBool ? '既に参加しています' : '参加申請を送りました', fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
+                                                        child: CustomText(text: "参加しました！", fontSize: screenSizeWidth * 0.05, color: Constant.blackGlay),
                                                       ));
                                                 });
 

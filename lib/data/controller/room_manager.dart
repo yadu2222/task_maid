@@ -27,6 +27,61 @@ class RoomManager extends ChangeNotifier {
     return _instance;
   }
 
+  static String serchRoomName = "検索結果はありません";
+  static Map<String, dynamic> serchRoomData = {};
+
+  String getSerchRoomName() {
+    return serchRoomName;
+  }
+
+  // サーバーと通信して検索、部屋を追加
+  void serchRoomServer(String roomNumber) async {
+    print(roomNumber);
+    http.Response response = await HttpToServer.httpReq("GET", "/get_record", {"tableName": "rooms", "pKey": "room_number", "pKeyValue": roomNumber});
+    print(response.body);
+    Map<String, dynamic> result = jsonDecode(response.body);
+    serchRoomName = " ${result["room_name"]}\nに参加しますか？";
+    serchRoomData = result;
+    print(serchRoomName);
+  }
+
+  void joinRoom() async {
+    // Map<String, dynamic> joinRoomData = {
+    //   "room_id": serchRoomData["room_id"],
+    //   "room_name": serchRoomData["room_name"],
+    //   "leaders": jsonDecode(serchRoomData["leaders"]),
+    //   "workers": jsonDecode(serchRoomData["workers"]).add("12345"),
+    //   "tasks": jsonDecode(serchRoomData["tasks"]),
+    //   "roomNumber": serchRoomData["room_number"],
+    //   "sub_rooms": serchRoomData["sub_rooms"],
+    //   "bool_sub_room": serchRoomData["bool_sub_room"],
+    //   "main_room_id": serchRoomData["main_room_id"]
+    // };
+
+    serchRoomData["workers"].add("12345");
+    await DatabaseHelper.insert('rooms', serchRoomData);
+
+    http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
+      "tableName": "rooms",
+      "pKey": "room_id",
+      "pKeyValue": "uuid-1",
+      "recordData": {
+        "room_id": serchRoomData["room_id"],
+        "room_name": serchRoomData["room_name"],
+        "applicant": [],
+        "workers": serchRoomData["workers"],
+        "leaders": serchRoomData["leaders"],
+        "tasks": serchRoomData["tasks"],
+        "room_number": serchRoomData["room_number"],
+        "is_sub_room": serchRoomData["is_sub_room"],
+        "main_room_id": serchRoomData["main_room_id"],
+        "sub_rooms": serchRoomData["sub_rooms"],
+      }
+    });
+
+    load();
+  }
+
   // 部屋数を取得
   int count() {
     if (_roomList.isNotEmpty) {
@@ -184,6 +239,7 @@ class RoomManager extends ChangeNotifier {
     // レスポンスをStringに変換
     Map resultData = jsonDecode(response.body);
     String result = resultData["server_response_data"].toString();
+    print(result);
 
     // print(room.sameGroupId);
 

@@ -70,7 +70,7 @@ class _PageHomeState extends State<PageHome> {
                           ),
                           child: CustomText(text: _door.taskFindbyIndex(index).contents, fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)),
                     )))
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }
@@ -106,7 +106,7 @@ class _PageHomeState extends State<PageHome> {
                     children: [
                       // header
                       // アイコンバー
-                      Container(
+                      SizedBox(
                           width: screenSizeWidth,
                           height: screenSizeHeight * 0.075,
                           child: Align(
@@ -129,7 +129,7 @@ class _PageHomeState extends State<PageHome> {
                                   ),
 
                                   //設定
-                                  PageShiftIcon(
+                                  const PageShiftIcon(
                                     functionIcon: Icons.settings,
                                     widget: PageSetting(),
                                   )
@@ -137,7 +137,7 @@ class _PageHomeState extends State<PageHome> {
                               ))),
 
                       // body
-                      Container(
+                      SizedBox(
                           width: screenSizeWidth,
                           height: screenSizeHeight * 0.865, // エラー発生中
                           child: Stack(children: <Widget>[
@@ -146,7 +146,7 @@ class _PageHomeState extends State<PageHome> {
                             //右半分 メイドさんの立ち絵
                             Align(
                               alignment: Alignment.bottomRight,
-                              child: Container(
+                              child: SizedBox(
                                   width: screenSizeWidth,
                                   height: screenSizeHeight * 0.9,
                                   //alignment: Alignment.bottomCenter,
@@ -210,7 +210,7 @@ class _PageHomeState extends State<PageHome> {
                                           ),
                                           // ループ
                                           child: taskList(_taskManager, _roomManager))
-                                      : SizedBox.shrink()
+                                      : const SizedBox.shrink()
                                 ])),
                           ]))
                     ],
