@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-
 class Constant {
   static const Color main = Color(0xFF00849C);
   static const Color glay = Color(0xFFD9D9D9);

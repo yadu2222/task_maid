@@ -164,7 +164,7 @@ class SocketIO {
 
     /// 接続
     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
-    socket.connect().emit('connected', "connect?"); // "time": DateTime.now().toString(),}
+    socket.connect().emit('connected', {"mail": "deka@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
   }
 
   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
@@ -174,9 +174,16 @@ class SocketIO {
 
   // サーバーに送ったりするメソッドとか
   /// テストメッセージ
-  void sendTestMsg(Map msg) {
+  void sendTestMsg(String msg) {
     if (msg.isNotEmpty) {
       socket.emit('message', msg);
+    }
+  }
+
+  ///任意のエンドポイントにメッセージを送る
+  void sendMsg(String wsEvent, Map<String, dynamic> wsData) {
+    if (wsData.isNotEmpty) {
+      socket.emit(wsEvent, wsData);
     }
   }
 

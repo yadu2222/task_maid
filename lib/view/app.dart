@@ -34,7 +34,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // wsインスタンスの宣言
-  late SocketIO sio;
+  final SocketIO sio = SocketIO();
   final Door _door = Door();
 
   // 既にdbが存在しているかを判定し、なければ追加
@@ -61,7 +61,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     super.initState();
     // wsインスタンス生成
-    sio = SocketIO();
+
     dbroomFirstAdd();
     _door.load();
   }

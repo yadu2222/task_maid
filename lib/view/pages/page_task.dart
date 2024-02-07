@@ -1218,64 +1218,84 @@ class _PageTask extends State<PageTask> {
     );
   }
 
-  // 表示部分
   @override
   Widget build(BuildContext context) {
     //画面サイズ
     var screenSizeWidth = MediaQuery.of(context).size.width;
     var screenSizeHeight = MediaQuery.of(context).size.height;
+    final bottomSpace = MediaQuery.of(context).viewInsets.bottom;
 
     return ChangeNotifierProvider<TaskManager>(
-        create: (context) => taskManager,
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            key: sideBarKey,
-            body: Center(
-                child: Container(
-              width: screenSizeWidth,
-              height: screenSizeHeight,
-              decoration: const BoxDecoration(color: Constant.main),
-              child: SafeArea(
-                  child: Stack(children: [
-                Column(
-                  children: [
-                    SizedBox(
-                        width: screenSizeWidth,
-                        // バー部分
-                        child: Row(children: [
-                          molecules.PageTitle(context, 'タスク', 1, PageHome()),
+      create: (context) => taskManager,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        key: sideBarKey,
+        body: SingleChildScrollView(
+          reverse: true,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomSpace),
+            child: Center(
+              child: Container(
+                width: screenSizeWidth,
+                height: screenSizeHeight,
+                decoration: const BoxDecoration(color: Constant.main),
+                child: SafeArea(
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
                           SizedBox(
-                            width: screenSizeWidth * 0.3,
+                            width: screenSizeWidth,
+                            // バー部分
+                            child: Row(
+                              children: [
+                                molecules.PageTitle(context, 'タスク', 1, PageHome()),
+                                SizedBox(
+                                  width: screenSizeWidth * 0.3,
+                                ),
+                                // タスク追加ボタン　リーダーのみ表示
+                                //leaderCheck()
+                                // メインタスクはリーダーのみ追加可能
+                                addTaskBottun(), // 修正: addTaskBottun() -> addTaskButton()
+
+                                // サイドバーを開く
+                                IconButton(
+                                  onPressed: () {
+                                    sideBarKey.currentState!.openEndDrawer();
+                                  },
+                                  icon: const Icon(
+                                    Icons.menu,
+                                    color: Constant.glay,
+                                    size: 35,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          // タスク追加ボタン　リーダーのみ表示
-                          //leaderCheck()
-                          // メインタスクはリーダーのみ追加可能
-                          addTaskBottun(),
 
-                          // サイドバーを開く
-                          IconButton(
-                              onPressed: () {
-                                sideBarKey.currentState!.openEndDrawer();
-                              },
-                              icon: const Icon(
-                                Icons.menu,
-                                color: Constant.glay,
-                                size: 35,
-                              ))
-                        ])),
+                          // 現在表示しているルームのボタン
+                          // ここからルーム選択、検索、追加ができる
+                          nowRoomInfo.subRoom == 1 ? subRoomName() : roomBottun(), // 修正: roomBottun() -> roomButton()
 
-                    // 現在表示しているルームのボタン
-                    // ここからルーム選択、検索、追加ができる
-                    nowRoomInfo.subRoom == 1 ? subRoomName() : roomBottun(),
-
-                    // タスク表示
-                    SizedBox(width: screenSizeWidth * 0.95, height: screenSizeHeight * 0.7, child: taskList())
-                  ],
+                          // タスク表示
+                          SizedBox(
+                            width: screenSizeWidth * 0.95,
+                            height: screenSizeHeight * 0.7,
+                            child: taskList(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ])),
-            )),
+              ),
+            ),
+          ),
+        ),
 
-            // サイドバー設定
-            endDrawer: sideBar()));
+        // サイドバー設定
+        endDrawer: sideBar(), // 修正: sideBar() の呼び出し方を確認
+      ),
+    );
   }
 }
