@@ -300,7 +300,7 @@ class _PageSetting extends State<PageSetting> {
                                       "status": 0,
                                       "stamp_id": 0,
                                       "quote_id": "",
-                                      "msg": msg
+                                      "msg": msg // msg
                                     },
                                     "token_mail": "deka@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
                                   });
