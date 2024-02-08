@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:task_maid/data/controller/user_manager.dart';
 import 'dart:math';
 
 // 各情報のクラス
@@ -27,45 +28,40 @@ class RoomManager extends ChangeNotifier {
     return _instance;
   }
 
-  static String serchRoomName = "検索結果はありません";
   static Map<String, dynamic> serchRoomData = {};
 
-  String getSerchRoomName() {
-    return serchRoomName;
-  }
-
   // サーバーと通信して検索、部屋を追加
-  void serchRoomServer(String roomNumber) async {
-    print(roomNumber);
+  Future<String> serchRoomServer(String roomNumber) async {
+    // 参加済みならはじいて早期return
+    List nowdbSerchResult = await DatabaseHelper.serachRows("rooms", 1, ["room_number"], [roomNumber], "room_number");
+    if (nowdbSerchResult.isNotEmpty) {
+      return "既に参加しています";
+    }
+
     http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
       "tableName": "rooms",
       "keyList": [
         {"pKey": "room_number", "pKeyValue": roomNumber, "isList": "False"}
       ]
     });
-    print(response.body);
-    Map<String, dynamic> result = jsonDecode(response.body)["srv_res_data"][0];
-    serchRoomName = " ${result["room_name"]}\nに参加しますか？";
-    print(serchRoomName);
-    serchRoomData = result;
-    print(serchRoomName);
+
+    List result = jsonDecode(response.body)["srv_res_data"]["records_list"];
+    print(jsonDecode(response.body));
+
+    // 検索結果が空
+    if (result.isEmpty) {
+      return "検索結果はありません";
+    } else {
+      serchRoomData = result[0];
+      return "${serchRoomData["room_name"]}\nに参加しますか？";
+    }
   }
 
+  // 参加処理
   void joinRoom() async {
-    // Map<String, dynamic> joinRoomData = {
-    //   "room_id": serchRoomData["room_id"],
-    //   "room_name": serchRoomData["room_name"],
-    //   "leaders": jsonDecode(serchRoomData["leaders"]),
-    //   "workers": jsonDecode(serchRoomData["workers"]).add("12345"),
-    //   "tasks": jsonDecode(serchRoomData["tasks"]),
-    //   "roomNumber": serchRoomData["room_number"],
-    //   "sub_rooms": serchRoomData["sub_rooms"],
-    //   "bool_sub_room": serchRoomData["bool_sub_room"],
-    //   "main_room_id": serchRoomData["main_room_id"]
-    // };
-
-    serchRoomData["workers"].add("12345");
     await DatabaseHelper.insert('rooms', serchRoomData);
+    List<String> serchDataWorker = jsonDecode(serchRoomData["workers"]);
+    serchDataWorker.add(UserManager().getUser().userId);
 
     http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
       "tableName": "rooms",
@@ -76,7 +72,7 @@ class RoomManager extends ChangeNotifier {
         "room_name": serchRoomData["room_name"],
         "applicant": [],
         "workers": serchRoomData["workers"],
-        "leaders": serchRoomData["leaders"],
+        "leaders": serchDataWorker,
         "tasks": serchRoomData["tasks"],
         "room_number": serchRoomData["room_number"],
         "is_sub_room": serchRoomData["is_sub_room"],
@@ -84,7 +80,6 @@ class RoomManager extends ChangeNotifier {
         "sub_rooms": serchRoomData["sub_rooms"],
       }
     });
-
     load();
   }
 

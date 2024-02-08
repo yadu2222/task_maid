@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:task_maid/view/pages/page_home.dart';
 import '../../const/items.dart';
 import '../design_system/constant.dart';
@@ -15,6 +16,8 @@ import '../../data/models/room_class.dart';
 
 import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
+
+import '../../data/database_helper.dart';
 
 import '../../data/models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
@@ -212,6 +215,18 @@ class _PageSetting extends State<PageSetting> {
                             });
                             print(httpResponse.statusCode);
                             print(httpResponse.body);
+
+                            // mapに変換 サーバーから帰ってきたuserDataをdbに保存
+                            Map<String, dynamic> addUserData = {
+                              "user_id": jsonDecode(httpResponse.body)["srv_res_data"],
+                              "mail": controllerTextFieldHttpInsertUsersMail.text,
+                              "name": controllerTextFieldHttpInsertUsersName.text,
+                              "sid":"",
+                              "tasks": [],
+                              "rooms": []
+                            };
+
+                            DatabaseHelper.insert('users', addUserData);
                           },
                           child: Container(
                             margin: EdgeInsets.all(screenSizeWidth * 0.03),

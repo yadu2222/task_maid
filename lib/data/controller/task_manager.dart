@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:task_maid/data/database_helper.dart';
 import '../models/room_class.dart';
 import 'room_manager.dart';
 import 'dart:math';
+import '../controller/user_manager.dart';
 
 // 通信
 import '../models/component_communication.dart';
@@ -22,13 +24,14 @@ class TaskManager extends ChangeNotifier {
   static final TaskManager _instance = TaskManager._internal();
 
   final RoomManager _roomManager = RoomManager();
+  final UserManager _userManager = UserManager();
 
   List<Task> getTaskList() {
     return _taskList;
   }
 
   // プライベートなコンストラクタ
-  TaskManager._internal() {}
+  TaskManager._internal();
   // 自分自身を生成
   factory TaskManager() {
     return _instance;
@@ -37,11 +40,11 @@ class TaskManager extends ChangeNotifier {
   // サーバーから自分のタスクを全件取得
   void getTaskListFromServer() async {
     http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
-      "tableName": "tasks", 
-      "keyList": [{
-        "pKey":"worker",
-        "pKeyValue":12345
-      }]});
+      "tableName": "tasks",
+      "keyList": [
+        {"pKey": "worker", "pKeyValue": _userManager.getId()}
+      ]
+    });
   }
 
   // タスクの件数を取得する
@@ -49,9 +52,22 @@ class TaskManager extends ChangeNotifier {
     return _taskList.length;
   }
 
+  Task getLastTask() {
+    return _taskList.last;
+  }
+
   // 指定したインデックスのタスクを取得する
   Task findByIndex(int index) {
-    return _taskList[index];
+    // sleep(Duration(milliseconds: 500));
+    Task result = dummy;
+
+    try {
+      result = _taskList[index];
+    } catch (e) {
+      print(e);
+    }
+
+    return result;
   }
 
   // タスクを検索して返却
@@ -93,14 +109,16 @@ class TaskManager extends ChangeNotifier {
   }
 
   // タスクを追加する
-  void add(String title, String contents, String taskLimit, String worker, String roomid) {
+  Future<Task> add(String title, String contents, String taskLimit, String worker, String roomid) async {
     var random = Random();
     var taskid = random.nextInt(100000);
 
     String dummyID = "888888";
     // var dateTime = getDateTime();
     var task = Task(dummyID, title, contents, 0, taskLimit, worker, roomid);
-    save(task, 0, "/post_ins_new_record");
+    await save(task, 0, "/post_ins_new_record");
+
+    return getLastTask();
   }
 
   // タスクを更新する
@@ -127,7 +145,7 @@ class TaskManager extends ChangeNotifier {
   }
 
   // タスクリストをdbに保存する
-  void save(Task task, int saveType, String httpRoute, [String? deleteId]) async {
+  Future<void> save(Task task, int saveType, String httpRoute, [String? deleteId]) async {
     Map<String, dynamic> saveTask = task.toJson();
 
     switch (saveType) {
@@ -142,12 +160,15 @@ class TaskManager extends ChangeNotifier {
 
         // レスポンスをStringに変換しidを取得
         Map resultData = jsonDecode(response.body);
-        String result = resultData["server_response_data"].toString();
+        String result = resultData["srv_res_data"].toString();
         task.taskid = result;
         saveTask["task_id"] = result;
+        print(result);
+
+        await DatabaseHelper.insert('tasks', saveTask);
         // リストに追加
         _taskList.add(task);
-        await DatabaseHelper.insert('tasks', saveTask);
+
         break;
 
       // update
@@ -183,6 +204,7 @@ class TaskManager extends ChangeNotifier {
 
     _roomManager.load();
     notifyListeners();
+    return;
   }
 
   // タスクを読み込む

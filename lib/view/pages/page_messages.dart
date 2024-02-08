@@ -14,6 +14,8 @@ import '../../data/models/task_class.dart';
 import '../../data/models/msg_class.dart';
 import '../../data/models/room_class.dart';
 import '../../data/controller/task_manager.dart';
+import '../../data/controller/user_manager.dart';
+
 
 // import 'package:intl/intl.dart';
 
@@ -40,6 +42,9 @@ class _PageMassages extends State<PageMassages> {
   // final chatRoomManager _chatRoomManager = chatRoomManager();
   final TaskManager _taskManager = TaskManager();
   final MsgManager _msgManager = MsgManager();
+  final UserManager _userManager = UserManager();
+
+  
 
   // 仮置きする変数
   String message = '';
@@ -154,7 +159,7 @@ class _PageMassages extends State<PageMassages> {
                         ])),
 
                     // 自分以外の人からのメッセージであればボタンを表示
-                    sender != items.userInfo['userid']
+                    sender != _userManager.getUser().userId
                         ? Container(
                             alignment: const Alignment(0.0, 0.0),
                             margin: EdgeInsets.all(screenSizeWidth * 0.03),
@@ -237,14 +242,14 @@ class _PageMassages extends State<PageMassages> {
           Container(
               width: screenSizeWidth,
               // 相手のメッセージならば左 自分のメッセージなら右に寄せて表示
-              alignment: senderid != items.userInfo['userid'] ? Alignment.centerLeft : Alignment.centerRight,
+              alignment: senderid !=_userManager.getId() ?  Alignment.centerRight :Alignment.centerLeft,
               child: SizedBox(
                   width: screenSizeWidth * 0.7,
                   // rowの高さを揃えるクラス
                   child: IntrinsicHeight(
                       child: Row(children: [
                     // 送信時間表示
-                    sendTime(index, senderid == items.userInfo['userid'], msgData),
+                    sendTime(index, senderid != _userManager.getId(), msgData),
                     Column(children: [
                       Container(
                           width: screenSizeWidth * 0.6,
@@ -262,7 +267,7 @@ class _PageMassages extends State<PageMassages> {
                           ]))
                     ]),
                     // 送信時間表示
-                    sendTime(index, senderid != items.userInfo['userid'], msgData),
+                    sendTime(index, senderid == _userManager.getId(), msgData),
                   ]))))
         ]));
   }

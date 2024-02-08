@@ -19,6 +19,7 @@ import '../../data/models/room_class.dart';
 import '../../data/controller/room_manager.dart';
 import '../../data/controller/task_manager.dart';
 import 'package:task_maid/data/controller/msg_manager.dart';
+import '../../data/controller/user_manager.dart';
 
 // 通信用のクラス
 import '../../data/models/component_communication.dart';
@@ -67,6 +68,7 @@ class _PageTask extends State<PageTask> {
   final TaskManager taskManager = TaskManager();
   final RoomManager roomManager = RoomManager();
   final MsgManager msgManager = MsgManager();
+  final UserManager userManager = UserManager();
   // 現在の部屋を取得
   Room nowRoomInfo;
   _PageTask({required this.nowRoomInfo});
@@ -85,7 +87,7 @@ class _PageTask extends State<PageTask> {
     bool result = false;
     // リストが空じゃなければ
     for (int i = 0; i < nowRoomInfo.leaders.length; i++) {
-      if (nowRoomInfo.leaders == items.userInfo['userid']) {
+      if (nowRoomInfo.leaders == userManager.getId()) {
         result = true;
         break;
       }
@@ -176,8 +178,8 @@ class _PageTask extends State<PageTask> {
                   title: CustomText(text: 'はい', fontSize: screenSizeWidth * 0.035, color: Constant.red),
                   onTap: () {
                     // ユーザーのidを削除
-                    nowRoomInfo.leaders.remove(items.userInfo['userid']);
-                    nowRoomInfo.workers.remove(items.userInfo['userid']);
+                    nowRoomInfo.leaders.remove(userManager.getId());
+                    nowRoomInfo.workers.remove(userManager.getId());
 
                     // 退室処理呼び出し
                     roomManager.deleat(nowRoomInfo);
@@ -217,9 +219,8 @@ class _PageTask extends State<PageTask> {
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
                       leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
-
                       // 改築予定
-                      CustomText(text: '\t${nowRoomInfo.workers[i]}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
+                      CustomText(text: '\t${userManager.getName(nowRoomInfo.workers[i])}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // リーダーはタップでDMにとべる
                     onTap: () {
@@ -309,7 +310,7 @@ class _PageTask extends State<PageTask> {
                           roomManager.add(
                             nowRoomInfo,
                             newSubRoomName,
-                            [items.userInfo['userid']],
+                            [userManager.getId()],
                             nowRoomInfo.workers,
                             [],
                             1,
@@ -692,7 +693,7 @@ class _PageTask extends State<PageTask> {
                               FocusScope.of(context).unfocus(); //キーボードを閉じる
                               // 仮置き
                               // 部屋を追加
-                              roomManager.add(nowRoomInfo, newRoomName, [items.userInfo['userid']], [items.userInfo['userid']], [], 0, taskManager);
+                              roomManager.add(nowRoomInfo, newRoomName, [userManager.getId()], [userManager.getId()], [], 0, taskManager);
                             }
 
                             // 現在の部屋の切り替えと変数の上書き
@@ -846,11 +847,7 @@ class _PageTask extends State<PageTask> {
                             decoration: const InputDecoration(
                               hintText: 'タスク内容を入力してね',
                             ),
-                            onChanged: (task) {
-                              setState(() {
-                                newTask = task;
-                              });
-                            },
+                            onChanged: (text) {},
                             textInputAction: TextInputAction.done,
                           )),
 
@@ -884,7 +881,7 @@ class _PageTask extends State<PageTask> {
                                     padding: EdgeInsets.only(top: screenSizeWidth * 0.02, bottom: screenSizeWidth * 0.02),
                                     alignment: Alignment(0, 0),
                                     decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
-                                    child: CustomText(text: nowRoomInfo.workers[index], fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
+                                    child: CustomText(text: userManager.getName(nowRoomInfo.workers[index]), fontSize: screenSizeWidth * 0.04, color: Constant.blackGlay),
                                   ),
                                 ));
                           },
@@ -898,8 +895,13 @@ class _PageTask extends State<PageTask> {
                         onTap: () async {
                           // 空文字だったら通さない
                           if (taskThinkController.text.isNotEmpty) {
-                            // タスクを追加
-                            taskManager.add(newTask, newTask, limitTime.toString(), worker, nowRoomInfo.roomid);
+                            FocusScope.of(context).unfocus(); // キーボードを閉じる
+
+                            // タスクの追加
+                            Task last = await taskManager.add(taskThinkController.text, taskThinkController.text, limitTime.toString(), worker, nowRoomInfo.roomid);
+
+                            Navigator.of(context).pop(); // 戻る
+                            msgManager.add('がんばってください', 1, 0, last.taskid, 0, nowRoomInfo.roomid);
 
                             // 入力フォームの初期化
                             dateText = '期日を入力してね';
@@ -907,59 +909,10 @@ class _PageTask extends State<PageTask> {
                             timeController.clear();
                             taskThinkController.clear();
 
-                            FocusScope.of(context).unfocus(); // キーボードを閉じる
-                            Navigator.of(context).pop(); // 戻る
-                            // 値の更新
-                            // items.taskList = await DatabaseHelper.queryAllRows('tasks');
-                            // nowRoomTaskList = await DatabaseHelper.queryRowtask(nowRoomid);
-
-                            // サーバーと通信
-                            // -------ここから----------
-                            // http.Response response = await HttpToServer.httpReq("POST", "/post_ins_new_record", {
-                            //   "tableName": "tasks",
-                            //   "pKey": "task_id",
-                            //   "pKeyValue": "",
-                            //   "recordData": {
-                            //     "task_id": "",
-                            //     "task_limit": limitTime.toString(),
-                            //     "leaders": ["005f9164-5eeb-4cfb-a039-8a9dceb07162"],
-                            //     "worker": "46956da2-7b0a-49e6-b980-f5ef4e7e3f12",
-                            //     "contents": newTask,
-                            //     "room_id": nowRoomid
-                            //   }
-                            // });
-                            // print(response.body);
-                            // Map<String, dynamic> parsedData = jsonDecode(response.body);
-                            // String task_uuid = parsedData["server_response_data"];
-                            // print(task_uuid);
-
-                            // // 失敗
-                            // http.Response getRes = await HttpToServer.httpReq("GET", "/get_record", {"tableName": "tasks", "pKey": "task_id", "pKeyValue": task_uuid});
-
-                            // print(getRes.body);
-                            // ---------ここまで---------------
-
-                            // dbに追加
-                            // print(nowRoomTaskList);
-                            // taskGet();
-                            // 画面の更新
-                            // msg
-                            msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid, 0, nowRoomInfo.roomid);
-
-                            const Loading();
-
-                            setState(() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PageMassages(
-                                          messageRoom: nowRoomInfo,
-                                        )),
-                              ).then((value) {
-                                //戻ってきたら再描画
-                                setState(() {});
-                              });
-                            });
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => PageMassages(messageRoom: nowRoomInfo)),
+                            );
                           }
                         },
                         child: Container(
@@ -1070,6 +1023,45 @@ class _PageTask extends State<PageTask> {
         ));
   }
 
+  // Widget addTaskBotton(String serchID) {
+  //   return MaterialApp(
+  //     debugShowCheckedModeBanner: false, //デバッグの表示を消す
+
+  //     // 非同期処理
+  //     home: FutureBuilder<bool>(
+  //       // ここに入れた処理を待ってreturnの中身を実行する
+  //       // dbの有無を確認
+  //       future: roomManager.serchRoomServer(serchID)
+  //       // snapshotに非同期処理の進捗や結果が含まれる
+  //       builder: (context, snapshot) {
+  //         // connectionStateを参照
+  //         // connectionStateに関する補足
+  //         // connectionState.none まだ非同期処理が開始されていない
+  //         // waiting 非同期処理を実行中で結果がまだ出ていない
+  //         // active 非同期処理を実行中で、結果が出た
+  //         // done 非同期処理が完了し、結果を受け取った
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return Loading();
+  //           //  CircularProgressIndicator(); // データベース確認中のローディング表示
+  //           // エラー
+  //         } else if (snapshot.hasError) {
+  //           return Text('Error: ${snapshot.error}');
+
+  //           // waitingでもerrorでもない = 結果を受け取っている
+  //         } else {
+  //           Navigator.of(context).pop(); // 戻る
+
+  //           // dbに追加
+  //           // 画面の更新
+  //           // msg
+  //           msgManager.add('がんばってください', 1, 0, taskManager.findByIndex(taskManager.count() - 1).taskid, 0, nowRoomInfo.roomid);
+  //           return PageMassages(messageRoom: nowRoomInfo);
+  //         }
+  //       },
+  //     ),
+  //   );
+  // }
+
   // -検索処理
   Widget searchButton(String searchID) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
@@ -1083,18 +1075,10 @@ class _PageTask extends State<PageTask> {
           if (_messageController.text.isNotEmpty) {
             // roomNames = roomName(); // 変数の更新
             // roomIDをkeyにしてここで問い合わせ
-            // ひとまずは仮の結果を用意する
-            // 値が帰ってくるかを判別する変数
-            // サーバー処理設置願い
-            String searchRoomName = 'てすとてすと';
-            bool searchBool = true;
-            String falseResult = '検索結果はありません';
-
             // 検索処理
-            roomManager.serchRoomServer(searchID);
-            Future.delayed(const Duration(milliseconds: 500));
-
-            // String result = searchBool ? searchRoomName : falseResult;
+            String searchRoomName = await roomManager.serchRoomServer(searchID);
+            // Future.delayed(const Duration(milliseconds: 500));
+            bool searchBool = searchRoomName != '既に参加しています' && searchRoomName != '検索結果はありません';
 
             // データベースさんへ問い合わせた結果を表示するダイアログ
             showDialog(
@@ -1125,7 +1109,7 @@ class _PageTask extends State<PageTask> {
                               top: screenSizeWidth * 0.0475,
                               bottom: screenSizeWidth * 0.02,
                             ),
-                            child: CustomText(text: roomManager.getSerchRoomName(), fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
+                            child: CustomText(text: searchRoomName, fontSize: screenSizeWidth * 0.045, color: Constant.blackGlay),
                           ),
 
                           // 参加しますか？
@@ -1140,7 +1124,6 @@ class _PageTask extends State<PageTask> {
                                       InkWell(
                                           onTap: () {
                                             Navigator.of(context).pop(); //もどる
-
                                             // サーバーに参加問い合わせ
                                             // 既に参加しています or 参加申請を送りました
                                             // 結果
@@ -1176,7 +1159,7 @@ class _PageTask extends State<PageTask> {
                                             Navigator.of(context).pop(); //もどる
                                           },
                                           // ボタン
-                                          child: dialogButton(true, 0.2)),
+                                          child: dialogButton(false, 0.2)),
                                     ],
                                   ))
                               // 検索結果なし

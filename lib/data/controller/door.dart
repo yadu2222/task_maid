@@ -11,6 +11,7 @@ import '../models/msg_class.dart';
 import 'task_manager.dart';
 import 'msg_manager.dart';
 import 'room_manager.dart';
+import 'user_manager.dart';
 
 // db操作
 import '../database_helper.dart';
@@ -24,9 +25,9 @@ class Door {
   // Door _door = Door();
 
   final TaskManager _taskManager = TaskManager();
-  // final MsgManager _msgManager = MsgManager();
   final RoomManager _roomManager = RoomManager();
   final MsgManager _msgManager = MsgManager();
+  final UserManager _userManager = UserManager();
 
   TaskManager getTaskManager() {
     return _taskManager;
@@ -98,6 +99,7 @@ class Door {
 
   // 読み込み
   void load() async {
+    _userManager.load();
     _roomManager.load();
     _taskManager.load();
     _msgManager.load();

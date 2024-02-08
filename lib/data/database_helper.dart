@@ -57,6 +57,7 @@ class DatabaseHelper {
       user_id TEXT PRIMARY KEY,
       mail TEXT,
       name TEXT,
+      sid text,
       tasks  text,
       rooms text
     )

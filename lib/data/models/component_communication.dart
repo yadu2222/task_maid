@@ -8,7 +8,7 @@ import '../database_helper.dart';
 
 class Url {
   // URLとかポートとかプロトコルとか
-  static const String serverIP = "10.200.0.190"; // win + r で gipcしてね♡
+  static const String serverIP = "172.22.80.1"; // win + r で gipcしてね♡
   static const String serverPort = "5108";
   static const String protocol = "http";
 

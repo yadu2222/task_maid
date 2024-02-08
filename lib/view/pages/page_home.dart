@@ -78,7 +78,7 @@ class _PageHomeState extends State<PageHome> {
   @override
   void initState() {
     super.initState();
-
+    _door.load();
     
   }
 
