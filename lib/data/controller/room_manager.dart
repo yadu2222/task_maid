@@ -29,6 +29,7 @@ class RoomManager extends ChangeNotifier {
   }
 
   static Map<String, dynamic> serchRoomData = {};
+  List resultDatas = [];
 
   // サーバーと通信して検索、部屋を追加
   Future<String> serchRoomServer(String roomNumber) async {
@@ -46,45 +47,50 @@ class RoomManager extends ChangeNotifier {
       ]
     });
 
-    List result = jsonDecode(response.body)["srv_res_data"]["records_list"];
+    resultDatas = jsonDecode(response.body)["srv_res_data"]["records_list"];
     print(jsonDecode(response.body));
 
     // 検索結果が空
-    if (result.isEmpty) {
+    if (resultDatas.isEmpty) {
       return "検索結果はありません";
     } else {
-      serchRoomData = result[0];
+      serchRoomData = resultDatas[0];
       return "${serchRoomData["room_name"]}\nに参加しますか？";
     }
   }
 
   // 参加処理
   void joinRoom() async {
-    await DatabaseHelper.insert('rooms', serchRoomData);
+    // await DatabaseHelper.insert('rooms', serchRoomData);
     List<dynamic> serchDataWorker = jsonDecode(serchRoomData["workers"]);
     serchDataWorker.add(UserManager().getUser().userId);
 
     print("serch${serchDataWorker}");
 
-    http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
-      "tableName": "rooms",
-      "pKey": "room_id",
-      "pKeyValue": serchRoomData["room_id"],
-      "recordData": {
-        "room_id": serchRoomData["room_id"],
-        "room_name": serchRoomData["room_name"],
-        "applicant":[],
-        "workers":  serchDataWorker,
-        "leaders": jsonDecode(serchRoomData["leaders"]),
-        "tasks": jsonDecode(serchRoomData["tasks"]),
-        "room_number": serchRoomData["room_number"],
-        "is_sub_room": serchRoomData["is_sub_room"],
-        "main_room_id":jsonDecode(serchRoomData["main_room_id"]),
-        "sub_rooms":jsonDecode( serchRoomData["sub_rooms"]),
-      }
-    });
+    for (Map<String,dynamic> result in resultDatas) {
+      http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
+        "tableName": "rooms",
+        "pKey": "room_id",
+        "pKeyValue": result["room_id"],
+        "recordData": {
+          "room_id": result["room_id"],
+          "room_name": result["room_name"],
+          "applicant": [],
+          "workers": serchDataWorker,
+          "leaders": jsonDecode(result["leaders"]),
+          "tasks": jsonDecode(result["tasks"]),
+          "room_number": result["room_number"],
+          "is_sub_room": result["is_sub_room"],
+          "main_room_id": jsonDecode(result["main_room_id"]),
+          "sub_rooms": jsonDecode(result["sub_rooms"]),
+        }
+      });
 
-    print(jsonDecode(response.body));
+      await DatabaseHelper.insert('rooms', result);
+
+      print(jsonDecode(response.body));
+    }
+
     load();
   }
 
@@ -319,6 +325,7 @@ class RoomManager extends ChangeNotifier {
   // 部屋情報の読み込み
   void load() async {
     List loadList = await DatabaseHelper.queryAllRows('rooms');
+
     _roomList.clear();
     for (Map room in loadList) {
       String roomid = room['room_id'];
@@ -327,8 +334,15 @@ class RoomManager extends ChangeNotifier {
       List workers = jsonDecode(room['workers']);
       List tasks = jsonDecode(room['tasks']);
       String roomNumber = room['room_number'];
-      List sameGroupId = jsonDecode(room['sub_rooms']);
       int subRoom = room['is_sub_room'];
+      List sameGroupId = jsonDecode(room['sub_rooms']);
+
+      if (subRoom == 1) {
+        List mainRoomIdList = await DatabaseHelper.serachRows('rooms', 0, ['is_sub_room', 'main_room_id'], [0, roomid], 'main_room_id');
+        sameGroupId = jsonDecode(mainRoomIdList[0]['sub_rooms']);
+        workers = jsonDecode(mainRoomIdList[0]['workers']);
+      }
+
       String mainRoomid = room['main_room_id'];
       List applicant = jsonDecode(room['applicant']);
 
