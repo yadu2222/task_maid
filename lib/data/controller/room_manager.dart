@@ -151,6 +151,7 @@ class RoomManager extends ChangeNotifier {
     if (boolSubRoom == 1) {
       // サブルームであれば
       // サブルームをいきなり追加することはできないであってほしい
+      // TODO:はじけるようにする
       // mainRoomから一部屋ずつ増やす方向で
       roomNumber = findByroomid(nowRoom.mainRoomid).roomNumber + "-" + (findByroomid(nowRoom.mainRoomid).sameGroupId.length).toString();
       // グループリストを今の部屋からもらう

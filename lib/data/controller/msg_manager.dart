@@ -54,9 +54,11 @@ class MsgManager {
     // インスタンス生成
     MSG addMsg = MSG(msgData["msg_id"], msgData["msg_datetime"], msgData["sender"], msgData["room_id"], msgData["level"], msgData["status"], msgData["stamp_id"], msgData["quote_id"], msgData["msg"],
         msgData["receiver"]);
+    // 保存処理呼び出す
+    save(addMsg);
 
-    _msgList.add(addMsg);
-    DatabaseHelper.insert('msg_chats', addMsg.toJson());
+    // _msgList.add(addMsg);
+    // DatabaseHelper.insert('msg_chats', addMsg.toJson());
     // load();
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_maid/data/controller/room_manager.dart';
 import 'package:task_maid/data/controller/task_manager.dart';
+import 'package:task_maid/view/design_system/constant.dart';
 import 'pages/page_home.dart';
 import '../const/items.dart';
 import '../data/database_helper.dart';
@@ -20,8 +21,18 @@ class MyApp extends StatelessWidget {
     // _door.load();
   }
 
-  Widget loadMaid() {
-    return SizedBox(child: Image.asset(items.taskMaid['move'][0]));
+  Widget loadMaid(BuildContext context) {
+    // 画面サイズ
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+    return Container(
+        height: screenSizeWidth * 0.2,
+        width: screenSizeWidth * 0.2,
+        decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(10)),
+        child: Image.asset(
+          items.taskMaid['move'][0],
+          fit: BoxFit.contain,
+        ));
   }
 
   @override
@@ -43,7 +54,7 @@ class MyApp extends StatelessWidget {
           // active 非同期処理を実行中で、結果が出た
           // done 非同期処理が完了し、結果を受け取った
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return loadMaid();
+            return loadMaid(context);
             //  CircularProgressIndicator(); // データベース確認中のローディング表示
             // エラー
           } else if (snapshot.hasError) {

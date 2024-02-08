@@ -187,10 +187,14 @@ class _PageTask extends State<PageTask> {
 
                     // 手持ちのデータを更新
                     nowRoomInfo = roomManager.findByindex(0);
+                    
 
                     taskManager.load();
 
-                    setState(() {});
+                    setState(() {
+                      exit = false;
+                      exitConfirmation = false;
+                    });
                   },
                 )
               : const SizedBox.shrink(),
@@ -219,8 +223,9 @@ class _PageTask extends State<PageTask> {
                 ? ListTile(
                     leading: i == 0 ? const Icon(Icons.horizontal_rule) : const SizedBox.shrink(),
                     title: Row(children: [
-                      leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
+                      // leaderCheck() ? const Icon(Icons.military_tech) : const Icon(Icons.horizontal_rule),
                       // 改築予定
+                      // なんかとれないね
                       CustomText(text: '\t${userManager.getName(nowRoomInfo.workers[i])}', fontSize: screenSizeWidth * 0.035, color: Constant.blackGlay)
                     ]),
                     // リーダーはタップでDMにとべる

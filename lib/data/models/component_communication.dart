@@ -144,7 +144,9 @@ class SocketIO {
         _chatMsgWs = data;
         print(data);
 
+        // 受け取ったデータをmapに変換
         Map<String, dynamic> recordMsgMap = jsonDecode(data);
+        // データを処理するメソッドに流す
         MsgManager().sioReceive(recordMsgMap);
       },
     );
