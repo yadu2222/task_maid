@@ -17,7 +17,7 @@ import '../models/component_communication.dart';
 import 'package:http/http.dart' as http; // http
 
 class RoomManager extends ChangeNotifier {
-  Room dummy = Room('12345', 'てすと', [], [], [], '1234', 0, '1234', []);
+  Room dummy = Room('12345', 'てすと', [], [], [], '1234', 0, '1234', [], []);
   late List<Room> _roomList = [dummy];
   // taskManagerのインスタンス
   static final RoomManager _instance = RoomManager._internal();
@@ -38,6 +38,7 @@ class RoomManager extends ChangeNotifier {
       return "既に参加しています";
     }
 
+    print(roomNumber);
     http.Response response = await HttpToServer.httpReq("POST", "/get_records", {
       "tableName": "rooms",
       "keyList": [
@@ -60,26 +61,30 @@ class RoomManager extends ChangeNotifier {
   // 参加処理
   void joinRoom() async {
     await DatabaseHelper.insert('rooms', serchRoomData);
-    List<String> serchDataWorker = jsonDecode(serchRoomData["workers"]);
+    List<dynamic> serchDataWorker = jsonDecode(serchRoomData["workers"]);
     serchDataWorker.add(UserManager().getUser().userId);
+
+    print("serch${serchDataWorker}");
 
     http.Response response = await HttpToServer.httpReq("POST", "/post_upd", {
       "tableName": "rooms",
       "pKey": "room_id",
-      "pKeyValue": "uuid-1",
+      "pKeyValue": serchRoomData["room_id"],
       "recordData": {
         "room_id": serchRoomData["room_id"],
         "room_name": serchRoomData["room_name"],
-        "applicant": [],
-        "workers": serchRoomData["workers"],
-        "leaders": serchDataWorker,
-        "tasks": serchRoomData["tasks"],
+        "applicant":[],
+        "workers":  serchDataWorker,
+        "leaders": jsonDecode(serchRoomData["leaders"]),
+        "tasks": jsonDecode(serchRoomData["tasks"]),
         "room_number": serchRoomData["room_number"],
         "is_sub_room": serchRoomData["is_sub_room"],
-        "main_room_id": serchRoomData["main_room_id"],
-        "sub_rooms": serchRoomData["sub_rooms"],
+        "main_room_id":jsonDecode(serchRoomData["main_room_id"]),
+        "sub_rooms":jsonDecode( serchRoomData["sub_rooms"]),
       }
     });
+
+    print(jsonDecode(response.body));
     load();
   }
 
@@ -125,6 +130,7 @@ class RoomManager extends ChangeNotifier {
     List leaders,
     List workers,
     List tasks,
+    // List applicant,
     int boolSubRoom,
     TaskManager _taskManager,
   ) {
@@ -148,17 +154,8 @@ class RoomManager extends ChangeNotifier {
       print("通信前sameGroup${sameGroupId}");
     }
     // インスタンス生成
-    var room = Room(
-      dummyId,
-      roomName,
-      leaders,
-      workers,
-      [],
-      roomNumber,
-      boolSubRoom,
-      nowRoom.mainRoomid,
-      sameGroupId,
-    );
+    // TODO: 現在はapplicantが空になっているのでそれの処理
+    var room = Room(dummyId, roomName, leaders, workers, [], roomNumber, boolSubRoom, nowRoom.mainRoomid, sameGroupId, []);
     // 通信 保存
     save(room, 0, "/post_ins_new_record");
     notifyListeners();
@@ -331,15 +328,16 @@ class RoomManager extends ChangeNotifier {
       List tasks = jsonDecode(room['tasks']);
       String roomNumber = room['room_number'];
       List sameGroupId = jsonDecode(room['sub_rooms']);
-      int subRoom = room['bool_sub_room'];
+      int subRoom = room['is_sub_room'];
       String mainRoomid = room['main_room_id'];
+      List applicant = jsonDecode(room['applicant']);
 
       // リストに追加
       // MsgManager msgManager = MsgManager(roomid);
       // List<Task> loadTaskData =   taskManager.findByRoomid(roomid);
       // List<Room> loadSubRoomData =  getSameData(sameGroupId);
 
-      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupId);
+      Room loadRoom = Room(roomid, roomName, leaders, workers, tasks, roomNumber, subRoom, mainRoomid, sameGroupId, applicant);
 
       _roomList.add(loadRoom);
     }

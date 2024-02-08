@@ -42,6 +42,7 @@ class PageTask extends StatefulWidget {
 class _PageTask extends State<PageTask> {
   // textfieldを初期化したり中身の有無を判定するためのコントローラー
   final TextEditingController _messageController = TextEditingController();
+    final TextEditingController serchIdController = TextEditingController();
   // final TextEditingController _controller = TextEditingController();
 
   // タスク作成時のフォームに使うコントローラー
@@ -953,7 +954,7 @@ class _PageTask extends State<PageTask> {
     double screenSizeWidth = MediaQuery.of(context).size.width;
     double screenSizeHeight = MediaQuery.of(context).size.height;
     // 検索用変数
-    String searchID = 'ルームID';
+    
     return InkWell(
         onTap: () {
           // ダイアログ表示 現在加入中の部屋と検索バー表示
@@ -990,20 +991,22 @@ class _PageTask extends State<PageTask> {
                                     alignment: const Alignment(0.0, 0.0),
                                     // テキストフィールド
                                     child: TextField(
-                                      controller: _messageController,
+                                      controller: serchIdController,
                                       decoration: const InputDecoration(
                                         hintText: '部屋番号を入力してね',
                                       ),
-                                      onChanged: (text) {
-                                        searchID = text;
+                                      onChanged: (serchID) {
+                                        
                                       },
                                       textInputAction: TextInputAction.search,
                                     )),
+
+                                    
                                 SizedBox(
                                   width: screenSizeWidth * 0.01,
                                 ),
                                 // やじるし 検索ボタン
-                                searchButton(searchID)
+                                searchButton(serchIdController.text)
                               ],
                             ),
                             // 現在参加中部屋のリスト
@@ -1072,7 +1075,7 @@ class _PageTask extends State<PageTask> {
           Navigator.of(context).pop(); //もどる
 
           // 入力されていなければはじく
-          if (_messageController.text.isNotEmpty) {
+          if (serchIdController.text.isNotEmpty) {
             // roomNames = roomName(); // 変数の更新
             // roomIDをkeyにしてここで問い合わせ
             // 検索処理

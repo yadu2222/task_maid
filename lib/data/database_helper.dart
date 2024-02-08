@@ -70,10 +70,11 @@ class DatabaseHelper {
       room_name TEXT ,
       leaders TEXT,
       workers TEXT,
+      applicant text,
       tasks TEXT,
       room_number TEXT,
       sub_rooms TEXT,
-      bool_sub_room integer,
+      is_sub_room integer,
       main_room_id text
     )
   ''');

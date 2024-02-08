@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 class Room {
   // 固有値
   String roomid;
@@ -13,6 +12,8 @@ class Room {
   List workers;
   // タスクidリスト
   List tasks;
+  // 入室申請者リスト
+  List applicant;
 
   // 検索用の値
   String roomNumber;
@@ -32,7 +33,7 @@ class Room {
 
   // MsgManager msgManager;
 
-  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroupId);
+  Room(this.roomid, this.roomName, this.leaders, this.workers, this.tasks, this.roomNumber, this.subRoom, this.mainRoomid, this.sameGroupId,this.applicant);
 
   // Mapに変換する
   // 保存で使う
@@ -45,8 +46,9 @@ class Room {
       'tasks': jsonEncode(tasks),
       'room_number': roomNumber,
       'sub_rooms': jsonEncode(sameGroupId),
-      'bool_sub_room': subRoom,
-      'main_room_id': mainRoomid
+      'is_sub_room': subRoom,
+      'main_room_id': mainRoomid,
+      'applicant':jsonEncode(applicant)
     };
   }
 }
