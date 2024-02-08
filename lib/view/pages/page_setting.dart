@@ -304,7 +304,7 @@ class _PageSetting extends State<PageSetting> {
                               // pKey, pKeyValue はauto_incrementなので不要
                               "recordData": {
                                 "msg_datetime": DateTime.now().toString(),
-                                "receiver": "ca12c172-297d-459b-b371-9748754e9c34",
+                                "receiver": "954309f3-e7d6-4409-a10d-80dd26bd6707", // *
                                 "room_id": "28e08fb5-4ce4-4f5e-a317-c1032eb4705c",
                                 "level": 0,
                                 "status": 0,
@@ -313,6 +313,20 @@ class _PageSetting extends State<PageSetting> {
                                 "msg": msg // msg
                               },
                               "token_mail": "deka@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
+                              // sio.sendMsg("send_msg_chat", {
+                              //   "tableName": "msg_chats",
+                              //   // pKey, pKeyValue はauto_incrementなので不要
+                              //   "recordData": {
+                              //     "msg_datetime": DateTime.now().toString(),
+                              //     "receiver": "ca12c172-297d-459b-b371-9748754e9c34",
+                              //     "room_id": "28e08fb5-4ce4-4f5e-a317-c1032eb4705c",
+                              //     "level": 0,
+                              //     "status": 0,
+                              //     "stamp_id": 0,
+                              //     "quote_id": "",
+                              //     "msg": msg // msg
+                              //   },
+                              //   "token_mail": "deka@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
                             });
                             // テキストフィールドをクリアする
                             controllerTextFieldWSMsg.clear();
@@ -332,7 +346,8 @@ class _PageSetting extends State<PageSetting> {
                           height: screenSizeHeight * 0.075,
                           alignment: Alignment(0, 0),
                           decoration: BoxDecoration(color: Constant.white, borderRadius: BorderRadius.circular(16)),
-                          child: CustomText(text: sio.chatMsgWs, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay), // ws.testText
+                          child:
+                              CustomText(text: "msg_num: " + sio.msg_numDataMsg_chat_msg_id + " msg: " + sio.chatMsgWsMsg, fontSize: screenSizeWidth * 0.03, color: Constant.blackGlay), // ws.testText
                         ),
 
                         // http get records
