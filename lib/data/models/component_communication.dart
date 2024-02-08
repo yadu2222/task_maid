@@ -6,6 +6,9 @@ import 'dart:convert'; // json
 import '../controller/msg_manager.dart';
 import '../controller/door.dart';
 import '../database_helper.dart';
+import 'dart:async';
+
+final StreamController<dynamic> _chatMsgController = StreamController<dynamic>.broadcast();
 
 class Url {
   // URLとかポートとかプロトコルとか
@@ -88,7 +91,10 @@ class SocketIO {
   String _connectMsg = "";
   String _testText = "";
   String _serverResMsg = "";
-  String _chatMsgWs = "";
+  String _msg_numDataMsg_chat_msg_id = "";
+  String _chatMsgWsMsg = "";
+  // Map<String, dynamic> _msg_numData = {};
+  // Map<String, dynamic> _chatMsgWs = {};
 
   // methods
   ///ファクトリコンストラクタ(factory Class)
@@ -136,22 +142,35 @@ class SocketIO {
       _testText = data;
     });
 
+    ///チャットの連番を受け取る
+    socket.on('msg_num', (data) {
+      _msg_numDataMsg_chat_msg_id = data['msg_chat_msg_id'];
+      print(data["msg_chat_msg_id"]);
+    });
+
     ///チャットを受け取る
     socket.on(
       'chat_msg',
       // ここに受け取ったデータが入る
       (data) {
-        _chatMsgWs = data;
-        print(data);
+        debugPrint(data);
 
         // 受け取ったデータをmapに変換
         Map<String, dynamic> recordMsgMap = jsonDecode(data);
+
+        _chatMsgWsMsg = jsonDecode(data)['msg'];
+        // 表示してみる
+        recordMsgMap.forEach((key, value) {
+          debugPrint("$key: $value");
+        });
+
         // データを処理するメソッドに流す
         MsgManager().sioReceive(recordMsgMap);
       },
     );
 
     socket.on(
+      // かわいそう；；
       'receive__update',
       (data) async {
         // サーバー側で更新があれば｛"tableName":テーブル名,"pKey":主キー,"pKeyValue":主キーの値｝を受信する。
@@ -183,13 +202,15 @@ class SocketIO {
     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
     socket.connect().emit('connected', {"mail": "neruko@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
 
-    // チャットを受け取る
-    socket.on(
-      'chat_msg',
-      (data) {
-        _chatMsgWs = jsonDecode(data); // フィールドに追加
-      },
-    );
+    // socket.onって別のところにかけるのかな～
+    //   // チャットを受け取る
+    //   socket.on(
+    //     'chat_msg',
+    //     (data) {
+    //       _chatMsgWs = jsonDecode(data); // フィールドに追加
+    //     },
+    //   );
+    // }
   }
 
   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
@@ -201,7 +222,7 @@ class SocketIO {
   /// テストメッセージ
   void sendTestMsg(String msg) {
     if (msg.isNotEmpty) {
-      socket.emit('message', msg);
+      socket.emit('test_msg', msg);
     }
   }
 
@@ -216,8 +237,12 @@ class SocketIO {
   String get connectMsg => _connectMsg;
   String get testText => _testText;
   String get serverResMsg => _serverResMsg;
-  String get chatMsgWs => _chatMsgWs;
+  String get msg_numDataMsg_chat_msg_id => _msg_numDataMsg_chat_msg_id;
+  String get chatMsgWsMsg => _chatMsgWsMsg;
+  // Map<String, dynamic> get msg_numData => _msg_numData;
+  // Map<String, dynamic> get chatMsgWs => _chatMsgWs;
 }
+
 
 // class Tryws {
 //   late io.Socket sk;
