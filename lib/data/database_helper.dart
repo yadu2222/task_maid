@@ -97,6 +97,7 @@ class DatabaseHelper {
     CREATE TABLE msg_chats (
       msg_id integer,
       msg_datetime TEXT PRIMARY KEY,
+      receiver text,
       sender TEXT,
       room_id TEXT,
       level integer,

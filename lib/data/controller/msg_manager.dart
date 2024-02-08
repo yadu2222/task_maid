@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:task_maid/data/models/user_class.dart';
+
 import '../database_helper.dart';
 import '../models/msg_class.dart';
+import '../controller/user_manager.dart';
 import '../models/component_communication.dart';
 
 class MsgManager {
@@ -13,6 +18,7 @@ class MsgManager {
   }
 
   final SocketIO _socketIO = SocketIO();
+  final UserManager _userManager = UserManager();
 
   // 指定した部屋のメッセージ数を取得
   int count() {
@@ -25,20 +31,38 @@ class MsgManager {
   }
 
   // msgを追加する
-  void add(String msg, int statusAddition, int stampid, String quoteid, int level, String roomid) {
+  void add(String msg, int statusAddition, int stampid, String quoteid, int level, String roomid) async {
     // (int msgid, String message, int status, int stamp_id, String quote_id, int level, String chatRoom
     var msgid = count() == 0 ? 1 : _msgList.last.msgid + 1;
-    String senderid = '12345';
     String msgDatetime = DateTime.now().toString();
+    // 送り先
+    List receiverList = await DatabaseHelper.serachRows("msg_chats", 1, ["room_id"], [roomid], "room_id");
+    String receiver = jsonDecode(receiverList[0]["leaders"]);
+    _socketIO.sendMsg("send_msg_chat", {
+      "tableMsg": "msg_chats",
+      "recordData": {"msg_datetime": msgDatetime, "receiver": receiver, "room_id": roomid, "level": level, "status": statusAddition, "stamp_id": stampid, "quote_id": quoteid, "msg": msg},
+      "token_mail": _userManager.getUser().mail
+    });
 
+    // savaしてはいけない
     // インスタンス生成
-    var newMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg);
-    _msgList.add(newMsg);
-    save(newMsg);
+    // var newMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg, receiver);
+    // save(newMsg);
+  }
+
+  void sioReceive(Map<String, dynamic> msgData) async {
+    // インスタンス生成
+    MSG addMsg = MSG(msgData["msg_id"], msgData["msg_datetime"], msgData["sender"], msgData["room_id"], msgData["level"], msgData["status"], msgData["stamp_id"], msgData["quote_id"], msgData["msg"],
+        msgData["receiver"]);
+
+    _msgList.add(addMsg);
+    DatabaseHelper.insert('msg_chats', addMsg.toJson());
+    // load();
   }
 
   // 保存
   void save(MSG msg) async {
+    _msgList.add(msg);
     Map<String, dynamic> savemsg = msg.toJson();
     DatabaseHelper.insert('msg_chats', savemsg);
   }
@@ -79,8 +103,9 @@ class MsgManager {
       int stampid = msgRoom['stamp_id'];
       String quoteid = msgRoom['quote_id'];
       String msg = msgRoom['msg'];
+      String receiver = msgRoom['receiver'];
 
-      MSG lordMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg);
+      MSG lordMsg = MSG(msgid, msgDatetime, senderid, roomid, level, statusAddition, stampid, quoteid, msg, receiver);
       _msgList.add(lordMsg);
     }
   }

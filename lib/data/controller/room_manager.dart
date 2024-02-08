@@ -222,11 +222,13 @@ class RoomManager extends ChangeNotifier {
       postType = room.roomid;
     }
 
+    // TODO : サブルームもまとめて退出したい
+
     // http通信
     http.Response response = await HttpToServer.httpReq("POST", httpRoute, {
       "tableName": "rooms",
       "pKey": "room_id",
-      "pKeyValue": "uuid-1",
+      "pKeyValue": postType,
       "recordData": {
         "room_id": postType,
         "room_name": room.roomName,

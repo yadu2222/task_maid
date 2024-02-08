@@ -3,6 +3,8 @@ class MSG {
   int msgid;
   // 送信時刻
   String msgDatetime;
+  // 受け取りびと
+  String receiver;
   // 送信者
   String senderid;
   // 部屋のid
@@ -18,7 +20,7 @@ class MSG {
   // 本文
   String msg;
 
-  MSG(this.msgid, this.msgDatetime, this.senderid, this.roomid, this.level, this.statusAddition, this.stampid, this.quoteid, this.msg);
+  MSG(this.msgid, this.msgDatetime, this.senderid, this.roomid, this.level, this.statusAddition, this.stampid, this.quoteid, this.msg,this.receiver);
 
   // Mapに変換する
   Map<String, dynamic> toJson() {
@@ -31,7 +33,8 @@ class MSG {
       'status_addition': statusAddition,
       'stamp_id': stampid,
       'quote_id': quoteid,
-      'msg': msg
+      'msg': msg,
+      'receiver':receiver
     };
   }
 }

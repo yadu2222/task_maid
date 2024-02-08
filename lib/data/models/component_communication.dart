@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http; // http
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert'; // json
 
+import '../controller/msg_manager.dart';
 import '../controller/door.dart';
 import '../database_helper.dart';
 
@@ -138,9 +139,13 @@ class SocketIO {
     ///チャットを受け取る
     socket.on(
       'chat_msg',
+      // ここに受け取ったデータが入る
       (data) {
         _chatMsgWs = data;
         print(data);
+
+        Map<String, dynamic> recordMsgMap = jsonDecode(data);
+        MsgManager().sioReceive(recordMsgMap);
       },
     );
 
@@ -175,6 +180,14 @@ class SocketIO {
     /// 接続
     /// connect()で接続、emit(...)でconnectedに"connect?"を送信
     socket.connect().emit('connected', {"mail": "neruko@gmail.com", "time": DateTime.now().toString(), "msg": "connect?"}); // "oauth": {"token": "",,,}
+
+    // チャットを受け取る
+    socket.on(
+      'chat_msg',
+      (data) {
+        _chatMsgWs = jsonDecode(data); // フィールドに追加
+      },
+    );
   }
 
   /// 切断。ログアウト、アプリケーションのバックグラウンド実行時、または接続が不要になったとき
