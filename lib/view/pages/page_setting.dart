@@ -221,7 +221,7 @@ class _PageSetting extends State<PageSetting> {
                               "user_id": jsonDecode(httpResponse.body)["srv_res_data"],
                               "mail": controllerTextFieldHttpInsertUsersMail.text,
                               "name": controllerTextFieldHttpInsertUsersName.text,
-                              "sid":"",
+                              "sid": "",
                               "tasks": [],
                               "rooms": []
                             };
@@ -327,7 +327,7 @@ class _PageSetting extends State<PageSetting> {
                                 "quote_id": "",
                                 "msg": msg // msg
                               },
-                              "token_mail": "deka@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
+                              "token_mail": "neruko@gmail.com", // 本来はトークンで認証し、通ればuuidを利用もしくはmailからuuidを取得し利用する。
                               // sio.sendMsg("send_msg_chat", {
                               //   "tableName": "msg_chats",
                               //   // pKey, pKeyValue はauto_incrementなので不要
