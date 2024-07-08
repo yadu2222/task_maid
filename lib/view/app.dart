@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:task_maid/data/controller/room_manager.dart';
 import 'package:task_maid/data/controller/task_manager.dart';
 import 'pages/page_home.dart';
-import '../const/items.dart';
+import '../constant/items.dart';
 import '../data/database_helper.dart';
 import '../data/controller/door.dart'; // 各情報のクラス
 import '../data/component_communication.dart';

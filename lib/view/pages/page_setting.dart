@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:task_maid/view/pages/page_home.dart';
-import '../../const/items.dart';
+import '../../constant/items.dart';
 import '../design_system/constant.dart';
 
 import '../parts/Molecules.dart';

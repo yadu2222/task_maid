@@ -6,7 +6,7 @@ import '../design_system/constant.dart';
 import '../parts/Molecules.dart';
 
 // userInfoや画像のパス
-import '../../const/items.dart';
+import '../../constant/items.dart';
 
 // 各情報のクラス
 import '../../data/models/task_class.dart';

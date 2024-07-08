@@ -42,10 +42,11 @@ String dateformat(String dateTime, int type) {
   final formatType_3 = DateFormat('HH:mm');
   final formatType_4 = DateFormat('MM月dd日HH時mm分');
   final formatType_5 = DateFormat('MM.dd.HH時mm分');
+  final formatType_6 = DateFormat('MM/dd');
 
   print(dateTime);
 
-  List formatType = [formatType_1, formatType_2, formatType_3, formatType_4, formatType_5];
+  List formatType = [formatType_1, formatType_2, formatType_3, formatType_4, formatType_5,formatType_6];
   DateTime nn = DateTime.parse(dateTime);
   return formatType[type].format(nn);
 }

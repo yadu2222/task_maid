@@ -9,7 +9,7 @@ import 'package:task_maid/view/pages/page_taskSetting.dart';
 import '../design_system/constant.dart';
 import 'page_messages.dart';
 
-import '../../const/items.dart';
+import '../../constant/items.dart';
 import '../parts/Molecules.dart';
 import '../parts/loading.dart';
 

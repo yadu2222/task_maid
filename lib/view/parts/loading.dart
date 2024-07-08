@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../const/items.dart'; // 画像のパス用
+import '../../constant/items.dart'; // 画像のパス用
 import '../design_system/constant.dart';
 
 class Loading extends StatefulWidget {
